@@ -1,10 +1,10 @@
 # dyFront #
 
-[![GitHub Build Status](https://github.com/cisagov/dyFront/workflows/build/badge.svg)](https://github.com/cisagov/dyFront/actions)
-[![Coverage Status](https://coveralls.io/repos/github/cisagov/dyFront/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/dyFront?branch=develop)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/dyFront/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/dyFront/context:python)
-[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/dyFront/develop/badge.svg)](https://snyk.io/test/github/cisagov/dyFront)
+[![GitHub Build Status](https://github.com/Pascal-0x90/dyFront/workflows/build/badge.svg)](https://github.com/Pascal-0x90/dyFront/actions)
+[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/dyFront/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/dyFront?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/dyFront/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/dyFront/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/dyFront/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/dyFront)
 
 This is a generic skeleton project that can be used to quickly get a
 new [cisagov](https://github.com/cisagov) Python library GitHub

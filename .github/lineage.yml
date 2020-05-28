@@ -1,6 +1,5 @@
 ---
-version: "1"
-
 lineage:
   skeleton:
-    remote-url: https://github.com/cisagov/skeleton-generic.git
+    remote-url: https://github.com/Pascal-0x90/skeleton-python-library.git
+version: '1'

@@ -1,10 +1,10 @@
-# skeleton-python-library #
+# dyFront #
 
-[![GitHub Build Status](https://github.com/cisagov/skeleton-python-library/workflows/build/badge.svg)](https://github.com/cisagov/skeleton-python-library/actions)
-[![Coverage Status](https://coveralls.io/repos/github/cisagov/skeleton-python-library/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/skeleton-python-library?branch=develop)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/skeleton-python-library.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/skeleton-python-library/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/skeleton-python-library.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/skeleton-python-library/context:python)
-[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/skeleton-python-library/develop/badge.svg)](https://snyk.io/test/github/cisagov/skeleton-python-library)
+[![GitHub Build Status](https://github.com/cisagov/dyFront/workflows/build/badge.svg)](https://github.com/cisagov/dyFront/actions)
+[![Coverage Status](https://coveralls.io/repos/github/cisagov/dyFront/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/dyFront?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/dyFront/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/dyFront/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/dyFront/develop/badge.svg)](https://snyk.io/test/github/cisagov/dyFront)
 
 This is a generic skeleton project that can be used to quickly get a
 new [cisagov](https://github.com/cisagov) Python library GitHub

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-"""example is an example Python library and tool.
+"""dyFront is an dyFront Python library and tool.
 
 Divide one integer by another and log the result. Also log some information
-from an environment variable and a package resource.
+from an environment variable and a package resource. THIS IS SOME TEXT
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -11,8 +11,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  example [--log-level=LEVEL] <dividend> <divisor>
-  example (-h | --help)
+  dyFront [--log-level=LEVEL] <dividend> <divisor>
+  dyFront (-h | --help)
 
 Options:
   -h --help              Show this message.
@@ -34,12 +34,13 @@ from schema import And, Schema, SchemaError, Use
 
 from ._version import __version__
 
-DEFAULT_ECHO_MESSAGE: str = "Hello World from the example default!"
+DEFAULT_ECHO_MESSAGE: str = "Hello World from the dyFront default!"
 
 
-def example_div(dividend: float, divisor: float) -> float:
+def dyFront_div(dividend: float, divisor: float) -> float:
     """Print some logging messages."""
-    logging.debug("This is a debug message")
+    logging.debug("This is a debug message and MOAR THERE IS SOMETHING HERE")
+    print("THIS IS SOMETHING")
     logging.info("This is an info message")
     logging.warning("This is a warning message")
     logging.error("This is an error message")
@@ -48,7 +49,7 @@ def example_div(dividend: float, divisor: float) -> float:
 
 
 def main() -> int:
-    """Set up logging and call the example function."""
+    """Set up logging and call the dyFront function."""
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
     schema: Schema = Schema(
@@ -87,7 +88,7 @@ def main() -> int:
         format="%(asctime)-15s %(levelname)s %(message)s", level=log_level.upper()
     )
 
-    logging.info(f"{dividend} / {divisor} == {example_div(dividend, divisor)}")
+    logging.info(f"{dividend} / {divisor} == {dyFront_div(dividend, divisor)}")
 
     # Access some data from an environment variable
     message: str = os.getenv("ECHO_MESSAGE", DEFAULT_ECHO_MESSAGE)
@@ -95,7 +96,7 @@ def main() -> int:
 
     # Access some data from our package data (see the setup.py)
     secret_message: str = (
-        pkg_resources.resource_string("example", "data/secret.txt")
+        pkg_resources.resource_string("dyFront", "data/secret.txt")
         .decode("utf-8")
         .strip()
     )

@@ -2,8 +2,8 @@
 For use with the Censys.io api
 """
 API_URL = "https://censys.io/api/v1"
-UID = "[UID]"
-SECRET = "[YOUR SECRET HERE]"
+#UID = "[UID]"
+#SECRET = "[YOUR SECRET HERE]"
 
 """
 Top 14 CDNs most commonly used.

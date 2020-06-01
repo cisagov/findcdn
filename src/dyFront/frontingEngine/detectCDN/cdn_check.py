@@ -5,7 +5,6 @@ import os
 from typing import List
 
 # Third-Party Libraries
-import urllib.parse as parse
 import urllib.request as request
 import censys.websites as censysLookup
 from urllib.error import HTTPError, URLError
@@ -40,11 +39,11 @@ class cdnCheck:
     def __init__(self):
         try:
             self.UID = os.environ["CENSYS_UID"]
-        except:
+        except KeyError as e:
             self.UID = None
         try:
             self.SECRET = os.environ["CENSYS_SECRET"]
-        except:
+        except KeyError as e:
             self.SECRET = None
 
     """
@@ -99,9 +98,7 @@ class cdnCheck:
         try:
             response = request.urlopen(PROTOCOL + "://" + dom.url)
             dom.headers = response.headers["server"]
-        except URLError:
-            pass
-        except HTTPError:
+        except:
             pass
 
     """
@@ -122,7 +119,7 @@ class cdnCheck:
     Querying Censys API for information on domain
     """
     def censys(self, dom: domain):
-        if self.UID == None or self.SECRET == None:
+        if self.UID is None or self.SECRET is None:
             return -1
         # Data to return
         censys_data = []
@@ -136,7 +133,7 @@ class cdnCheck:
                       '80.http_www.get.headers.unknown',
                       '443.https.get.headers.unknown',
                       '80.http_www.get.headers.server']
-        data = list(c.search("domain: " + self.dom,
+        data = list(client.search("domain: " + self.dom,
                              API_FIELDS, max_records=10))
         for value_set in data[0].values():
             if isinstance(url,list):

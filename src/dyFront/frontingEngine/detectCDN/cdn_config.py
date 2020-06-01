@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+
+"""
+Define public exports.
+"""
+__all__ = ["API_URL",
+           "COMMON",
+           "CDNs",
+           "CDNs_rev"]
+
 """
 For use with the Censys.io api
 """
@@ -43,8 +53,6 @@ CDNs = {
     ".anankecdn.com.br":"Ananke",
     ".belugacdn.com":"BelugaCDN",
     ".cdnify.io":"CDNify",
-    ".inscname.net":"Instartlogic",
-    ".insnw.net":"Instartlogic",
     ".clients.turbobytes.net": "Turbo Bytes",
     ".lambdacdn.net":"LambdaCDN",
     ".akamai.net":"Akamai",
@@ -59,9 +67,9 @@ CDNs = {
     ".tl88.net":"AkamaiChinaCDN",
     ".llnwd.net":"Limelight",
     ".lldns.net":"Limelight",
-    ".netdna-cdn.com":"MaxCDN",
-    ".netdna-ssl.com":"MaxCDN",
-    ".netdna.com":"MaxCDN",
+    ".netdna-cdn.com":"StackPath",
+    ".netdna-ssl.com":"StackPath",
+    ".netdna.com":"StackPath",
     ".gfx.ms":"Limelight",
     ".adn.":"EdgeCast",
     ".wac.":"EdgeCast",
@@ -79,7 +87,6 @@ CDNs = {
     "hwcdn.net":"Highwinds",
     ".simplecdn.net":"SimpleCDN",
     ".instacontent.net":"MirrorImage",
-    ".mirror-image.net":"MirrorImage",
     ".cap-mii.net":"MirrorImage",
     ".footprint.net":"Level3",
     ".fpbns.net":"Level3",
@@ -97,9 +104,6 @@ CDNs = {
     ".inscname.net":"InstartLogic",
     ".internapcdn.net":"Internap",
     ".cloudfront.net":"Amazon CloudFront",
-    ".netdna-cdn.com":"NetDNA",
-    ".netdna-ssl.com":"NetDNA",
-    ".netdna.com":"NetDNA",
     ".kxcdn.com":"KeyCDN",
     ".cotcdn.net":"CotendoCDN",
     ".cachefly.net":"Cachefly",
@@ -107,7 +111,6 @@ CDNs = {
     ".cloudflare.net":"Cloudflare",
     ".cloudflare.com":"Cloudflare",
     ".afxcdn.net":"afxcdn.net",
-    ".lxdns.com":"ChinaNetCenter",
     ".wscdns.com":"ChinaNetCenter",
     ".wscloudcdn.com":"ChinaNetCenter",
     ".ourwebpic.com":"ChinaNetCenter",
@@ -122,8 +125,6 @@ CDNs = {
     ".gccdn.net":"CDNetworks",
     ".gccdn.cn":"CDNetworks",
     ".panthercdn.com":"CDNetworks",
-    ".fastly.net":"Fastly",
-    ".fastlylb.net":"Fastly",
     ".nocookie.net":"Fastly",
     ".cdn.bitgravity.com":"Tata communications",
     ".cdn.telefonica.com":"Telefonica",
@@ -195,7 +196,7 @@ CDNs = {
     ".netlify.com":"Netlify",
     ".b-cdn.net":"BunnyCDN",
     ".gtimg":"Tencent"}
-    
+
 """
 Swap the keys with their respective value. Used for digesting results.
 """

@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+Define public exports.
+"""
+__all__ = ["NoDomains",
+           "NoIPaddress"]
+
 class NoDomains(Exception):
     """Raised when no domains exist in CDN Check"""
     def __init__(self, message="There are no Domains to check!"):

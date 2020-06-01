@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
-"""dyFront is an dyFront Python library and tool.
+"""dyFront is a security research and reporting tool.
 
-Divide one integer by another and log the result. Also log some information
-from an environment variable and a package resource. THIS IS SOME TEXT
+dyFront determine what domain names from a passed in list are domain 
+frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file. 
 
 EXIT STATUS
     This utility exits with one of the following values:
-    0   Calculation completed successfully.
+    0   Frontable domains successfully printed to file
     >0  An error occurred.
 
 Usage:
-  dyFront [--log-level=LEVEL] <dividend> <divisor>
+  dyFront file <fileIn> [options]
+  dyFront list  <domain>... [options]
   dyFront (-h | --help)
 
 Options:
   -h --help              Show this message.
-  --log-level=LEVEL      If specified, then the log level will be set to
-                         the specified value.  Valid values are "debug", "info",
-                         "warning", "error", and "critical". [default: info]
+  --version              Show the current version.
+  -o FILE --output=FILE  If specified, then the output file will be set to
+                         the specified value. [default: ./frontable.json]
+
+
 """
 
 # Standard Python Libraries
-import logging
 import os
 import sys
 from typing import Any, Dict
@@ -30,42 +32,35 @@ from typing import Any, Dict
 # Third-Party Libraries
 import docopt
 import pkg_resources
-from schema import And, Schema, SchemaError, Use
+from schema import And, Schema, SchemaError, Use, Or
+import validators
 
 from ._version import __version__
 
-DEFAULT_ECHO_MESSAGE: str = "Hello World from the dyFront default!"
-
-
-def dyFront_div(dividend: float, divisor: float) -> float:
-    """Print some logging messages."""
-    logging.debug("This is a debug message and MOAR THERE IS SOMETHING HERE")
-    print("THIS IS SOMETHING")
-    logging.info("This is an info message")
-    logging.warning("This is a warning message")
-    logging.error("This is an error message")
-    logging.critical("This is a critical message")
-    return dividend / divisor
 
 
 def main() -> int:
-    """Set up logging and call the dyFront function."""
+    """Collect the arguments"""
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
     schema: Schema = Schema(
         {
-            "--log-level": And(
+            "--output": And(
                 str,
-                Use(str.lower),
-                lambda n: n in ("debug", "info", "warning", "error", "critical"),
-                error="Possible values for --log-level are "
-                + "debug, info, warning, error, and critical.",
+                lambda filename: not os.path.isfile(filename),
+                error= "Output file \"" + args["--output"] + "\" already exists!"
             ),
-            "<dividend>": Use(int, error="<dividend> must be an integer."),
-            "<divisor>": And(
-                Use(int),
-                lambda n: n != 0,
-                error="<divisor> must be an integer that is not 0.",
+            "<fileIn>" :Or(
+                None,
+                And(
+                    str,
+                    lambda filename: os.path.isfile(filename) ,
+                    error= "Input file \"" + str(args["<fileIn>"]) + "\" does not exist!"
+                )
+            ),
+            "<domain>" : And(
+                list,                
+                error= "Please format the domains as a list."
             ),
             str: object,  # Don't care about other keys, if any
         }
@@ -77,33 +72,35 @@ def main() -> int:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
         return 1
+    
+    #Add domains to a list
+    domainList = []
 
-    # Assign validated arguments to variables
-    dividend: int = validated_args["<dividend>"]
-    divisor: int = validated_args["<divisor>"]
-    log_level: str = validated_args["--log-level"]
+    if (validated_args["file"] ==  True):
+        try:
+            with open(validated_args["<fileIn>"]) as f:
+                domainList = [line.rstrip() for line in f]
+        except IOError as e:
+            print("A file error occured: %s" % e, file=sys.stderr)
+            return 1
+    else:
+        domainList = validated_args["<domain>"]
+    
+    #Validate domains in list
+    for item in domainList:
+        if (validators.domain(item) is not True):
+            print("One or more domains are not valid",file=sys.stderr)
+            return 1
+    
+    print("%d Domains Validated" % len(domainList))
+    
+    #Look for CDN
 
-    # Set up logging
-    logging.basicConfig(
-        format="%(asctime)-15s %(levelname)s %(message)s", level=log_level.upper()
-    )
+    #Check if domain is frontable
 
-    logging.info(f"{dividend} / {divisor} == {dyFront_div(dividend, divisor)}")
+    #Run report
 
-    # Access some data from an environment variable
-    message: str = os.getenv("ECHO_MESSAGE", DEFAULT_ECHO_MESSAGE)
-    logging.info(f'ECHO_MESSAGE="{message}"')
-
-    # Access some data from our package data (see the setup.py)
-    secret_message: str = (
-        pkg_resources.resource_string("dyFront", "data/secret.txt")
-        .decode("utf-8")
-        .strip()
-    )
-    logging.info(f'Secret="{secret_message}"')
-
-    # Stop logging and clean up
-    logging.shutdown()
+    print("Program exited successfully")
     return 0
 
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+The detectCDN library is meant to give functionality for
+detecting the CDN a website/target domain may be using.
+"""
+
 # Standard Python Libraries 
 import os
 from typing import List

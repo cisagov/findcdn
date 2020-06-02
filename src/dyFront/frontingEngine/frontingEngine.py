@@ -14,7 +14,7 @@ from typing import List
 
 # Internal Libraries
 from .frontingEngine_err import *
-import detectCDN
+from . import detectCDN
 
 class DomainPot:
     def __init__(self, domains: List[str]):
@@ -22,8 +22,17 @@ class DomainPot:
         self.domain_to_cdn = {}
 
         # Convert to list of type domain
-        for domain in domains:
-            self.domains.append(detectCDN.domain(domain))
+        for dom in domains:
+            domin = detectCDN.domain(dom,
+                                     list(),
+                                     list(),
+                                     list(),
+                                     list(),
+                                     list(),
+                                     list(),
+                                     list(),
+                                     list())
+            self.domains.append(domin)
 
 class Chef:
     def __init__(self, pot: DomainPot=None):
@@ -33,25 +42,30 @@ class Chef:
     """
     Check for CDNs used be domain list
     """
-    def grab_cdn(self, domains: List[detectCDN.domain]):
+    def grab_cdn(self):
         # Checker module for each domain
         detective = detectCDN.cdnCheck()
 
         # Iterate over all domains and run checks
-        for domain in domains:
-            detective.all_checks(domain)
+        for domain in self.pot.domains:
+            detective.all_checks(domain) # Multithreading Point
 
     """
-    For each domain, check if domain is frontable
+    For each domain, check if domain is frontable.
+    CURRENT METRIC:
+        - If domain has a CDN, it is frontable
     """
-    def check_front(self, domains: List[detectCDN.domain]):
-        pass
+    def check_front(self):
+        for domain in self.pot.domains:
+            self.pot.domain_to_cdn[domain.url] = domain.cdns
+        self.frontable = self.pot.domain_to_cdn
 
     """
     Run analysis on the internal domain pool
     """
     def run_checks(self):
-        pass
+        self.grab_cdn()
+        self.check_front()
 
 def check_frontable(domains: List[str]):
     """This will orchestrate the use of DomainPot and Chef"""
@@ -66,6 +80,4 @@ def check_frontable(domains: List[str]):
 
     # Return the set of frontable domains
     return chef.frontable
-
-
 

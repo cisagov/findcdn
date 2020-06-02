@@ -25,6 +25,8 @@ Options:
 """
 
 # Standard Python Libraries
+import datetime
+import json
 import os
 import sys
 from typing import Any, Dict
@@ -35,6 +37,20 @@ from schema import And, Schema, SchemaError, Or
 import validators
 
 from ._version import __version__
+
+def write_json(json_dict: dict, output: str) -> int:
+    "Write dict as JSON to output file."
+    try:
+        outfile = open(output, "w") # TODO:(DoctorEww) Update file operation mode
+    except Exception as e:
+        print("Unable to open output file:\n%s" % (e), file=sys.stderr)
+        return 1
+    info = json.dumps(json_dict, indent=4, sort_keys=True)
+    outfile.write(info)
+    outfile.close()
+    return 0
+
+
 
 def main() -> int:
     """Collect the arguments."""
@@ -86,16 +102,40 @@ def main() -> int:
     # Validate domains in list
     for item in domainList:
         if (validators.domain(item) is not True):
-            print("One or more domains are not valid", file=sys.stderr)
+            print(f"{item} is not a valid domain", file=sys.stderr)
             return 1
     
     print("%d Domains Validated" % len(domainList))
     
+    domain_dict = {}
+
+    for domain in domainList:
+        domain_dict[domain] = {
+                            "CDN": "fakeCDN",
+                            "Status": "Possibly Frontable"
+                            }
+
+    # TODO: things to put in JSON
+    # date 
+    # domain name
+    # successful 
+    # IP addr
+    # CDN 
+    # SSL policy score? 
+    # HSTS 
+
     # Look for CDN
 
     # Check if domain is frontable
 
     # Run report
+    json_dict = {}
+    json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    json_dict["domains"] = domain_dict
+
+
+    if( not write_json(json_dict, validated_args["--output"])):
+        return 1
 
     print("Program exited successfully")
     return 0

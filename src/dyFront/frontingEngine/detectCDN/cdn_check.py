@@ -183,15 +183,15 @@ class cdnCheck:
     """
     def data_digest(self, dom: domain):
         # Digest all local lists of data
-        if len(dom.censys_data) > 0:
+        if len(dom.censys_data) > 0 and not None:
             self.CDNid(dom, dom.censys_data)
-        if len(dom.cnames) > 0:
+        if len(dom.cnames) > 0 and not None:
             self.CDNid(dom, dom.cnames)
-        if len(dom.headers) > 0:
+        if len(dom.headers) > 0 and not None:
             self.CDNid(dom, dom.headers)
-        if len(dom.namesrvs) > 0:
+        if len(dom.namesrvs) > 0 and not None:
             self.CDNid(dom, dom.namesrvs)
-        if len(dom.whois_data) > 0:
+        if len(dom.whois_data) > 0 and not None:
             self.CDNid(dom, dom.whois_data)
 
     """

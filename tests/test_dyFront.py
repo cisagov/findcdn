@@ -2,7 +2,6 @@
 """Tests for dyFront."""
 
 # Standard Python Libraries
-import logging
 import os
 import sys
 from unittest.mock import patch
@@ -13,20 +12,6 @@ import pytest
 # cisagov Libraries
 import dyFront
 
-div_params = [
-    (1, 1, 1),
-    (2, 2, 1),
-    (0, 1, 0),
-    (8, 2, 4),
-]
-
-log_levels = (
-    "debug",
-    "info",
-    "warning",
-    "error",
-    "critical",
-)
 
 # define sources of version strings
 RELEASE_TAG = os.getenv("RELEASE_TAG")
@@ -67,6 +52,23 @@ def test_list_broken():
     with patch.object(sys, "argv", ["bogus", "list", "google.com/searchtest","facebook.com", "login.gov"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 1, "main() should return failure"
+
+"""Test working domains passed in as a list"""
+def test_file_working():
+    """Working domain list to test with."""
+    with patch.object(sys, "argv", ["bogus", "file", "validTest.txt"]):
+        return_code = dyFront.dyFront.main()
+    assert return_code == 0, "main() should return successfully"
+
+
+"""Test a broken domains passed in as a file"""
+def test_file_broken():
+    """Working domain list to test with."""
+    with patch.object(sys, "argv", ["bogus", "file", "invalidTest.txt"]):
+        return_code = dyFront.dyFront.main()
+    assert return_code == 1, "main() should return failure"
+
+
 
 
 

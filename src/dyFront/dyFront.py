@@ -31,16 +31,13 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-import pkg_resources
-from schema import And, Schema, SchemaError, Use, Or
+from schema import And, Schema, SchemaError, Or
 import validators
 
 from ._version import __version__
 
-
-
 def main() -> int:
-    """Collect the arguments"""
+    """Collect the arguments."""
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
     schema: Schema = Schema(
@@ -48,19 +45,19 @@ def main() -> int:
             "--output": And(
                 str,
                 lambda filename: not os.path.isfile(filename),
-                error= "Output file \"" + args["--output"] + "\" already exists!"
+                error="Output file \"" + args["--output"] + "\" already exists!"
             ),
-            "<fileIn>" :Or(
+            "<fileIn>": Or(
                 None,
                 And(
                     str,
-                    lambda filename: os.path.isfile(filename) ,
-                    error= "Input file \"" + str(args["<fileIn>"]) + "\" does not exist!"
+                    lambda filename: os.path.isfile(filename),
+                    error="Input file \"" + str(args["<fileIn>"]) + "\" does not exist!"
                 )
             ),
-            "<domain>" : And(
+            "<domain>": And(
                 list,                
-                error= "Please format the domains as a list."
+                error="Please format the domains as a list."
             ),
             str: object,  # Don't care about other keys, if any
         }
@@ -73,10 +70,10 @@ def main() -> int:
         print(err, file=sys.stderr)
         return 1
     
-    #Add domains to a list
+    # Add domains to a list
     domainList = []
 
-    if (validated_args["file"] ==  True):
+    if (validated_args["file"]): #
         try:
             with open(validated_args["<fileIn>"]) as f:
                 domainList = [line.rstrip() for line in f]
@@ -86,19 +83,19 @@ def main() -> int:
     else:
         domainList = validated_args["<domain>"]
     
-    #Validate domains in list
+    # Validate domains in list
     for item in domainList:
         if (validators.domain(item) is not True):
-            print("One or more domains are not valid",file=sys.stderr)
+            print("One or more domains are not valid", file=sys.stderr)
             return 1
     
     print("%d Domains Validated" % len(domainList))
     
-    #Look for CDN
+    # Look for CDN
 
-    #Check if domain is frontable
+    # Check if domain is frontable
 
-    #Run report
+    # Run report
 
     print("Program exited successfully")
     return 0

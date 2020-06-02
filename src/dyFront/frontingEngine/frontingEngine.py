@@ -34,7 +34,12 @@ class Chef:
     Check for CDNs used be domain list
     """
     def grab_cdn(self, domains: List[detectCDN.domain]):
-        pass
+        # Checker module for each domain
+        detective = detectCDN.cdnCheck()
+
+        # Iterate over all domains and run checks
+        for domain in domains:
+            detective.all_checks(domain)
 
     """
     For each domain, check if domain is frontable

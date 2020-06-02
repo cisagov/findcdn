@@ -137,7 +137,8 @@ class cdnCheck:
                       '80.http.get.metadata.description',
                       '80.http_www.get.headers.unknown',
                       '443.https.get.headers.unknown',
-                      '80.http_www.get.headers.server']
+                      '80.http_www.get.headers.server',
+                      '443.https.get.headers.via']
         data = list(client.search("domain: " + self.dom,
                              API_FIELDS, max_records=10))
         for value_set in data[0].values():

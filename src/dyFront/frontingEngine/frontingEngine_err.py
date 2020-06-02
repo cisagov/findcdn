@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Define public exports.
+"""
+__all__ = ["DomainsExist"]
 
 class DomainsExist(Exception):
     """Raised when the self.domains list is not empty."""

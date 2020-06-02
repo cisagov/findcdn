@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+"""
+The detectCDN library is meant to give functionality for
+detecting the CDN a website/target domain may be using.
+"""
+
 # Standard Python Libraries 
 import os
 from typing import List
@@ -94,12 +99,14 @@ class cdnCheck:
     """
     def https_lookup(self, dom: domain):
         # Request from webserver, read ['server']
-        PROTOCOL = "http"
-        try:
-            response = request.urlopen(PROTOCOL + "://" + dom.url)
-            dom.headers = response.headers["server"]
-        except:
-            pass
+        PROTOCOLS = ["http", "https"]
+        for PROTOCOL in PROTOCOLS:
+            try:
+                response = request.urlopen(PROTOCOL + "://" + dom.url)
+                if response.headers["server"] is not None:
+                    dom.headers.append(response.headers["server"])
+            except URLError as e:
+                pass
 
     """
     Scrape WHOIS data for the org or asn_description.
@@ -110,9 +117,12 @@ class cdnCheck:
         # Define temp list to assign
         whois_data = []
         for ip in dom.ip:
-            response = IPWhois(ip)
-            org = response.lookup_rdap()['network']['name']
-            whois_data.append(org)
+            try:
+                response = IPWhois(ip)
+                org = response.lookup_rdap()['network']['name']
+                whois_data.append(org)
+            except HTTPLookupError as e:
+                pass
         dom.whois_data = whois_data
 
     """
@@ -132,11 +142,12 @@ class cdnCheck:
                       '80.http.get.metadata.description',
                       '80.http_www.get.headers.unknown',
                       '443.https.get.headers.unknown',
-                      '80.http_www.get.headers.server']
-        data = list(client.search("domain: " + self.dom,
+                      '80.http_www.get.headers.server',
+                      '443.https.get.headers.via']
+        data = list(client.search("domain: " + dom.url,
                              API_FIELDS, max_records=10))
         for value_set in data[0].values():
-            if isinstance(url,list):
+            if isinstance(value_set,list):
                 for discovered in value_set:
                     for info in discovered.values():
                         censys_data.append(info)
@@ -177,15 +188,15 @@ class cdnCheck:
     """
     def data_digest(self, dom: domain):
         # Digest all local lists of data
-        if len(dom.censys_data) > 0:
+        if len(dom.censys_data) > 0 and not None:
             self.CDNid(dom, dom.censys_data)
-        if len(dom.cnames) > 0:
+        if len(dom.cnames) > 0 and not None:
             self.CDNid(dom, dom.cnames)
-        if len(dom.headers) > 0:
+        if len(dom.headers) > 0 and not None:
             self.CDNid(dom, dom.headers)
-        if len(dom.namesrvs) > 0:
+        if len(dom.namesrvs) > 0 and not None:
             self.CDNid(dom, dom.namesrvs)
-        if len(dom.whois_data) > 0:
+        if len(dom.whois_data) > 0 and not None:
             self.CDNid(dom, dom.whois_data)
 
     """

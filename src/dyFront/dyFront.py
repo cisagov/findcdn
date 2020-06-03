@@ -114,7 +114,9 @@ def main() -> int:
 
     # TODO: Update to reflect the output of the check_frontable
     for domain in domainList:
-        domain_dict[domain] = {"CDN": "fakeCDN", "Status": "Possibly Frontable"}
+        domain_dict[domain] = {"CDN": "fakeCDN",
+                               "Status": "Possibly Frontable"
+                               }
 
     # Run report
     json_dict = {}

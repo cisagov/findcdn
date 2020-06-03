@@ -70,32 +70,34 @@ class cdnCheck:
             # Assign any found IP addresses
             dom.ip = [str(ip.address) for ip in response]
         except NXDOMAIN:
-            return -1
+            return 1
         except NoNameservers:
-            return -2
+            return 2
         except NoAnswer:
-            return -3
+            return 3
         return 0
 
-    def cname(self, dom: Domain):
+    def cname(self, dom: Domain) -> int:
         """Collect CNAME records on domain."""
         try:
             response = query(dom.url, "cname")
             dom.cnames = [record.to_text() for record in response]
         except NoAnswer:
-            pass
+            return 1
         except NXDOMAIN:
-            pass
+            return 2
+        return 0
 
-    def namesrv(self, dom: Domain):
+    def namesrv(self, dom: Domain) -> int:
         """Collect nameservers for potential cdn suggestions."""
         try:
             response = query(dom.url, "ns")
             dom.namesrvs = [server.to_text() for server in response]
         except NoAnswer:
-            pass
+            return 1
         except NXDOMAIN:
-            pass
+            return 2
+        return 0
 
     def https_lookup(self, dom: Domain):
         """Read 'server' header for CDN hints."""

@@ -37,15 +37,15 @@ from schema import And, Schema, SchemaError, Or
 import validators
 
 
+# Internal Libraries
 from ._version import __version__
-
-from .frontingEngine import *
+from .frontingEngine import check_frontable
 
 
 def write_json(json_dict: dict, output: str) -> int:
-    "Write dict as JSON to output file."
+    """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "w") # TODO:(DoctorEww) Update file operation mode
+        outfile = open(output, "w")   # TODO:(DoctorEww) Update file operation mode
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1
@@ -94,7 +94,7 @@ def main() -> int:
     
     # Add domains to a list
     domainList = []
-    if (validated_args["file"]): #
+    if (validated_args["file"]):
         try:
             with open(validated_args["<fileIn>"]) as f:
                 domainList = [line.rstrip() for line in f]
@@ -116,28 +116,11 @@ def main() -> int:
 
     print(check_frontable(domainList))
 
+    # TODO: Update to reflect the output of the check_frontable
     for domain in domainList:
-        domain_dict[domain] = {
-                            "CDN": "fakeCDN",
-                            "Status": "Possibly Frontable"
-                            }
-
-    # TODO: things to put in JSON
-    # date 
-    # domain name
-    # successful 
-    # IP addr
-    # CDN 
-    # SSL policy score? 
-    # HSTS 
-
-    # Look for CDN
-
-    # Check if domain is frontable
-
-
-
-
+        domain_dict[domain] = {"CDN": "fakeCDN",
+                               "Status": "Possibly Frontable"
+                              }
 
     # Run report
     json_dict = {}
@@ -147,13 +130,11 @@ def main() -> int:
     if validated_args["--output"] is None:
         print(json_dict)
     else:
-        if( not write_json(json_dict, validated_args["--output"])):
+        if(not write_json(json_dict, validated_args["--output"])):
             return 1
-    
 
     print("Program exited successfully")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

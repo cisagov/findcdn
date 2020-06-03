@@ -11,15 +11,15 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [options]
-  dyFront list  <domain>... [options]
+  dyFront file <fileIn> [-o FILE]
+  dyFront list  <domain>... [-o FILE]
   dyFront (-h | --help)
 
 Options:
   -h --help              Show this message.
   --version              Show the current version.
-  -o FILE --output=FILE  If specified, then the output file will be set to
-                         the specified value. [default: ./frontable.json]
+  -o FILE --output=FILE  If specified, then the JSON output file will be 
+                         set to the specified value. 
 
 
 """
@@ -36,7 +36,11 @@ import docopt
 from schema import And, Schema, SchemaError, Or
 import validators
 
+
 from ._version import __version__
+
+from .frontingEngine import *
+
 
 def write_json(json_dict: dict, output: str) -> int:
     "Write dict as JSON to output file."
@@ -51,17 +55,19 @@ def write_json(json_dict: dict, output: str) -> int:
     return 0
 
 
-
 def main() -> int:
     """Collect the arguments."""
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
     schema: Schema = Schema(
         {
-            "--output": And(
-                str,
-                lambda filename: not os.path.isfile(filename),
-                error="Output file \"" + args["--output"] + "\" already exists!"
+            "--output": Or( 
+                None,
+                And(
+                    str,
+                    lambda filename: not os.path.isfile(filename),
+                    error="Output file \"" + str(args["--output"]) + "\" already exists!"
+                )            
             ),
             "<fileIn>": Or(
                 None,
@@ -88,7 +94,6 @@ def main() -> int:
     
     # Add domains to a list
     domainList = []
-
     if (validated_args["file"]): #
         try:
             with open(validated_args["<fileIn>"]) as f:
@@ -109,6 +114,8 @@ def main() -> int:
     
     domain_dict = {}
 
+    print(check_frontable(domainList))
+
     for domain in domainList:
         domain_dict[domain] = {
                             "CDN": "fakeCDN",
@@ -128,14 +135,21 @@ def main() -> int:
 
     # Check if domain is frontable
 
+
+
+
+
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     json_dict["domains"] = domain_dict
 
-
-    if( not write_json(json_dict, validated_args["--output"])):
-        return 1
+    if validated_args["--output"] is None:
+        print(json_dict)
+    else:
+        if( not write_json(json_dict, validated_args["--output"])):
+            return 1
+    
 
     print("Program exited successfully")
     return 0

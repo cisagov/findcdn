@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
 
-"""
-Define public exports.
-"""
-__all__ = ["API_URL", "COMMON", "CDNs", "CDNs_rev"]
+"""Define public exports."""
+__all__ = ["COMMON", "CDNs", "CDNs_rev"]
 
-"""
-For use with the Censys.io api
-"""
-API_URL = "https://censys.io/api/v1"
-# UID = "[UID]"
-# SECRET = "[YOUR SECRET HERE]"
-
-"""
-Top 14 CDNs most commonly used.
-"""
+"""Top 14 CDNs most commonly used."""
 COMMON = {
     "Cloudflare": "Cloudflare - https://www.cloudflare.com",
     "Incapsula": "Incapsula - https://www.incapsula.com/",
@@ -34,6 +23,7 @@ COMMON = {
 
 """
 More inclusive list of available CDNs
+
 Format: CDNs[<cdn_domain>] = <cdn_name>
 """
 CDNs = {

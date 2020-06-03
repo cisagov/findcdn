@@ -1,15 +1,13 @@
-"""detectCDN Library"""
-from .cdn_check import cdnCheck, domain
-from .cdn_config import API_URL, COMMON, CDNs, CDNs_rev
-from .cdn_err import NoDomains, NoIPaddress
+"""detectCDN Library."""
+from .cdn_check import Domain, cdnCheck
+from .cdn_config import COMMON, CDNs, CDNs_rev
+from .cdn_err import NoIPaddress
 
 __all__ = [
-    "domain",
+    "Domain",
     "cdnCheck",
     "CDNs_rev",
     "CDNs",
     "COMMON",
-    "API_URL",
-    "NoDomains",
     "NoIPaddress",
 ]

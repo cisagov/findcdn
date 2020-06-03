@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
 
 """
-The detectCDN library is meant to give functionality for
-detecting the CDN a website/target domain may be using.
+Summary: This is the main runner for detectCDn.
+
+Description: The detectCDN library is meant to show what CDNs a domain may be using
 """
 
 # Standard Python Libraries
 import os
 from typing import List
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError
 import urllib.request as request
 
 # Third-Party Libraries
 import censys.websites as censysLookup
 from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, query
-from ipwhois import IPWhois
+from ipwhois import HTTPLookupError, IPWhois
 
 # Internal Libraries
-from .cdn_config import *
-from .cdn_err import *
+from .cdn_config import COMMON, CDNs, CDNs_rev
+from .cdn_err import NoIPaddress
 
 
-class domain:
+class Domain:
+    """Domain class allows for storage of metadata on domain."""
+
     def __init__(
         self,
         url: str,
@@ -34,6 +37,7 @@ class domain:
         whois_data: List[str] = [],
         censys_data: List[str] = [],
     ):
+        """Initialize object to store metadata on domain in url."""
         self.url = url
         self.ip = ip
         self.cnames = cnames
@@ -46,22 +50,21 @@ class domain:
 
 
 class cdnCheck:
+    """cdnCheck runs analysis and stores discovered data in Domain object."""
+
     def __init__(self):
+        """Initialize the orchestrator of analysis. Grab Censys.io api keys from environment."""
         try:
             self.UID = os.environ["CENSYS_UID"]
-        except KeyError as e:
+        except KeyError:
             self.UID = None
         try:
             self.SECRET = os.environ["CENSYS_SECRET"]
-        except KeyError as e:
+        except KeyError:
             self.SECRET = None
 
-    """
-    Determine IP addresses the domain resolves to.
-    """
-
-    def ip(self, dom: domain):
-        # Attempt to query the domain
+    def ip(self, dom: Domain):
+        """Determine IP addresses the domain resolves to."""
         try:
             response = query(dom.url)
             # Assign any found IP addresses
@@ -73,26 +76,18 @@ class cdnCheck:
         except NoAnswer:
             pass
 
-    """
-    Collect CNAME records on domain
-    """
-
-    def cname(self, dom: domain):
-        # Attempt to query the domain for CNAME
+    def cname(self, dom: Domain):
+        """Collect CNAME records on domain."""
         try:
             response = query(dom.url, "cname")
             dom.cnames = [record.to_text() for record in response]
-        except NoAnswer as err:
+        except NoAnswer:
             pass
         except NXDOMAIN:
             pass
 
-    """
-    Collect nameservers for potential cdn suggestions
-    """
-
-    def namesrv(self, dom: domain):
-        # Check for any nameservers
+    def namesrv(self, dom: Domain):
+        """Collect nameservers for potential cdn suggestions."""
         try:
             response = query(dom.url, "ns")
             dom.namesrvs = [server.to_text() for server in response]
@@ -101,28 +96,21 @@ class cdnCheck:
         except NXDOMAIN:
             pass
 
-    """
-    Read 'server' header for CDN hints.
-    """
-
-    def https_lookup(self, dom: domain):
-        # Request from webserver, read ['server']
-        PROTOCOLS = ["http", "https"]
+    def https_lookup(self, dom: Domain):
+        """Read 'server' header for CDN hints."""
+        PROTOCOLS = ["http://", "https://"]
         for PROTOCOL in PROTOCOLS:
             try:
-                response = request.urlopen(PROTOCOL + "://" + dom.url)
+                response = request.urlopen(PROTOCOL + dom.url)  # nosec
                 HEADERS = ["server", "via"]
                 for value in HEADERS:
                     if response.headers[value] is not None:
                         dom.headers.append(response.headers[value])
-            except URLError as e:
+            except URLError:
                 pass
 
-    """
-    Scrape WHOIS data for the org or asn_description.
-    """
-
-    def whois(self, dom: domain):
+    def whois(self, dom: Domain):
+        """Scrape WHOIS data for the org or asn_description."""
         if len(dom.ip) <= 0:
             raise NoIPaddress
         # Define temp list to assign
@@ -132,15 +120,12 @@ class cdnCheck:
                 response = IPWhois(ip)
                 org = response.lookup_rdap()["network"]["name"]
                 whois_data.append(org)
-            except HTTPLookupError as e:
+            except HTTPLookupError:
                 pass
         dom.whois_data = whois_data
 
-    """
-    Querying Censys API for information on domain
-    """
-
-    def censys(self, dom: domain):
+    def censys(self, dom: Domain):
+        """Query Censys API for information on domain."""
         if self.UID is None or self.SECRET is None:
             return -1
         # Data to return
@@ -168,11 +153,8 @@ class cdnCheck:
                 censys_data.append(value_set)
         dom.censys_data = censys_data
 
-    """
-    Identify any CDN name in list recieved
-    """
-
-    def CDNid(self, dom: domain, data_blob: List):
+    def CDNid(self, dom: Domain, data_blob: List):
+        """Identify any CDN name in list recieved."""
         for data in data_blob:
             # Check the CDNs standard list
             for url in CDNs:
@@ -198,12 +180,8 @@ class cdnCheck:
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 
-    """
-    Digest all data collected and assign to CDN list
-    """
-
-    def data_digest(self, dom: domain):
-        # Digest all local lists of data
+    def data_digest(self, dom: Domain):
+        """Digest all data collected and assign to CDN list."""
         if len(dom.censys_data) > 0 and not None:
             self.CDNid(dom, dom.censys_data)
         if len(dom.cnames) > 0 and not None:
@@ -215,11 +193,8 @@ class cdnCheck:
         if len(dom.whois_data) > 0 and not None:
             self.CDNid(dom, dom.whois_data)
 
-    """
-    An option to run everything in this library then digest.
-    """
-
-    def all_checks(self, dom: domain):
+    def all_checks(self, dom: Domain):
+        """Option to run everything in this library then digest."""
         self.ip(dom)
         self.cname(dom)
         self.namesrv(dom)

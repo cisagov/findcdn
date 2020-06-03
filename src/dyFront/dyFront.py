@@ -119,7 +119,7 @@ def main() -> int:
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["domains"] = domain_dict
+    json_dict["domains"] = domain_dict  # type: ignore
 
     if validated_args["--output"] is None:
         print(json_dict)

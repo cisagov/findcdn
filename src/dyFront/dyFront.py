@@ -33,9 +33,8 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-from schema import And, Schema, SchemaError, Or
+from schema import And, Or, Schema, SchemaError
 import validators
-
 
 # Internal Libraries
 from ._version import __version__
@@ -45,7 +44,7 @@ from .frontingEngine import check_frontable
 def write_json(json_dict: dict, output: str) -> int:
     """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "w")   # TODO:(DoctorEww) Update file operation mode
+        outfile = open(output, "w")  # TODO:(DoctorEww) Update file operation mode
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1
@@ -66,21 +65,18 @@ def main() -> int:
                 And(
                     str,
                     lambda filename: not os.path.isfile(filename),
-                    error="Output file \"" + str(args["--output"]) + "\" already exists!"
-                )
+                    error='Output file "' + str(args["--output"]) + '" already exists!',
+                ),
             ),
             "<fileIn>": Or(
                 None,
                 And(
                     str,
                     lambda filename: os.path.isfile(filename),
-                    error="Input file \"" + str(args["<fileIn>"]) + "\" does not exist!"
-                )
+                    error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
+                ),
             ),
-            "<domain>": And(
-                list,
-                error="Please format the domains as a list."
-            ),
+            "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }
     )
@@ -94,7 +90,7 @@ def main() -> int:
 
     # Add domains to a list
     domainList = []
-    if (validated_args["file"]):
+    if validated_args["file"]:
         try:
             with open(validated_args["<fileIn>"]) as f:
                 domainList = [line.rstrip() for line in f]
@@ -106,7 +102,7 @@ def main() -> int:
 
     # Validate domains in list
     for item in domainList:
-        if (validators.domain(item) is not True):
+        if validators.domain(item) is not True:
             print(f"{item} is not a valid domain", file=sys.stderr)
             return 1
 
@@ -125,12 +121,12 @@ def main() -> int:
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["domains"] = domain_dict
+    json_dict["domains"] = domain_dict  # type: ignore
 
     if validated_args["--output"] is None:
         print(json_dict)
     else:
-        if(not write_json(json_dict, validated_args["--output"])):
+        if not write_json(json_dict, validated_args["--output"]):
             return 1
 
     print("Program exited successfully")

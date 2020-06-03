@@ -1,13 +1,6 @@
-from .detectCDN import cdn_check
-from .detectCDN import cdn_config
-from .detectCDN import cdn_err
-from .frontingEngine import DomainPot, Chef, check_frontable
+"""frontingEngine library."""
 from . import detectCDN
+from .frontingEngine import Chef, DomainPot, check_frontable
 
-"""
-Define public exports.
-"""
-__all__ = ["DomainPot",
-           "Chef",
-           "check_frontable",
-           "detectCDN"]
+"""Define public exports."""
+__all__ = ["DomainPot", "Chef", "check_frontable", "detectCDN"]

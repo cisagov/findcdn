@@ -1,16 +1,17 @@
 #!/usr/bin/env pytest -vs
 """Tests for detectCDN."""
 
+# Standard Python Libraries
 import os
 import sys
-# from unittest.mock import patch
 
 # Third-Party Libraries
 import pytest
 
 # cisagov Libraries
+from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
-from dyFront.frontingEngine.detectCDN import cdnCheck, Domain
+# from unittest.mock import patch
 
 
 def test_ip():
@@ -38,7 +39,9 @@ def test_cname():
     check = cdnCheck()
     check.cname(dom_in)
 
-    assert "www.asu.edu.cdn.cloudflare.net." in dom_in.cnames, "www.asu.edu should have www.asu.edu.cdn.cloudflare.net. as a cname"
+    assert (
+        "www.asu.edu.cdn.cloudflare.net." in dom_in.cnames
+    ), "www.asu.edu should have www.asu.edu.cdn.cloudflare.net. as a cname"
 
 
 def test_namesrv():
@@ -47,7 +50,9 @@ def test_namesrv():
     check = cdnCheck()
     check.namesrv(dom_in)
 
-    assert "ns1.google.com." in dom_in.namesrvs, "google.com should have ns1.google.com. as a nameserver"
+    assert (
+        "ns1.google.com." in dom_in.namesrvs
+    ), "google.com should have ns1.google.com. as a nameserver"
 
 
 def test_https_lookup():
@@ -66,7 +71,9 @@ def test_whois():
     check.ip(dom_in)
     check.whois(dom_in)
 
-    assert "GOOGLE" in dom_in.whois_data, "google.com should return GOOGLE in the whois_data"
+    assert (
+        "GOOGLE" in dom_in.whois_data
+    ), "google.com should return GOOGLE in the whois_data"
 
 
 # def test_whois_no_ip():
@@ -100,4 +107,3 @@ def test_whois():
 #     check.cname(dom_in)
 
 #     assert "8.8.8.8" in dom_in.cnames, "the ip for dns.google.com should be 8.8.8.8"
-        

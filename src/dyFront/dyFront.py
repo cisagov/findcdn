@@ -35,8 +35,8 @@ from schema import And, Or, Schema, SchemaError
 import validators
 
 # Internal Libraries
-from .frontingEngine import check_frontable
 from ._version import __version__
+from .frontingEngine import check_frontable
 
 
 def write_json(json_dict: dict, output: str) -> int:
@@ -112,9 +112,7 @@ def main() -> int:
 
     # TODO: Update to reflect the output of the check_frontable
     for domain in domainList:
-        domain_dict[domain] = {"CDN": "fakeCDN",
-                               "Status": "Possibly Frontable"
-                               }
+        domain_dict[domain] = {"CDN": "fakeCDN", "Status": "Possibly Frontable"}
 
     # Run report
     json_dict = {}

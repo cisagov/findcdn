@@ -5,31 +5,35 @@ The detectCDN library is meant to give functionality for
 detecting the CDN a website/target domain may be using.
 """
 
-# Standard Python Libraries 
+# Standard Python Libraries
 import os
 from typing import List
+from urllib.error import HTTPError, URLError
+import urllib.request as request
 
 # Third-Party Libraries
-import urllib.request as request
 import censys.websites as censysLookup
-from urllib.error import HTTPError, URLError
-from dns.resolver import query, NoAnswer, NXDOMAIN, NoNameservers
+from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, query
 from ipwhois import IPWhois
 
 # Internal Libraries
 from .cdn_config import *
 from .cdn_err import *
 
+
 class domain:
-    def __init__(self, url: str,
-                 ip: List[str]=[],
-                 cnames: List[str]=[],
-                 cdns: List[str]=[],
-                 cdns_by_name: List[str]=[],
-                 namsrvs: List[str]=[],
-                 headers: List[str]=[],
-                 whois_data: List[str]=[],
-                 censys_data: List[str]=[]):
+    def __init__(
+        self,
+        url: str,
+        ip: List[str] = [],
+        cnames: List[str] = [],
+        cdns: List[str] = [],
+        cdns_by_name: List[str] = [],
+        namsrvs: List[str] = [],
+        headers: List[str] = [],
+        whois_data: List[str] = [],
+        censys_data: List[str] = [],
+    ):
         self.url = url
         self.ip = ip
         self.cnames = cnames
@@ -39,6 +43,7 @@ class domain:
         self.headers = headers
         self.whois_data = whois_data
         self.censys_data = censys_data
+
 
 class cdnCheck:
     def __init__(self):
@@ -54,6 +59,7 @@ class cdnCheck:
     """
     Determine IP addresses the domain resolves to.
     """
+
     def ip(self, dom: domain):
         # Attempt to query the domain
         try:
@@ -67,14 +73,14 @@ class cdnCheck:
         except NoAnswer:
             pass
 
-
     """
     Collect CNAME records on domain
     """
+
     def cname(self, dom: domain):
         # Attempt to query the domain for CNAME
         try:
-            response = query(dom.url,'cname')
+            response = query(dom.url, "cname")
             dom.cnames = [record.to_text() for record in response]
         except NoAnswer as err:
             pass
@@ -84,10 +90,11 @@ class cdnCheck:
     """
     Collect nameservers for potential cdn suggestions
     """
+
     def namesrv(self, dom: domain):
-        # Check for any nameservers 
+        # Check for any nameservers
         try:
-            response = query(dom.url, 'ns')
+            response = query(dom.url, "ns")
             dom.namesrvs = [server.to_text() for server in response]
         except NoAnswer:
             pass
@@ -97,20 +104,24 @@ class cdnCheck:
     """
     Read 'server' header for CDN hints.
     """
+
     def https_lookup(self, dom: domain):
         # Request from webserver, read ['server']
         PROTOCOLS = ["http", "https"]
         for PROTOCOL in PROTOCOLS:
             try:
                 response = request.urlopen(PROTOCOL + "://" + dom.url)
-                if response.headers["server"] is not None:
-                    dom.headers.append(response.headers["server"])
+                HEADERS = ["server","via"]
+                for value in HEADERS:
+                    if response.headers[value] is not None:
+                        dom.headers.append(response.headers[value])
             except URLError as e:
                 pass
 
     """
     Scrape WHOIS data for the org or asn_description.
     """
+
     def whois(self, dom: domain):
         if len(dom.ip) <= 0:
             raise NoIPaddress
@@ -119,7 +130,7 @@ class cdnCheck:
         for ip in dom.ip:
             try:
                 response = IPWhois(ip)
-                org = response.lookup_rdap()['network']['name']
+                org = response.lookup_rdap()["network"]["name"]
                 whois_data.append(org)
             except HTTPLookupError as e:
                 pass
@@ -128,26 +139,28 @@ class cdnCheck:
     """
     Querying Censys API for information on domain
     """
+
     def censys(self, dom: domain):
         if self.UID is None or self.SECRET is None:
             return -1
         # Data to return
         censys_data = []
-        client = censysLookup.CensysWebsites(self.UID,self.SECRET)
-        API_FIELDS = ['443.https.get.headers.server',
-                      '80.https.get.headers.server',
-                      '443.https.get.metadata.description',
-                      '443.https.get.headers.vary',
-                      '80.http.get.headers.vary',
-                      '80.http.get.metadata.description',
-                      '80.http_www.get.headers.unknown',
-                      '443.https.get.headers.unknown',
-                      '80.http_www.get.headers.server',
-                      '443.https.get.headers.via']
-        data = list(client.search("domain: " + dom.url,
-                             API_FIELDS, max_records=10))
+        client = censysLookup.CensysWebsites(self.UID, self.SECRET)
+        API_FIELDS = [
+            "443.https.get.headers.server",
+            "80.https.get.headers.server",
+            "443.https.get.metadata.description",
+            "443.https.get.headers.vary",
+            "80.http.get.headers.vary",
+            "80.http.get.metadata.description",
+            "80.http_www.get.headers.unknown",
+            "443.https.get.headers.unknown",
+            "80.http_www.get.headers.server",
+            "443.https.get.headers.via",
+        ]
+        data = list(client.search("domain: " + dom.url, API_FIELDS, max_records=10))
         for value_set in data[0].values():
-            if isinstance(value_set,list):
+            if isinstance(value_set, list):
                 for discovered in value_set:
                     for info in discovered.values():
                         censys_data.append(info)
@@ -158,34 +171,40 @@ class cdnCheck:
     """
     Identify any CDN name in list recieved
     """
+
     def CDNid(self, dom: domain, data_blob: List):
         for data in data_blob:
             # Check the CDNs standard list
             for url in CDNs:
-                if url.lower().replace(
-                        " ", "") in data.lower().replace(
-                        " ", "") and url not in dom.cdns:
+                if (
+                    url.lower().replace(" ", "") in data.lower().replace(" ", "")
+                    and url not in dom.cdns
+                ):
                     dom.cdns.append(url)
                     dom.cdns_by_name.append(CDNs[url])
 
             # Check the CDNs reverse list
             for name in CDNs_rev:
-                if name.lower().replace(
-                        " ", "") in data.lower().replace(
-                        " ", "") and CDNs_rev[name] not in dom.cdns:
+                if (
+                    name.lower() in data.lower()
+                    and CDNs_rev[name] not in dom.cdns
+                ):
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 
             # Check the CDNs Common list:
             for name in COMMON.keys():
-                if name.lower().replace(
-                        " ", "") in data.lower().replace(
-                        " ", "") and CDNs_rev[name] not in dom.cdns:
+                if (
+                    name.lower().replace(" ", "") in data.lower().replace(" ", "")
+                    and CDNs_rev[name] not in dom.cdns
+                ):
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
+
     """
     Digest all data collected and assign to CDN list
     """
+
     def data_digest(self, dom: domain):
         # Digest all local lists of data
         if len(dom.censys_data) > 0 and not None:
@@ -202,6 +221,7 @@ class cdnCheck:
     """
     An option to run everything in this library then digest.
     """
+
     def all_checks(self, dom: domain):
         self.ip(dom)
         self.cname(dom)
@@ -210,30 +230,3 @@ class cdnCheck:
         self.whois(dom)
         self.censys(dom)
         self.data_digest(dom)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

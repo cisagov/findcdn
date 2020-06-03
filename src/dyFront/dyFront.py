@@ -20,8 +20,6 @@ Options:
   --version              Show the current version.
   -o FILE --output=FILE  If specified, then the JSON output file will be
                          set to the specified value.
-
-
 """
 
 # Standard Python Libraries
@@ -37,8 +35,8 @@ from schema import And, Or, Schema, SchemaError
 import validators
 
 # Internal Libraries
-from ._version import __version__
 from .frontingEngine import check_frontable
+from ._version import __version__
 
 
 def write_json(json_dict: dict, output: str) -> int:

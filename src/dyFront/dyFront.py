@@ -2,8 +2,8 @@
 
 """dyFront is a security research and reporting tool.
 
-dyFront determine what domain names from a passed in list are domain 
-frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file. 
+dyFront determine what domain names from a passed in list are domain
+frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file.
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -18,8 +18,8 @@ Usage:
 Options:
   -h --help              Show this message.
   --version              Show the current version.
-  -o FILE --output=FILE  If specified, then the JSON output file will be 
-                         set to the specified value. 
+  -o FILE --output=FILE  If specified, then the JSON output file will be
+                         set to the specified value.
 
 
 """
@@ -61,13 +61,13 @@ def main() -> int:
     # Validate and convert arguments as needed
     schema: Schema = Schema(
         {
-            "--output": Or( 
+            "--output": Or(
                 None,
                 And(
                     str,
                     lambda filename: not os.path.isfile(filename),
                     error="Output file \"" + str(args["--output"]) + "\" already exists!"
-                )            
+                )
             ),
             "<fileIn>": Or(
                 None,
@@ -78,7 +78,7 @@ def main() -> int:
                 )
             ),
             "<domain>": And(
-                list,                
+                list,
                 error="Please format the domains as a list."
             ),
             str: object,  # Don't care about other keys, if any
@@ -91,7 +91,7 @@ def main() -> int:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
         return 1
-    
+
     # Add domains to a list
     domainList = []
     if (validated_args["file"]):
@@ -103,15 +103,15 @@ def main() -> int:
             return 1
     else:
         domainList = validated_args["<domain>"]
-    
+
     # Validate domains in list
     for item in domainList:
         if (validators.domain(item) is not True):
             print(f"{item} is not a valid domain", file=sys.stderr)
             return 1
-    
+
     print("%d Domains Validated" % len(domainList))
-    
+
     domain_dict = {}
 
     print(check_frontable(domainList))
@@ -120,7 +120,7 @@ def main() -> int:
     for domain in domainList:
         domain_dict[domain] = {"CDN": "fakeCDN",
                                "Status": "Possibly Frontable"
-                              }
+                               }
 
     # Run report
     json_dict = {}
@@ -135,6 +135,7 @@ def main() -> int:
 
     print("Program exited successfully")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

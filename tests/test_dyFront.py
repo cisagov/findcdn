@@ -12,7 +12,6 @@ import pytest
 # cisagov Libraries
 import dyFront
 
-
 # define sources of version strings
 RELEASE_TAG = os.getenv("RELEASE_TAG")
 PROJECT_VERSION = dyFront.__version__
@@ -40,20 +39,34 @@ def test_release_version():
 
 
 """Test working domains passed in as a list"""
+
+
 def test_list_working():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["bogus", "list", "google.com","facebook.com", "login.gov"]):
+    with patch.object(
+        sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov"]
+    ):
         return_code = dyFront.dyFront.main()
     assert return_code == 0, "main() should return successfully"
 
+
 """Test a broken domains passed in as a list"""
+
+
 def test_list_broken():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["bogus", "list", "google.com/searchtest","facebook.com", "login.gov"]):
+    with patch.object(
+        sys,
+        "argv",
+        ["bogus", "list", "google.com/searchtest", "facebook.com", "login.gov"],
+    ):
         return_code = dyFront.dyFront.main()
     assert return_code == 1, "main() should return failure"
 
+
 """Test working domains passed in as a list"""
+
+
 def test_file_working():
     """Working domain list to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "validTest.txt"]):
@@ -62,16 +75,13 @@ def test_file_working():
 
 
 """Test a broken domains passed in as a file"""
+
+
 def test_file_broken():
     """Working domain list to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "invalidTest.txt"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 1, "main() should return failure"
-
-
-
-
-
 
 
 # @pytest.mark.parametrize("level", log_levels)

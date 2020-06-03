@@ -2,8 +2,8 @@
 
 """dyFront is a security research and reporting tool.
 
-dyFront determine what domain names from a passed in list are domain 
-frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file. 
+dyFront determine what domain names from a passed in list are domain
+frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file.
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -18,8 +18,8 @@ Usage:
 Options:
   -h --help              Show this message.
   --version              Show the current version.
-  -o FILE --output=FILE  If specified, then the JSON output file will be 
-                         set to the specified value. 
+  -o FILE --output=FILE  If specified, then the JSON output file will be
+                         set to the specified value.
 
 
 """
@@ -33,9 +33,8 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-from schema import And, Schema, SchemaError, Or
+from schema import And, Or, Schema, SchemaError
 import validators
-
 
 # Internal Libraries
 from ._version import __version__
@@ -45,7 +44,7 @@ from .frontingEngine import check_frontable
 def write_json(json_dict: dict, output: str) -> int:
     """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "w")   # TODO:(DoctorEww) Update file operation mode
+        outfile = open(output, "w")  # TODO:(DoctorEww) Update file operation mode
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1
@@ -61,26 +60,23 @@ def main() -> int:
     # Validate and convert arguments as needed
     schema: Schema = Schema(
         {
-            "--output": Or( 
+            "--output": Or(
                 None,
                 And(
                     str,
                     lambda filename: not os.path.isfile(filename),
-                    error="Output file \"" + str(args["--output"]) + "\" already exists!"
-                )            
+                    error='Output file "' + str(args["--output"]) + '" already exists!',
+                ),
             ),
             "<fileIn>": Or(
                 None,
                 And(
                     str,
                     lambda filename: os.path.isfile(filename),
-                    error="Input file \"" + str(args["<fileIn>"]) + "\" does not exist!"
-                )
+                    error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
+                ),
             ),
-            "<domain>": And(
-                list,                
-                error="Please format the domains as a list."
-            ),
+            "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }
     )
@@ -91,10 +87,10 @@ def main() -> int:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
         return 1
-    
+
     # Add domains to a list
     domainList = []
-    if (validated_args["file"]):
+    if validated_args["file"]:
         try:
             with open(validated_args["<fileIn>"]) as f:
                 domainList = [line.rstrip() for line in f]
@@ -103,24 +99,22 @@ def main() -> int:
             return 1
     else:
         domainList = validated_args["<domain>"]
-    
+
     # Validate domains in list
     for item in domainList:
-        if (validators.domain(item) is not True):
+        if validators.domain(item) is not True:
             print(f"{item} is not a valid domain", file=sys.stderr)
             return 1
-    
+
     print("%d Domains Validated" % len(domainList))
-    
+
     domain_dict = {}
 
     print(check_frontable(domainList))
 
     # TODO: Update to reflect the output of the check_frontable
     for domain in domainList:
-        domain_dict[domain] = {"CDN": "fakeCDN",
-                               "Status": "Possibly Frontable"
-                              }
+        domain_dict[domain] = {"CDN": "fakeCDN", "Status": "Possibly Frontable"}
 
     # Run report
     json_dict = {}
@@ -130,11 +124,12 @@ def main() -> int:
     if validated_args["--output"] is None:
         print(json_dict)
     else:
-        if(not write_json(json_dict, validated_args["--output"])):
+        if not write_json(json_dict, validated_args["--output"]):
             return 1
 
     print("Program exited successfully")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

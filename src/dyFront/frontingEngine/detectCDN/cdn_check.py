@@ -111,7 +111,7 @@ class cdnCheck:
         for PROTOCOL in PROTOCOLS:
             try:
                 response = request.urlopen(PROTOCOL + "://" + dom.url)
-                HEADERS = ["server","via"]
+                HEADERS = ["server", "via"]
                 for value in HEADERS:
                     if response.headers[value] is not None:
                         dom.headers.append(response.headers[value])
@@ -185,10 +185,7 @@ class cdnCheck:
 
             # Check the CDNs reverse list
             for name in CDNs_rev:
-                if (
-                    name.lower() in data.lower()
-                    and CDNs_rev[name] not in dom.cdns
-                ):
+                if name.lower() in data.lower() and CDNs_rev[name] not in dom.cdns:
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 

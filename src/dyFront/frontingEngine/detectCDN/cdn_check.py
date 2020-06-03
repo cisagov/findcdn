@@ -63,18 +63,19 @@ class cdnCheck:
         except KeyError:
             self.SECRET = None
 
-    def ip(self, dom: Domain):
+    def ip(self, dom: Domain) -> int:
         """Determine IP addresses the domain resolves to."""
         try:
             response = query(dom.url)
             # Assign any found IP addresses
             dom.ip = [str(ip.address) for ip in response]
         except NXDOMAIN:
-            pass
+            return -1
         except NoNameservers:
-            pass
+            return -2
         except NoAnswer:
-            pass
+            return -3
+        return 0
 
     def cname(self, dom: Domain):
         """Collect CNAME records on domain."""

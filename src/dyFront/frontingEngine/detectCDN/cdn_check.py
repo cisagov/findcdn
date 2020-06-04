@@ -14,7 +14,8 @@ import urllib.request as request
 
 # Third-Party Libraries
 import censys.websites as censysLookup
-from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, Resolver, query, Timeout
+from dns.resolver import (NXDOMAIN, NoAnswer, NoNameservers, Resolver, Timeout,
+                          query)
 from ipwhois import HTTPLookupError, IPWhois
 
 # Internal Libraries

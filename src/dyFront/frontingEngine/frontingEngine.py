@@ -33,7 +33,7 @@ class DomainPot:
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
-    def __init__(self, pot: DomainPot = None):
+    def __init__(self, pot: DomainPot):
         """Give the chef the pot to use."""
         self.pot = pot
         self.frontable: Dict[str, List] = {}
@@ -50,7 +50,8 @@ class Chef:
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""
         for domain in self.pot.domains:
-            self.pot.domain_to_cdn[domain.url] = domain.cdns
+            if len(domain.cdns) > 0:
+                self.pot.domain_to_cdn[domain.url] = domain.cdns
         self.frontable = self.pot.domain_to_cdn
 
     def run_checks(self):

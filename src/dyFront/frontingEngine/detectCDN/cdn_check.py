@@ -14,13 +14,14 @@ import urllib.request as request
 
 # Third-Party Libraries
 import censys.websites as censysLookup
-from dns.resolver import (NXDOMAIN, NoAnswer, NoNameservers, Resolver, Timeout,
-                          query)
 from ipwhois import HTTPLookupError, IPWhois
 
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
 from .cdn_err import NoIPaddress
+
+from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers  # isort:skip
+from dns.resolver import Resolver, Timeout, query  # isort:skip
 
 
 class Domain:

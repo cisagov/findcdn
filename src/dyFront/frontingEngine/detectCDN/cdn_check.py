@@ -109,7 +109,7 @@ class cdnCheck:
 
     def https_lookup(self, dom: Domain):
         """Read 'server' header for CDN hints."""
-        PROTOCOLS = ["http://", "https://"]
+        PROTOCOLS = ["https://"]
         for PROTOCOL in PROTOCOLS:
             try:
                 response = request.urlopen(PROTOCOL + dom.url)  # nosec
@@ -133,7 +133,8 @@ class cdnCheck:
             try:
                 response = IPWhois(ip)
                 org = response.lookup_rdap()["network"]["name"]
-                whois_data.append(org)
+                if org != "BAREFRUIT-ERRORHANDLING":
+                    whois_data.append(org)
             except HTTPLookupError:
                 pass
         dom.whois_data = whois_data

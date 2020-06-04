@@ -126,10 +126,10 @@ def test_all_checks_by_name():
     assert "Cloudfront" in dom_in.cdns_by_name, "the ip for dns.google.com should be 8.8.8.8"
 
 
-# def test_all_checks():
-#     """Working domain list to test with."""
-#     dom_in = Domain("google.com")
-#     check = cdnCheck()
-#     check.cname(dom_in)
-
-#     assert "8.8.8.8" in dom_in.cnames, "the ip for dns.google.com should be 8.8.8.8"
+def test_all_checks_bad():
+    """Working domain list to test with."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    return_code = check.all_checks(dom_in)
+    print(return_code)
+    assert return_code != 0, "This fake site should return a non 0 code."

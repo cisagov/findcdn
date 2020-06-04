@@ -141,7 +141,7 @@ class cdnCheck:
     def censys(self, dom: Domain):
         """Query Censys API for information on domain."""
         if self.UID is None or self.SECRET is None:
-            return -1
+            return 1
         # Data to return
         censys_data = []
         client = censysLookup.CensysWebsites(self.UID, self.SECRET)
@@ -196,16 +196,23 @@ class cdnCheck:
 
     def data_digest(self, dom: Domain):
         """Digest all data collected and assign to CDN list."""
+        return_code = 1
         if len(dom.censys_data) > 0 and not None:
             self.CDNid(dom, dom.censys_data)
+            return_code = 0
         if len(dom.cnames) > 0 and not None:
             self.CDNid(dom, dom.cnames)
+            return_code = 0
         if len(dom.headers) > 0 and not None:
             self.CDNid(dom, dom.headers)
+            return_code = 0
         if len(dom.namesrvs) > 0 and not None:
             self.CDNid(dom, dom.namesrvs)
+            return_code = 0
         if len(dom.whois_data) > 0 and not None:
             self.CDNid(dom, dom.whois_data)
+            return_code = 0
+        return return_code
 
     def all_checks(self, dom: Domain):
         """Option to run everything in this library then digest."""
@@ -215,4 +222,5 @@ class cdnCheck:
         self.https_lookup(dom)
         self.whois(dom)
         self.censys(dom)
-        self.data_digest(dom)
+        return self.data_digest(dom)
+

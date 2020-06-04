@@ -15,7 +15,9 @@ def test_ip():
     """Test the IP resolving feature."""
     dns.resolver.default_resolver = dns.resolver.Resolver()
     dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
-    dom_in = Domain("dns.google.com")
+    dom_in = Domain(
+        "dns.google.com", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.ip(dom_in)
 
@@ -26,7 +28,17 @@ def test_broken_ip():
     """Test a non-working domain IP resolving feature."""
     dns.resolver.default_resolver = dns.resolver.Resolver()
     dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dom_in = Domain(
+        "notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
     check = cdnCheck()
     return_code = check.ip(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
@@ -34,7 +46,9 @@ def test_broken_ip():
 
 def test_cname():
     """Test the CNAME resolving feature."""
-    dom_in = Domain("www.asu.edu")
+    dom_in = Domain(
+        "www.asu.edu", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.cname(dom_in)
 
@@ -45,7 +59,17 @@ def test_cname():
 
 def test_broken_cname():
     """Test a non-working domain CNAME resolving feature."""
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dom_in = Domain(
+        "notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
     check = cdnCheck()
     return_code = check.cname(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
@@ -53,7 +77,9 @@ def test_broken_cname():
 
 def test_namesrv():
     """Test the namesrv resolving feature."""
-    dom_in = Domain("google.com")
+    dom_in = Domain(
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.namesrv(dom_in)
 
@@ -64,7 +90,17 @@ def test_namesrv():
 
 def test_broken_namesrv():
     """Test a non-working domain namesrv resolving feature."""
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dom_in = Domain(
+        "notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
     check = cdnCheck()
     return_code = check.namesrv(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
@@ -72,7 +108,9 @@ def test_broken_namesrv():
 
 def test_https_lookup():
     """Test the header resolving feature."""
-    dom_in = Domain("google.com")
+    dom_in = Domain(
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.https_lookup(dom_in)
 
@@ -81,7 +119,17 @@ def test_https_lookup():
 
 def test_broken_https_lookup():
     """Test a non-working domain header resolving feature."""
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dom_in = Domain(
+        "notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
     check = cdnCheck()
     return_code = check.namesrv(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
@@ -89,7 +137,9 @@ def test_broken_https_lookup():
 
 def test_whois():
     """Test the whois resolving feature."""
-    dom_in = Domain("google.com")
+    dom_in = Domain(
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.ip(dom_in)
     check.whois(dom_in)
@@ -101,7 +151,17 @@ def test_whois():
 
 def test_broken_whois():
     """Test a non-working domain whois resolving feature."""
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dom_in = Domain(
+        "notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
     check = cdnCheck()
     check.ip(dom_in)
     return_code = check.whois(dom_in)
@@ -146,7 +206,9 @@ def test_censys_check_uid_secret():
 )
 def test_censys():
     """Check basic functionality of the censys module."""
-    dom_in = Domain("amazon.com")
+    dom_in = Domain(
+        "amazon.com", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.censys(dom_in)
 
@@ -163,7 +225,9 @@ def test_censys():
 
 def test_all_checks():
     """Working domain list to test with."""
-    dom_in = Domain("login.gov")
+    dom_in = Domain(
+        "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.all_checks(dom_in)
 
@@ -174,7 +238,9 @@ def test_all_checks():
 
 def test_all_checks_by_name():
     """Working domain list to test with."""
-    dom_in = Domain("login.gov")
+    dom_in = Domain(
+        "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.all_checks(dom_in)
 
@@ -185,8 +251,22 @@ def test_all_checks_by_name():
 
 def test_all_checks_bad():
     """Working domain list to test with."""
-    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    dns.resolver.default_resolver = dns.resolver.Resolver()
+    dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
+    dom = Domain(
+        "super.definitelynot.notarealdomain.fakedomaindne.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
+    print(dom.url, dom.cdns, dom.cnames, dom.headers, dom.whois_data, dom.ip)
     check = cdnCheck()
-    return_code = check.all_checks(dom_in)
+    return_code = check.all_checks(dom)
     print(return_code)
+    print(dom.url, dom.cdns, dom.cnames, dom.headers, dom.whois_data, dom.ip)
     assert return_code != 0, "This fake site should return a non 0 code."

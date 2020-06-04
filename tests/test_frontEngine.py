@@ -92,7 +92,6 @@ def test_check_frontable():
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     frontable = dyFront.frontingEngine.check_frontable(domains)
     expected = {"asu.edu": [".cloudflare.com"], "censys.io": [".cloudflare.com"]}
-
     # Assertions
     assert len(frontable) > 0, "Returned frontable list is empty."
     assert frontable == expected, "Returned domains do not match."

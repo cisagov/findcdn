@@ -1,6 +1,10 @@
 #!/usr/bin/env pytest -vs
 """Tests for detectCDN."""
 
+# Third-Party Libraries
+import dns.resolver
+import pytest
+
 # cisagov Libraries
 from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
@@ -9,6 +13,8 @@ from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
 def test_ip():
     """Test the IP resolving feature."""
+    dns.resolver.default_resolver = dns.resolver.Resolver()
+    dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
     dom_in = Domain("dns.google.com")
     check = cdnCheck()
     check.ip(dom_in)
@@ -18,6 +24,8 @@ def test_ip():
 
 def test_broken_ip():
     """Test a non-working domain IP resolving feature."""
+    dns.resolver.default_resolver = dns.resolver.Resolver()
+    dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
     dom_in = Domain("notarealdomain.fakedomaindne.com")
     check = cdnCheck()
     return_code = check.ip(dom_in)
@@ -99,13 +107,58 @@ def test_broken_whois():
     return_code = check.whois(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
 
-# TODO: make test for this function
-# def test_censys():
-#     """Working domain list to test with."""
-#     dom_in = Domain("google.com")
-#     check = cdnCheck()
-#     check.cname(dom_in)
-#     assert "8.8.8.8" in dom_in.cnames, "the ip for dns.google.com should be 8.8.8.8"
+
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys_bad_domain():
+    """Working domain list to test with."""
+    dom_in = Domain("wewewewewewewewe.com")
+    check = cdnCheck()
+    result = check.censys(dom_in)
+
+    # Assertions
+    assert result == 2, "Censys should not return data."
+
+
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys_check_uid_secret():
+    """Check if system variables correctly grabbed."""
+    check = cdnCheck()
+    assert check.UID is not None, "UID Needs to be defined to use Censys."
+    assert check.SECRET is not None, "SECRET Needs to be defined to use Censys."
+
+    # Set these to None
+    check.UID = None
+    check.SECRET = None
+
+    result = check.censys
+    assert result != 1, "Method should not run if UID and SECRET are not defined."
+
+
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys():
+    """Check basic functionality of the censys module."""
+    dom_in = Domain("amazon.com")
+    check = cdnCheck()
+    check.censys(dom_in)
+
+    # Assertions
+    assert len(dom_in.censys_data) > 0, "Data should be returned for known good data."
+
+    # Test for our intended data inside the returned data
+    data_found = False
+    for data in dom_in.censys_data:
+        if "cloudfront" in data:
+            data_found = True
+    assert data_found, "Data returned does not match known data of amazon.com."
 
 
 def test_all_checks():
@@ -114,7 +167,9 @@ def test_all_checks():
     check = cdnCheck()
     check.all_checks(dom_in)
 
-    assert ".cloudfront.net" in dom_in.cdns, "the ip for dns.google.com should be 8.8.8.8"
+    assert (
+        ".cloudfront.net" in dom_in.cdns
+    ), "the ip for dns.google.com should be 8.8.8.8"
 
 
 def test_all_checks_by_name():
@@ -123,7 +178,9 @@ def test_all_checks_by_name():
     check = cdnCheck()
     check.all_checks(dom_in)
 
-    assert ".cloudfront.net" in dom_in.cdns, "the ip for dns.google.com should be 8.8.8.8"
+    assert (
+        ".cloudfront.net" in dom_in.cdns
+    ), "the ip for dns.google.com should be 8.8.8.8"
 
 
 # def test_all_checks():

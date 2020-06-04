@@ -138,10 +138,10 @@ class cdnCheck:
                 pass
         dom.whois_data = whois_data
 
-    def censys(self, dom: Domain):
+    def censys(self, dom: Domain) -> int:
         """Query Censys API for information on domain."""
         if self.UID is None or self.SECRET is None:
-            return -1
+            return 1
         # Data to return
         censys_data = []
         client = censysLookup.CensysWebsites(self.UID, self.SECRET)
@@ -158,14 +158,20 @@ class cdnCheck:
             "443.https.get.headers.via",
         ]
         data = list(client.search("domain: " + dom.url, API_FIELDS, max_records=10))
-        for value_set in data[0].values():
-            if isinstance(value_set, list):
-                for discovered in value_set:
-                    for info in discovered.values():
-                        censys_data.append(info)
-            else:
-                censys_data.append(value_set)
-        dom.censys_data = censys_data
+
+        # Make sure something valid returned
+        if len(data) <= 0:
+            return 2
+        else:
+            for value_set in data[0].values():
+                if isinstance(value_set, list):
+                    for discovered in value_set:
+                        for info in discovered.values():
+                            censys_data.append(info)
+                else:
+                    censys_data.append(value_set)
+            dom.censys_data = censys_data
+        return 0
 
     def CDNid(self, dom: Domain, data_blob: List):
         """Identify any CDN name in list recieved."""

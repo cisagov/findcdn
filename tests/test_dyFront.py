@@ -69,7 +69,7 @@ def test_list_broken():
 
 def test_file_working():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["bogus", "file", "tests/validTest.txt"]):
+    with patch.object(sys, "argv", ["./dyFront", "file", "tests/validTest.txt"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 0, "main() should return successfully"
 

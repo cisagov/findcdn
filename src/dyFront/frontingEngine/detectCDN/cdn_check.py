@@ -229,4 +229,3 @@ class cdnCheck:
         self.whois(dom)
         self.censys(dom)
         return self.data_digest(dom)
-

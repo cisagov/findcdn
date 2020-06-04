@@ -182,6 +182,7 @@ def test_all_checks_by_name():
         ".cloudfront.net" in dom_in.cdns
     ), "the ip for dns.google.com should be 8.8.8.8"
 
+
 def test_all_checks_bad():
     """Working domain list to test with."""
     dom_in = Domain("notarealdomain.fakedomaindne.com")

@@ -114,8 +114,11 @@ class cdnCheck:
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
-        if len(dom.ip) <= 0:
-            raise NoIPaddress
+        try:
+            if len(dom.ip) <= 0:
+                raise NoIPaddress
+        except NoIPaddress:
+            return 1
         # Define temp list to assign
         whois_data = []
         for ip in dom.ip:

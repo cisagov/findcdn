@@ -14,12 +14,14 @@ import urllib.request as request
 
 # Third-Party Libraries
 import censys.websites as censysLookup
-from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, query
 from ipwhois import HTTPLookupError, IPWhois
 
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
 from .cdn_err import NoIPaddress
+
+from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers  # isort:skip
+from dns.resolver import Resolver, Timeout, query  # isort:skip
 
 
 class Domain:
@@ -79,13 +81,19 @@ class cdnCheck:
 
     def cname(self, dom: Domain) -> int:
         """Collect CNAME records on domain."""
+        resolver = Resolver()
+        resolver.timeout = 10
+        resolver.lifetime = 10
+        cname_query = resolver.query
         try:
-            response = query(dom.url, "cname")
+            response = cname_query(dom.url, "cname")
             dom.cnames = [record.to_text() for record in response]
         except NoAnswer:
             return 1
         except NXDOMAIN:
             return 2
+        except Timeout:
+            return 3
         return 0
 
     def namesrv(self, dom: Domain) -> int:

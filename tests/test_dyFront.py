@@ -69,7 +69,7 @@ def test_list_broken():
 
 def test_file_working():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["bogus", "file", "validTest.txt"]):
+    with patch.object(sys, "argv", ["bogus", "file", "tests/validTest.txt"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 0, "main() should return successfully"
 
@@ -79,7 +79,7 @@ def test_file_working():
 
 def test_file_broken():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["bogus", "file", "invalidTest.txt"]):
+    with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 1, "main() should return failure"
 

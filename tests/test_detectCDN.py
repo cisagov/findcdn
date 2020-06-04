@@ -1,13 +1,6 @@
 #!/usr/bin/env pytest -vs
 """Tests for detectCDN."""
 
-# Standard Python Libraries
-import os
-import sys
-
-# Third-Party Libraries
-import pytest
-
 # cisagov Libraries
 from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
@@ -15,7 +8,7 @@ from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
 
 def test_ip():
-    """Test the IP resolving feature"""
+    """Test the IP resolving feature."""
     dom_in = Domain("dns.google.com")
     check = cdnCheck()
     check.ip(dom_in)
@@ -106,14 +99,7 @@ def test_broken_whois():
     return_code = check.whois(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
 
-# def test_whois_no_ip():
-#     """Working domain list to test with."""
-#     dom_in = Domain("google.com")
-#     check = cdnCheck()
-#     check.whois(dom_in)
-
-#     assert "gws" in dom_in.whois_data, "the ip for dns.google.com should be 8.8.8.8"
-
+# TODO: make test for this function
 # def test_censys():
 #     """Working domain list to test with."""
 #     dom_in = Domain("google.com")
@@ -122,13 +108,23 @@ def test_broken_whois():
 #     assert "8.8.8.8" in dom_in.cnames, "the ip for dns.google.com should be 8.8.8.8"
 
 
-# def test_data_digest():
-#     """Working domain list to test with."""
-#     dom_in = Domain("google.com")
-#     check = cdnCheck()
-#     check.cname(dom_in)
+def test_all_checks():
+    """Working domain list to test with."""
+    dom_in = Domain("login.gov")
+    check = cdnCheck()
+    check.all_checks(dom_in)
 
-#     assert "8.8.8.8" in dom_in.cnames, "the ip for dns.google.com should be 8.8.8.8"
+    assert ".cloudfront.net" in dom_in.cdns, "the ip for dns.google.com should be 8.8.8.8"
+
+
+def test_all_checks_by_name():
+    """Working domain list to test with."""
+    dom_in = Domain("login.gov")
+    check = cdnCheck()
+    check.all_checks(dom_in)
+
+    assert ".cloudfront.net" in dom_in.cdns, "the ip for dns.google.com should be 8.8.8.8"
+
 
 # def test_all_checks():
 #     """Working domain list to test with."""

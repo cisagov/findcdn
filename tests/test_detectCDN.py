@@ -22,15 +22,13 @@ def test_ip():
 
     assert "8.8.8.8" in dom_in.ip, "the ip for dns.google.com should be 8.8.8.8"
 
-    """ ToDo this part.
-    def test_broken_ip():
-        Working domain list to test with.
-        dom_in = Domain("dns.gooasdfasdfasdfasdfasdfasdfasdfasdfasdfasfasdfgle.com")
-        check = cdnCheck()
-        check.ip(dom_in)
 
-        assert "8.8.8.8" in dom_in.ip, "the ip for dns.google.com should be 8.8.8.8"
-    """
+def test_broken_ip():
+    """Test a non-working domain IP resolving feature."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    return_code = check.ip(dom_in)
+    assert return_code != 0, "This fake site should return a non 0 code."
 
 
 def test_cname():
@@ -44,6 +42,14 @@ def test_cname():
     ), "www.asu.edu should have www.asu.edu.cdn.cloudflare.net. as a cname"
 
 
+def test_broken_cname():
+    """Test a non-working domain CNAME resolving feature."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    return_code = check.cname(dom_in)
+    assert return_code != 0, "This fake site should return a non 0 code."
+
+
 def test_namesrv():
     """Test the namesrv resolving feature."""
     dom_in = Domain("google.com")
@@ -55,6 +61,14 @@ def test_namesrv():
     ), "google.com should have ns1.google.com. as a nameserver"
 
 
+def test_broken_namesrv():
+    """Test a non-working domain namesrv resolving feature."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    return_code = check.namesrv(dom_in)
+    assert return_code != 0, "This fake site should return a non 0 code."
+
+
 def test_https_lookup():
     """Test the header resolving feature."""
     dom_in = Domain("google.com")
@@ -62,6 +76,14 @@ def test_https_lookup():
     check.https_lookup(dom_in)
 
     assert "gws" in dom_in.headers, "google.com should have gws as a header"
+
+
+def test_broken_https_lookup():
+    """Test a non-working domain header resolving feature."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    return_code = check.namesrv(dom_in)
+    assert return_code != 0, "This fake site should return a non 0 code."
 
 
 def test_whois():
@@ -75,6 +97,14 @@ def test_whois():
         "GOOGLE" in dom_in.whois_data
     ), "google.com should return GOOGLE in the whois_data"
 
+
+def test_broken_whois():
+    """Test a non-working domain whois resolving feature."""
+    dom_in = Domain("notarealdomain.fakedomaindne.com")
+    check = cdnCheck()
+    check.ip(dom_in)
+    return_code = check.whois(dom_in)
+    assert return_code != 0, "This fake site should return a non 0 code."
 
 # def test_whois_no_ip():
 #     """Working domain list to test with."""

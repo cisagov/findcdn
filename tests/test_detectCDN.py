@@ -123,7 +123,7 @@ def test_all_checks_by_name():
     check = cdnCheck()
     check.all_checks(dom_in)
 
-    assert ".cloudfront.net" in dom_in.cdns, "the ip for dns.google.com should be 8.8.8.8"
+    assert "Cloudfront" in dom_in.cdns_by_name, "the ip for dns.google.com should be 8.8.8.8"
 
 
 # def test_all_checks():

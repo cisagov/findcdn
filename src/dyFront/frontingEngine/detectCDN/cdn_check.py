@@ -105,6 +105,8 @@ class cdnCheck:
             return 1
         except NXDOMAIN:
             return 2
+        except NoNameservers:
+            return 3
         return 0
 
     def https_lookup(self, dom: Domain):

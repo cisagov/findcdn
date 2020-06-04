@@ -131,8 +131,8 @@ def test_broken_https_lookup():
         list(),
     )
     check = cdnCheck()
-    return_code = check.namesrv(dom_in)
-    assert return_code != 0, "This fake site should return a non 0 code."
+    check.https_lookup(dom_in)
+    assert len(dom_in.headers) <= 0, "There should be no response."
 
 
 def test_whois():

@@ -1,13 +1,6 @@
 #!/usr/bin/env pytest -vs
 """Tests for detectCDN."""
 
-# Standard Python Libraries
-import os
-import sys
-
-# Third-Party Libraries
-import pytest
-
 # cisagov Libraries
 from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
@@ -15,14 +8,14 @@ from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
 
 
 def test_ip():
-    """Test the IP resolving feature"""
+    """Test the IP resolving feature."""
     dom_in = Domain("dns.google.com")
     check = cdnCheck()
     check.ip(dom_in)
 
     assert "8.8.8.8" in dom_in.ip, "the ip for dns.google.com should be 8.8.8.8"
 
-    """ ToDo this part.
+    """ ToDo this part. # noqa: D400
     def test_broken_ip():
         Working domain list to test with.
         dom_in = Domain("dns.gooasdfasdfasdfasdfasdfasdfasdfasdfasdfasfasdfgle.com")

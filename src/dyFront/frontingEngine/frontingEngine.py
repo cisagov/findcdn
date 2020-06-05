@@ -36,7 +36,7 @@ class Chef:
     def __init__(self, pot: DomainPot):
         """Give the chef the pot to use."""
         self.pot = pot
-        self.frontable: Dict[str, List] = {}
+        self.frontable: List[detectCDN.Domain] = []
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
@@ -52,7 +52,7 @@ class Chef:
         for domain in self.pot.domains:
             if len(domain.cdns) > 0:
                 self.pot.domain_to_cdn[domain.url] = domain.cdns
-        self.frontable = self.pot.domain_to_cdn
+                self.frontable.append(domain)
 
     def run_checks(self):
         """Run analysis on the internal domain pool."""

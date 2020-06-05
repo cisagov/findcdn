@@ -7,6 +7,7 @@ Description: The detectCDN library is meant to show what CDNs a domain may be us
 """
 
 # Standard Python Libraries
+from http.client import RemoteDisconnected
 import os
 from typing import List
 from urllib.error import URLError
@@ -14,7 +15,7 @@ import urllib.request as request
 
 # Third-Party Libraries
 import censys.websites as censysLookup
-from ipwhois import HTTPLookupError, IPWhois
+from ipwhois import HTTPLookupError, IPDefinedError, IPWhois
 
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
@@ -77,6 +78,8 @@ class cdnCheck:
             return 2
         except NoAnswer:
             return 3
+        except Timeout:
+            return 4
         return 0
 
     def cname(self, dom: Domain) -> int:
@@ -94,6 +97,8 @@ class cdnCheck:
             return 2
         except Timeout:
             return 3
+        except NoNameservers:
+            return 4
         return 0
 
     def namesrv(self, dom: Domain) -> int:
@@ -121,6 +126,8 @@ class cdnCheck:
                         dom.headers.append(response.headers[value])
             except URLError:
                 pass
+            except RemoteDisconnected:
+                pass
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
@@ -138,6 +145,8 @@ class cdnCheck:
                 if org != "BAREFRUIT-ERRORHANDLING":
                     whois_data.append(org)
             except HTTPLookupError:
+                pass
+            except IPDefinedError:
                 pass
         dom.whois_data = whois_data
 

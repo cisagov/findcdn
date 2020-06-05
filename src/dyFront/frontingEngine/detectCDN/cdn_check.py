@@ -188,6 +188,9 @@ class cdnCheck:
     def CDNid(self, dom: Domain, data_blob: List):
         """Identify any CDN name in list recieved."""
         for data in data_blob:
+            # Make sure we do not try to analyze None type data
+            if data is None:
+                continue
             # Check the CDNs standard list
             for url in CDNs:
                 if (

@@ -38,9 +38,6 @@ def test_release_version():
     ), "RELEASE_TAG does not match the project version"
 
 
-"""Test working domains passed in as a list"""
-
-
 def test_list_working():
     """Working domain list to test with."""
     with patch.object(
@@ -50,11 +47,8 @@ def test_list_working():
     assert return_code == 0, "main() should return successfully"
 
 
-"""Test a broken domains passed in as a list"""
-
-
 def test_list_broken():
-    """Working domain list to test with."""
+    """Broken domain list to test with."""
     with patch.object(
         sys,
         "argv",
@@ -64,11 +58,8 @@ def test_list_broken():
     assert return_code == 1, "main() should return failure"
 
 
-"""Test working domains passed in as a list"""
-
-
 def test_file_working():
-    """Working domain list to test with."""
+    """Working domain file to test with."""
     with patch.object(sys, "argv", ["./dyFront", "file", "tests/validTest.txt"]):
         return_code = dyFront.dyFront.main()
     assert return_code == 0, "main() should return successfully"
@@ -78,63 +69,22 @@ def test_file_working():
 
 
 def test_file_broken():
-    """Working domain list to test with."""
+    """Broken domain file to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):
         return_code = dyFront.dyFront.main()
-    assert return_code == 1, "main() should return failure"
+    assert return_code != 0, "main() should return failure"
 
 
-# @pytest.mark.parametrize("level", log_levels)
-# def test_log_levels(level):
-#     """Validate commandline log-level arguments."""
-#     with patch.object(sys, "argv", ["bogus", f"--log-level={level}", "1", "1"]):
-#         with patch.object(logging.root, "handlers", []):
-#             assert (
-#                 logging.root.hasHandlers() is False
-#             ), "root logger should not have handlers yet"
-#             return_code = dyFront.dyFront.main()
-#             assert (
-#                 logging.root.hasHandlers() is True
-#             ), "root logger should now have a handler"
-#             assert return_code == 0, "main() should return success (0)"
+def test_file_dne():
+    """Working domain list to test with."""
+    with patch.object(sys, "argv", ["./dyFront", "file", "nosuchfile.txt"]):
+        return_code = dyFront.dyFront.main()
+    assert return_code != 0, "main() should return successfully"
 
 
-# def test_bad_log_level():
-#     """Validate bad log-level argument returns error."""
-#     with patch.object(sys, "argv", ["bogus", "--log-level=emergency", "1", "1"]):
-#         return_code = dyFront.dyFront.main()
-#         assert return_code == 1, "main() should return failure"
-
-
-# @pytest.mark.parametrize("dividend, divisor, quotient", div_params)
-# def test_division(dividend, divisor, quotient):
-#     """Verify division results."""
-#     result = dyFront.dyFront_div(dividend, divisor)
-#     assert result == quotient, "result should equal quotient"
-
-
-# @pytest.mark.slow
-# def test_slow_division():
-#     """dyFront of using a custom marker.
-
-#     This test will only be run if --runslow is passed to pytest.
-#     Look in conftest.py to see how this is implemented.
-#     """
-#     import time
-
-#     result = dyFront.dyFront_div(256, 16)
-#     time.sleep(4)
-#     assert result == 16, "result should equal be 16"
-
-
-# def test_zero_division():
-#     """Verify that division by zero throws the correct exception."""
-#     with pytest.raises(ZeroDivisionError):
-#         dyFront.dyFront_div(1, 0)
-
-
-# def test_zero_divisor_argument():
-#     """Verify that a divisor of zero is handled as expected."""
-#     with patch.object(sys, "argv", ["bogus", "1", "0"]):
-#         return_code = dyFront.dyFront.main()
-#         assert return_code == 1, "main() should exit with error"
+def test_file_write(tmpdir):
+    """Test writing to a file."""
+    file = tmpdir.join('outputtest.txt')
+    with patch.object(sys, "argv", ["./dyFront", "list", "google.com", "-o", str(file)]):
+        dyFront.dyFront.main()
+    assert "google.com" in file.read()

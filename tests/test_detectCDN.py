@@ -173,7 +173,7 @@ def test_broken_whois():
     reason="Environment var not set",
 )
 def test_censys_bad_domain():
-    """Working domain list to test with."""
+    """Non-working domain to test censys feature with."""
     dom_in = Domain("wewewewewewewewe.com")
     check = cdnCheck()
     result = check.censys(dom_in)
@@ -224,7 +224,7 @@ def test_censys():
 
 
 def test_all_checks():
-    """Working domain list to test with."""
+    """Run all checks."""
     dom_in = Domain(
         "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
     )
@@ -237,7 +237,7 @@ def test_all_checks():
 
 
 def test_all_checks_by_name():
-    """Working domain list to test with."""
+    """Run all checks and get CDN name."""
     dom_in = Domain(
         "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
     )
@@ -250,7 +250,7 @@ def test_all_checks_by_name():
 
 
 def test_all_checks_bad():
-    """Working domain list to test with."""
+    """Test fake domain and ensure it dosen't break anything."""
     dns.resolver.default_resolver = dns.resolver.Resolver()
     dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
     dom = Domain(

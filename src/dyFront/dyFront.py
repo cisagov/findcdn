@@ -42,7 +42,7 @@ from .frontingEngine import check_frontable
 def write_json(json_dict: dict, output: str) -> int:
     """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "w")  # TODO:(DoctorEww) Update file operation mode
+        outfile = open(output, "x")
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1

@@ -114,7 +114,7 @@ def main() -> int:
         domain_dict[domain.url] = {"IP": str(domain.ip)[1:-1],
                                    "cdns": str(domain.cdns)[1:-1],
                                    "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-                                   "Status": str(domain.frontable)
+                                   "Status": "Domain Frontable" if domain.frontable else "Domain Not Frontable"
                                    }
 
     # Run report

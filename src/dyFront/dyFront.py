@@ -42,7 +42,7 @@ from .frontingEngine import check_frontable
 def write_json(json_dict: dict, output: str) -> int:
     """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "w")  # TODO:(DoctorEww) Update file operation mode
+        outfile = open(output, "x")
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1
@@ -111,13 +111,11 @@ def main() -> int:
     processed_list = check_frontable(domain_list)
 
     for domain in processed_list:
-        domain_dict[domain.url] = {
-            "IP": str(domain.ip)[1:-1],
-            "cdns": str(domain.cdns)[1:-1],
-            "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-            "Status": str(domain.frontable),
-        }
-
+        domain_dict[domain.url] = {"IP": str(domain.ip)[1:-1],
+                                   "cdns": str(domain.cdns)[1:-1],
+                                   "cdns_by_names": str(domain.cdns_by_name)[1:-1],
+                                   "Status": "Domain Frontable" if domain.frontable else "Domain Not Frontable"
+                                   }
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")

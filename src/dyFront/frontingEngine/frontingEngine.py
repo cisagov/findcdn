@@ -8,7 +8,7 @@ if a given domain or set of domains are frontable.
 """
 
 # Standard Python Libraries
-from typing import Dict, List
+from typing import List
 
 # Internal Libraries
 from . import detectCDN
@@ -19,8 +19,7 @@ class DomainPot:
 
     def __init__(self, domains: List[str]):
         """Define the pot for the Chef to use."""
-        self.domains = []
-        self.domain_to_cdn: Dict[str, List] = {}
+        self.domains: List[detectCDN.Domain] = []
 
         # Convert to list of type domain
         for dom in domains:
@@ -35,8 +34,7 @@ class Chef:
 
     def __init__(self, pot: DomainPot):
         """Give the chef the pot to use."""
-        self.pot = pot
-        self.domain_list: List[detectCDN.Domain] = []
+        self.pot: DomainPot = pot
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
@@ -51,8 +49,6 @@ class Chef:
         """For each domain, check if domain is frontable using naive metric."""
         for domain in self.pot.domains:
             if len(domain.cdns) > 0:
-                self.pot.domain_to_cdn[domain.url] = domain.cdns
-                self.domain_list.append(domain)
                 domain.frontable = True
 
     def run_checks(self):

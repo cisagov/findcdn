@@ -111,11 +111,12 @@ def main() -> int:
     processed_list = check_frontable(domain_list)
 
     for domain in processed_list:
-        domain_dict[domain.url] = {"IP": str(domain.ip)[1:-1],
-                                   "cdns": str(domain.cdns)[1:-1],
-                                   "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-                                   "Status": str(domain.frontable)
-                                   }
+        domain_dict[domain.url] = {
+            "IP": str(domain.ip)[1:-1],
+            "cdns": str(domain.cdns)[1:-1],
+            "cdns_by_names": str(domain.cdns_by_name)[1:-1],
+            "Status": str(domain.frontable),
+        }
 
     # Run report
     json_dict = {}

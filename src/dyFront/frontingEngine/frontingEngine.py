@@ -68,5 +68,5 @@ def check_frontable(domains: List[str]):
     # Run analysis for all domains
     chef.run_checks()
 
-    # Return the set of frontable domains
+    # Return all domains for further parsing
     return chef.pot.domains

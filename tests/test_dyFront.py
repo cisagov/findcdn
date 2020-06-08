@@ -84,7 +84,9 @@ def test_file_dne():
 
 def test_file_write(tmpdir):
     """Test writing to a file."""
-    file = tmpdir.join('outputtest.txt')
-    with patch.object(sys, "argv", ["./dyFront", "list", "google.com", "-o", str(file)]):
+    file = tmpdir.join("outputtest.txt")
+    with patch.object(
+        sys, "argv", ["./dyFront", "list", "google.com", "-o", str(file)]
+    ):
         dyFront.dyFront.main()
     assert "google.com" in file.read()

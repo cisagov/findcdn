@@ -31,7 +31,6 @@ def test_chef_init():
 
     # Assertions
     assert type(chef.pot) == dyFront.frontingEngine.DomainPot
-    assert type(chef.frontable) == list
 
 
 def test_grab_cdn():
@@ -40,21 +39,24 @@ def test_grab_cdn():
     pot = dyFront.frontingEngine.DomainPot(domains)
     chef = dyFront.frontingEngine.Chef(pot)
     chef.run_checks()
-    frontable = chef.frontable
+    checked_domains = chef.pot.domains
 
     # Assertions
-    assert frontable[0].cdns == [".cloudflare.com"], "{} is not {}.".format(
-        frontable[0].cdns, [".cloudflare.com"]
+    assert checked_domains[0].cdns == [
+        ".cloudflare.com"
+    ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[0].url)
+    assert checked_domains[1].cdns == [
+        ".cloudfront.net",
+        ".awsdn",
+    ], "Did not detect {} from {}.".format(
+        [".cloudfront.net", ".awsdn"], checked_domains[1].url
     )
-    assert frontable[1].cdns == [".cloudfront.net", ".awsdn"], "{} is not {}.".format(
-        frontable[1].cdns, [".cloudfront.net", ".awsdn"]
-    )
-    assert frontable[2].cdns == [".cloudflare.com"], "{} is not {}.".format(
-        frontable[2].cdns, [".cloudflare.com"]
-    )
-    assert frontable[3].cdns == [".cloudflare.com"], "{} is not {}.".format(
-        frontable[3].cdns, [".cloudflare.com"]
-    )
+    assert checked_domains[2].cdns == [
+        ".cloudflare.com"
+    ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[2].url)
+    assert checked_domains[3].cdns == [
+        ".cloudflare.com"
+    ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[3].url)
 
 
 def test_check_front():
@@ -63,11 +65,21 @@ def test_check_front():
     pot = dyFront.frontingEngine.DomainPot(domains)
     chef = dyFront.frontingEngine.Chef(pot)
     chef.run_checks()
-    frontable = chef.frontable
+    checked_domains = chef.pot.domains
 
     # Assertions
-    assert len(frontable) != 1, "Too many frontable domains."
-    assert frontable[1].url == "censys.io", "Wrong frontable domain detected."
+    frontable = 0
+    for dom in checked_domains:
+        if dom.frontable:
+            frontable += 1
+
+    assert frontable == 2, "Too many frontable domains counted."
+    assert checked_domains[0].url == "asu.edu" and checked_domains[0].cdns == [
+        ".cloudflare.com"
+    ], ("Incorrect CDN detected for %s" % checked_domains[0].url)
+    assert checked_domains[1].url == "censys.io" and checked_domains[1].cdns == [
+        ".cloudflare.com"
+    ], ("Incorrect CDN detected for %s" % checked_domains[1].url)
 
 
 def test_run_checks():
@@ -79,7 +91,6 @@ def test_run_checks():
 
     # Assertions
     assert len(chef.pot.domains) > 0, "Pot not stored correctly."
-    assert len(chef.frontable) > 0, "Frontable not assigned correctly."
 
 
 def test_check_frontable():
@@ -88,7 +99,8 @@ def test_check_frontable():
     objects = dyFront.frontingEngine.check_frontable(domains)
     frontable = {}
     for dom in objects:
-        frontable[dom.url] = dom.cdns
+        if dom.frontable:
+            frontable[dom.url] = dom.cdns
     expected = {"asu.edu": [".cloudflare.com"], "censys.io": [".cloudflare.com"]}
     # Assertions
     assert len(frontable) > 0, "Returned frontable list is empty."

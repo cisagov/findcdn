@@ -87,32 +87,35 @@ def main() -> int:
         return 1
 
     # Add domains to a list
-    domainList = []
+    domain_list = []
     if validated_args["file"]:
         try:
             with open(validated_args["<fileIn>"]) as f:
-                domainList = [line.rstrip() for line in f]
+                domain_list = [line.rstrip() for line in f]
         except IOError as e:
             print("A file error occured: %s" % e, file=sys.stderr)
             return 1
     else:
-        domainList = validated_args["<domain>"]
+        domain_list = validated_args["<domain>"]
 
     # Validate domains in list
-    for item in domainList:
+    for item in domain_list:
         if validators.domain(item) is not True:
             print(f"{item} is not a valid domain", file=sys.stderr)
             return 1
 
-    print("%d Domains Validated" % len(domainList))
+    print("%d Domains Validated" % len(domain_list))
 
     domain_dict = {}
 
-    print(check_frontable(domainList))
+    processed_list = check_frontable(domain_list)
 
-    # TODO: Update to reflect the output of the check_frontable
-    for domain in domainList:
-        domain_dict[domain] = {"CDN": "fakeCDN", "Status": "Possibly Frontable"}
+    for domain in processed_list:
+        domain_dict[domain.url] = {"IP": str(domain.ip)[1:-1],
+                                   "cdns": str(domain.cdns)[1:-1],
+                                   "cdns_by_names": str(domain.cdns_by_name)[1:-1],
+                                   "Status": "Possibly Frontable"
+                                   }
 
     # Run report
     json_dict = {}

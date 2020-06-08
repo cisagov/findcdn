@@ -114,7 +114,7 @@ def main() -> int:
         domain_dict[domain.url] = {"IP": str(domain.ip)[1:-1],
                                    "cdns": str(domain.cdns)[1:-1],
                                    "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-                                   "Status": "Possibly Frontable"
+                                   "Status": str(domain.frontable)
                                    }
 
     # Run report
@@ -125,8 +125,7 @@ def main() -> int:
     if validated_args["--output"] is None:
         print(json_dict)
     else:
-        if not write_json(json_dict, validated_args["--output"]):
-            return 1
+        return write_json(json_dict, validated_args["--output"])
 
     print("Program exited successfully")
     return 0

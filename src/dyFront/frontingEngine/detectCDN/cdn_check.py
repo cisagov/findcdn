@@ -50,6 +50,7 @@ class Domain:
         self.headers = headers
         self.whois_data = whois_data
         self.censys_data = censys_data
+        self.frontable = False
 
 
 class cdnCheck:

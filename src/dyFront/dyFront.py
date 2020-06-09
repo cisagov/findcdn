@@ -52,7 +52,7 @@ def write_json(json_dump: str, output: str) -> int:
 
 
 def main(domain_list: list, output_path: str) -> int:
-
+    """Call when wanting to interface with dyFront."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:

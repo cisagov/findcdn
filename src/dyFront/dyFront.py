@@ -39,20 +39,57 @@ from ._version import __version__
 from .frontingEngine import check_frontable
 
 
-def write_json(json_dict: dict, output: str) -> int:
+def write_json(json_dump: str, output: str) -> int:
     """Write dict as JSON to output file."""
     try:
         outfile = open(output, "x")
     except Exception as e:
         print("Unable to open output file:\n%s" % (e), file=sys.stderr)
         return 1
-    info = json.dumps(json_dict, indent=4, sort_keys=True)
-    outfile.write(info)
+    outfile.write(json_dump)
     outfile.close()
     return 0
 
 
-def main() -> int:
+def main(domain_list: list, output_path: str) -> int:
+
+    # Validate domains in list
+    for item in domain_list:
+        if validators.domain(item) is not True:
+            print(f"{item} is not a valid domain", file=sys.stderr)
+            return 1
+
+    print("%d Domains Validated" % len(domain_list))
+
+    domain_dict = {}
+
+    processed_list = check_frontable(domain_list)
+
+    for domain in processed_list:
+        domain_dict[domain.url] = {
+            "IP": str(domain.ip)[1:-1],
+            "cdns": str(domain.cdns)[1:-1],
+            "cdns_by_names": str(domain.cdns_by_name)[1:-1],
+            "Status": "Domain Frontable"
+            if domain.frontable
+            else "Domain Not Frontable",
+        }
+    # Run report
+    json_dict = {}
+    json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    json_dict["domains"] = domain_dict  # type: ignore
+    json_dump = json.dumps(json_dict, indent=4, sort_keys=True)
+
+    if output_path is None:
+        print(json_dump)
+    else:
+        return write_json(json_dump, output_path)
+
+    print("Program exited successfully")
+    return 0
+
+
+def interactive() -> int:
     """Collect the arguments."""
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
@@ -98,40 +135,8 @@ def main() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
-    # Validate domains in list
-    for item in domain_list:
-        if validators.domain(item) is not True:
-            print(f"{item} is not a valid domain", file=sys.stderr)
-            return 1
-
-    print("%d Domains Validated" % len(domain_list))
-
-    domain_dict = {}
-
-    processed_list = check_frontable(domain_list)
-
-    for domain in processed_list:
-        domain_dict[domain.url] = {
-            "IP": str(domain.ip)[1:-1],
-            "cdns": str(domain.cdns)[1:-1],
-            "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-            "Status": "Domain Frontable"
-            if domain.frontable
-            else "Domain Not Frontable",
-        }
-    # Run report
-    json_dict = {}
-    json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["domains"] = domain_dict  # type: ignore
-
-    if validated_args["--output"] is None:
-        print(json_dict)
-    else:
-        return write_json(json_dict, validated_args["--output"])
-
-    print("Program exited successfully")
-    return 0
+    return main(domain_list, validated_args["--output"])
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(interactive())

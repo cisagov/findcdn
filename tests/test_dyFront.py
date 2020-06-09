@@ -21,7 +21,7 @@ def test_stdout_version(capsys):
     """Verify that version string sent to stdout agrees with the module version."""
     with pytest.raises(SystemExit):
         with patch.object(sys, "argv", ["bogus", "--version"]):
-            dyFront.dyFront.main()
+            dyFront.dyFront.interactive()
     captured = capsys.readouterr()
     assert (
         captured.out == f"{PROJECT_VERSION}\n"
@@ -43,8 +43,8 @@ def test_list_working():
     with patch.object(
         sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov"]
     ):
-        return_code = dyFront.dyFront.main()
-    assert return_code == 0, "main() should return successfully"
+        return_code = dyFront.dyFront.interactive()
+    assert return_code == 0, "interactive() should return successfully"
 
 
 def test_list_broken():
@@ -54,15 +54,15 @@ def test_list_broken():
         "argv",
         ["bogus", "list", "google.com/searchtest", "facebook.com", "login.gov"],
     ):
-        return_code = dyFront.dyFront.main()
-    assert return_code == 1, "main() should return failure"
+        return_code = dyFront.dyFront.interactive()
+    assert return_code == 1, "interactive() should return failure"
 
 
 def test_file_working():
     """Working domain file to test with."""
     with patch.object(sys, "argv", ["./dyFront", "file", "tests/validTest.txt"]):
-        return_code = dyFront.dyFront.main()
-    assert return_code == 0, "main() should return successfully"
+        return_code = dyFront.dyFront.interactive()
+    assert return_code == 0, "interactive() should return successfully"
 
 
 """Test a broken domains passed in as a file"""
@@ -71,15 +71,15 @@ def test_file_working():
 def test_file_broken():
     """Broken domain file to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):
-        return_code = dyFront.dyFront.main()
-    assert return_code != 0, "main() should return failure"
+        return_code = dyFront.dyFront.interactive()
+    assert return_code != 0, "interactive() should return failure"
 
 
 def test_file_dne():
     """Working domain list to test with."""
     with patch.object(sys, "argv", ["./dyFront", "file", "nosuchfile.txt"]):
-        return_code = dyFront.dyFront.main()
-    assert return_code != 0, "main() should return successfully"
+        return_code = dyFront.dyFront.interactive()
+    assert return_code != 0, "interactive() should return successfully"
 
 
 def test_file_write(tmpdir):
@@ -88,5 +88,5 @@ def test_file_write(tmpdir):
     with patch.object(
         sys, "argv", ["./dyFront", "list", "google.com", "-o", str(file)]
     ):
-        dyFront.dyFront.main()
+        dyFront.dyFront.interactive()
     assert "google.com" in file.read()

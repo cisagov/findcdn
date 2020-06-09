@@ -97,5 +97,5 @@ setup(
         ]
     },
     # Conveniently allows one to run the CLI tool as `dyFront`
-    entry_points={"console_scripts": ["dyFront = dyFront.dyFront:main"]},
+    entry_points={"console_scripts": ["dyFront = dyFront.dyFront:interactive"]},
 )

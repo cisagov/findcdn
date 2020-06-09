@@ -1,0 +1,11 @@
+{
+    "date": "06/09/2020, 08:48:40",
+    "domains": {
+        "censys.io": {
+            "IP": "'104.26.11.245', '104.26.10.245', '172.67.68.81'",
+            "Status": "Domain Frontable",
+            "cdns": "'.cloudflare.com'",
+            "cdns_by_names": "'Cloudflare'"
+        }
+    }
+}

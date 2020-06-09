@@ -125,6 +125,8 @@ detection:
 - [Domain Fronting Technique T1172 - MITRE ATT&CK Framework](https://attack.mitre.org/techniques/T1172/)
 - [Blocking-resistant Communication Through Domain Fronting](https://www.bamsoftware.com/papers/fronting/)
 - [Domain Fronting - Wikipedia](https://en.wikipedia.org/wiki/Domain_fronting)
+- [rvrsh3ll/FindFrontableDomains](https://github.com/rvrsh3ll/FindFrontableDomains)
+- [Traversing the Kill-Chain - Vincent Yiu](https://gsec.hitb.org/materials/sg2018/D2%20-%20Traversing%20the%20Kill-Chain%20-%20The%20New%20Shiny%20in%202018%20-%20Vincent%20Yiu.pdf)
 
 ## Contributing
 

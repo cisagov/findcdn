@@ -8,13 +8,11 @@ Description: The detectCDN library is meant to show what CDNs a domain may be us
 
 # Standard Python Libraries
 from http.client import RemoteDisconnected
-import os
 from typing import List
 from urllib.error import URLError
 import urllib.request as request
 
 # Third-Party Libraries
-import censys.websites as censysLookup
 from ipwhois import HTTPLookupError, IPDefinedError, IPWhois
 
 # Internal Libraries
@@ -38,7 +36,6 @@ class Domain:
         namsrvs: List[str] = [],
         headers: List[str] = [],
         whois_data: List[str] = [],
-        censys_data: List[str] = [],
     ):
         """Initialize object to store metadata on domain in url."""
         self.url = url
@@ -49,7 +46,6 @@ class Domain:
         self.namesrvs = namsrvs
         self.headers = headers
         self.whois_data = whois_data
-        self.censys_data = censys_data
         self.frontable = False
 
 
@@ -57,15 +53,8 @@ class cdnCheck:
     """cdnCheck runs analysis and stores discovered data in Domain object."""
 
     def __init__(self):
-        """Initialize the orchestrator of analysis. Grab Censys.io api keys from environment."""
-        try:
-            self.UID = os.environ["CENSYS_UID"]
-        except KeyError:
-            self.UID = None
-        try:
-            self.SECRET = os.environ["CENSYS_SECRET"]
-        except KeyError:
-            self.SECRET = None
+        """Initialize the orchestrator of analysis."""
+        self.running = False
 
     def ip(self, dom: Domain) -> int:
         """Determine IP addresses the domain resolves to."""
@@ -151,41 +140,6 @@ class cdnCheck:
                 pass
         dom.whois_data = whois_data
 
-    def censys(self, dom: Domain) -> int:
-        """Query Censys API for information on domain."""
-        if self.UID is None or self.SECRET is None:
-            return 1
-        # Data to return
-        censys_data = []
-        client = censysLookup.CensysWebsites(self.UID, self.SECRET)
-        API_FIELDS = [
-            "443.https.get.headers.server",
-            "80.https.get.headers.server",
-            "443.https.get.metadata.description",
-            "443.https.get.headers.vary",
-            "80.http.get.headers.vary",
-            "80.http.get.metadata.description",
-            "80.http_www.get.headers.unknown",
-            "443.https.get.headers.unknown",
-            "80.http_www.get.headers.server",
-            "443.https.get.headers.via",
-        ]
-        data = list(client.search("domain: " + dom.url, API_FIELDS, max_records=10))
-
-        # Make sure something valid returned
-        if len(data) <= 0:
-            return 2
-        else:
-            for value_set in data[0].values():
-                if isinstance(value_set, list):
-                    for discovered in value_set:
-                        for info in discovered.values():
-                            censys_data.append(info)
-                else:
-                    censys_data.append(value_set)
-            dom.censys_data = censys_data
-        return 0
-
     def CDNid(self, dom: Domain, data_blob: List):
         """Identify any CDN name in list recieved."""
         for data in data_blob:
@@ -219,9 +173,6 @@ class cdnCheck:
     def data_digest(self, dom: Domain):
         """Digest all data collected and assign to CDN list."""
         return_code = 1
-        if len(dom.censys_data) > 0 and not None:
-            self.CDNid(dom, dom.censys_data)
-            return_code = 0
         if len(dom.cnames) > 0 and not None:
             self.CDNid(dom, dom.cnames)
             return_code = 0
@@ -243,5 +194,4 @@ class cdnCheck:
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
-        self.censys(dom)
         return self.data_digest(dom)

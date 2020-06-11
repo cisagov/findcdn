@@ -77,7 +77,6 @@ setup(
         "schema",
         "ipwhois",
         "urllib3",
-        "censys",
         "dnspython",
         "validators",
     ],

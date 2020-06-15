@@ -14,6 +14,7 @@ import urllib.request as request
 
 # Third-Party Libraries
 from ipwhois import HTTPLookupError, IPDefinedError, IPWhois
+from ipwhois.exceptions import ASNRegistryError
 
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
@@ -102,6 +103,8 @@ class cdnCheck:
             return 2
         except NoNameservers:
             return 3
+        except Timeout:
+            return 4
         return 0
 
     def https_lookup(self, dom: Domain):
@@ -137,6 +140,8 @@ class cdnCheck:
             except HTTPLookupError:
                 pass
             except IPDefinedError:
+                pass
+            except ASNRegistryError:
                 pass
         dom.whois_data = whois_data
 

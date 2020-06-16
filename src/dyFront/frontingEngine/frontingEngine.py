@@ -46,21 +46,22 @@ class ChefWorker(threading.Thread):
 
     def run(self):
         """Run the thread and check domain for domain object."""
-        # Try to grab from queue
-        try:
-            domain = self.queue.get(timeout=1)
-        except queue.Empty:
-            return
+        while True:
+            # Try to grab from queue
+            try:
+                domain = self.queue.get(timeout=1)
+            except queue.Empty:
+                return
 
-        # Create our detector object
-        detective = detectCDN.cdnCheck()
+            # Create our detector object
+            detective = detectCDN.cdnCheck()
 
-        # Detect CDN
-        detective.all_checks(domain)
+            # Detect CDN
+            detective.all_checks(domain)
 
-        # Signal complete and update status
-        self.queue.task_done()
-        self.pbar.update(1)
+            # Signal complete and update status
+            self.queue.task_done()
+            self.pbar.update(1)
 
 
 class Chef:
@@ -83,7 +84,7 @@ class Chef:
 
         # Set number of threads
         threads = list()
-        for tid in range(1, 40):
+        for tid in range(1, 4):
             worker = ChefWorker(q, tid, pbar)
             worker.setDaemon(True)
             worker.start()

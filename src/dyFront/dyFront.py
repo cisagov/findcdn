@@ -11,8 +11,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE] [-v] [--frontable]
-  dyFront list  <domain>... [-o FILE] [-v] [--frontable]
+  dyFront file <fileIn> [-o FILE] [-v] [--all]
+  dyFront list  <domain>... [-o FILE] [-v] [--all]
   dyFront (-h | --help)
 
 Options:
@@ -21,7 +21,8 @@ Options:
   -o FILE --output=FILE  If specified, then the JSON output file will be
                          set to the specified value.
   -v --verbose           Includes additional print statments.
-  --frontable            Includes only frontable domains the output.
+  --all                  Includes both frontable and non frontable domains
+                         in output.
 """
 
 # Standard Python Libraries
@@ -57,7 +58,7 @@ def main(
     domain_list: list,
     output_path: str = None,
     verbose: bool = False,
-    frontable_only: bool = False,
+    all_domains: bool = False,
 ) -> str:
     """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
@@ -71,7 +72,7 @@ def main(
     domain_dict = {}
     processed_list = check_frontable(domain_list)
     for domain in processed_list:
-        if domain.frontable or not frontable_only:
+        if domain.frontable or all_domains:
             domain_dict[domain.url] = {
                 "IP": str(domain.ip)[1:-1],
                 "cdns": str(domain.cdns)[1:-1],
@@ -147,7 +148,7 @@ def interactive() -> int:
             domain_list,
             validated_args["--output"],
             validated_args["--verbose"],
-            validated_args["--frontable"],
+            validated_args["--all"],
         )
         == "Failed"
     ):

@@ -197,11 +197,12 @@ class cdnCheck:
             return_code = 0
         return return_code
 
-    def all_checks(self, dom: Domain, a: int):
+    def all_checks(self, dom: Domain):
         """Option to run everything in this library then digest."""
         self.ip(dom)
         self.cname(dom)
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
+        print(dom.url)
         return self.data_digest(dom)

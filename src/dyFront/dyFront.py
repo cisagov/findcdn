@@ -11,8 +11,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE]
-  dyFront list  <domain>... [-o FILE]
+  dyFront file <fileIn> [-o FILE] [-v] [--frontable]
+  dyFront list  <domain>... [-o FILE] [-v] [--frontable]
   dyFront (-h | --help)
 
 Options:
@@ -20,6 +20,8 @@ Options:
   --version              Show the current version.
   -o FILE --output=FILE  If specified, then the JSON output file will be
                          set to the specified value.
+  -v --verbose           Includes additional print statments.
+  --frontable            Includes only frontable domains the output.
 """
 
 # Standard Python Libraries
@@ -51,7 +53,12 @@ def write_json(json_dump: str, output: str) -> int:
     return 0
 
 
-def main(domain_list: list, output_path: str = None) -> str:
+def main(
+    domain_list: list,
+    output_path: str = None,
+    verbose: bool = False,
+    frontable_only: bool = False,
+) -> str:
     """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
     for item in domain_list:
@@ -64,14 +71,15 @@ def main(domain_list: list, output_path: str = None) -> str:
     domain_dict = {}
     processed_list = check_frontable(domain_list)
     for domain in processed_list:
-        domain_dict[domain.url] = {
-            "IP": str(domain.ip)[1:-1],
-            "cdns": str(domain.cdns)[1:-1],
-            "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-            "Status": "Domain Frontable"
-            if domain.frontable
-            else "Domain Not Frontable",
-        }
+        if domain.frontable or not frontable_only:
+            domain_dict[domain.url] = {
+                "IP": str(domain.ip)[1:-1],
+                "cdns": str(domain.cdns)[1:-1],
+                "cdns_by_names": str(domain.cdns_by_name)[1:-1],
+                "Status": "Domain Frontable"
+                if domain.frontable
+                else "Domain Not Frontable",
+            }
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
@@ -79,6 +87,7 @@ def main(domain_list: list, output_path: str = None) -> str:
     json_dump = json.dumps(json_dict, indent=4, sort_keys=True)
 
     if output_path is None:
+        print(json_dump)
         return json_dump
     else:
         if write_json(json_dump, output_path):
@@ -133,7 +142,15 @@ def interactive() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
-    if main(domain_list, validated_args["--output"]) == "Failed":
+    if (
+        main(
+            domain_list,
+            validated_args["--output"],
+            validated_args["--verbose"],
+            validated_args["--frontable"],
+        )
+        == "Failed"
+    ):
         return 1
     else:
         return 0

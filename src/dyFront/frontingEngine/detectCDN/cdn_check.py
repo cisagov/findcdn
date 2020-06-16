@@ -8,7 +8,7 @@ Description: The detectCDN library is meant to show what CDNs a domain may be us
 
 # Standard Python Libraries
 from http.client import RemoteDisconnected
-from ssl import CertificateError
+from ssl import CertificateError, SSLError
 from typing import List
 from urllib.error import URLError
 import urllib.request as request
@@ -64,11 +64,11 @@ class cdnCheck:
             response = query(dom.url)
             # Assign any found IP addresses
             dom.ip = [str(ip.address) for ip in response]
-        except NXDOMAIN:
+        except NoAnswer:
             return 1
         except NoNameservers:
             return 2
-        except NoAnswer:
+        except NXDOMAIN:
             return 3
         except Timeout:
             return 4
@@ -85,11 +85,11 @@ class cdnCheck:
             dom.cnames = [record.to_text() for record in response]
         except NoAnswer:
             return 1
-        except NXDOMAIN:
-            return 2
-        except Timeout:
-            return 3
         except NoNameservers:
+            return 2
+        except NXDOMAIN:
+            return 3
+        except Timeout:
             return 4
         return 0
 
@@ -100,9 +100,9 @@ class cdnCheck:
             dom.namesrvs = [server.to_text() for server in response]
         except NoAnswer:
             return 1
-        except NXDOMAIN:
-            return 2
         except NoNameservers:
+            return 2
+        except NXDOMAIN:
             return 3
         except Timeout:
             return 4
@@ -126,6 +126,10 @@ class cdnCheck:
                 pass
             except ConnectionResetError:
                 pass
+            except SSLError:
+                pass
+            except Exception as e:
+                print("Unexpected Exception: %s" % str(e))
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
@@ -148,6 +152,8 @@ class cdnCheck:
                 pass
             except ASNRegistryError:
                 pass
+            except Exception as e:
+                print("Unexpected Exception: %s" % str(e))
         dom.whois_data = whois_data
 
     def CDNid(self, dom: Domain, data_blob: List):

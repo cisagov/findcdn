@@ -79,6 +79,7 @@ setup(
         "urllib3",
         "dnspython",
         "validators",
+        "tqdm",
     ],
     extras_require={
         "test": [

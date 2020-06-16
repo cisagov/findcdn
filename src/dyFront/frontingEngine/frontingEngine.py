@@ -8,8 +8,12 @@ if a given domain or set of domains are frontable.
 """
 
 # Standard Python Libraries
+import queue
 import threading
 from typing import List
+
+# Third-Party Libraries
+from tqdm import tqdm
 
 # Internal Libraries
 from . import detectCDN
@@ -30,6 +34,35 @@ class DomainPot:
             self.domains.append(domin)
 
 
+class ChefWorker(threading.Thread):
+    """ChefWorker defines the thread worker for the Chef class."""
+
+    def __init__(self, q: queue.Queue, tid: int, pbar: tqdm):
+        """Define the thread. Inherit from super class."""
+        threading.Thread.__init__(self)
+        self.queue = q
+        self.tid = tid
+        self.pbar = pbar
+
+    def run(self):
+        """Run the thread and check domain for domain object."""
+        # Try to grab from queue
+        try:
+            domain = self.queue.get(timeout=1)
+        except queue.Empty:
+            return
+
+        # Create our detector object
+        detective = detectCDN.cdnCheck()
+
+        # Detect CDN
+        detective.all_checks(domain)
+
+        # Signal complete and update status
+        self.queue.task_done()
+        self.pbar.update(1)
+
+
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
@@ -39,24 +72,32 @@ class Chef:
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
-        # Checker module for each domain
-        detective = detectCDN.cdnCheck()
-
-        # Iterate over all domains and run checks
-        threads = list()
+        # Setup Status bar
+        total_domains = 0
         for domain in self.pot.domains:
-            # Create thread
-            x = threading.Thread(
-                target=detective.all_checks, args=(domain,), daemon=True
-            )
+            total_domains += 1
+        pbar = tqdm(total=total_domains)
 
-            # Add thread to pool
-            threads.append(x)
+        # Define queue
+        q = queue.Queue()
 
-            # Launch thread
-            x.start()
-        for _, thread in enumerate(threads):
+        # Set number of threads
+        threads = list()
+        for tid in range(1, 40):
+            worker = ChefWorker(q, tid, pbar)
+            worker.setDaemon(True)
+            worker.start()
+            threads.append(worker)
+
+        # Populate queue
+        for domain in self.pot.domains:
+            q.put(domain)
+        q.join()
+
+        # Wait for threads to exit
+        for thread in threads:
             thread.join()
+        pbar.close()
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""

@@ -67,9 +67,10 @@ class ChefWorker(threading.Thread):
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
-    def __init__(self, pot: DomainPot):
+    def __init__(self, pot: DomainPot, threads: int):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
+        self.threads = threads
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
@@ -84,7 +85,7 @@ class Chef:
 
         # Set number of threads
         threads = list()
-        for tid in range(1, 4):
+        for tid in range(1, self.threads):
             worker = ChefWorker(q, tid, pbar)
             worker.setDaemon(True)
             worker.start()
@@ -112,13 +113,13 @@ class Chef:
         self.check_front()
 
 
-def check_frontable(domains: List[str]):
+def check_frontable(domains: List[str], threads: int = 70):
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
     # Our chef to manage pot
-    chef = Chef(dp)
+    chef = Chef(dp, threads)
 
     # Run analysis for all domains
     chef.run_checks()

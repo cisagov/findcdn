@@ -204,5 +204,4 @@ class cdnCheck:
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
-        print(dom.url)
         return self.data_digest(dom)

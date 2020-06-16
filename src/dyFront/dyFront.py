@@ -51,20 +51,18 @@ def write_json(json_dump: str, output: str) -> int:
     return 0
 
 
-def main(domain_list: list, output_path: str) -> int:
-
+def main(domain_list: list, output_path: str = None) -> str:
+    """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
             print(f"{item} is not a valid domain", file=sys.stderr)
-            return 1
+            return "Failed"
 
     print("%d Domains Validated" % len(domain_list))
 
     domain_dict = {}
-
     processed_list = check_frontable(domain_list)
-
     for domain in processed_list:
         domain_dict[domain.url] = {
             "IP": str(domain.ip)[1:-1],
@@ -81,12 +79,12 @@ def main(domain_list: list, output_path: str) -> int:
     json_dump = json.dumps(json_dict, indent=4, sort_keys=True)
 
     if output_path is None:
-        print(json_dump)
+        return json_dump
     else:
-        return write_json(json_dump, output_path)
-
-    print("Program exited successfully")
-    return 0
+        if write_json(json_dump, output_path):
+            return json_dump
+        else:
+            return "Failed"
 
 
 def interactive() -> int:
@@ -135,7 +133,10 @@ def interactive() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
-    return main(domain_list, validated_args["--output"])
+    if main(domain_list, validated_args["--output"]) == "Failed":
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":

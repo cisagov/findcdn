@@ -8,6 +8,7 @@ Description: The detectCDN library is meant to show what CDNs a domain may be us
 
 # Standard Python Libraries
 from http.client import RemoteDisconnected
+from ssl import CertificateError
 from typing import List
 from urllib.error import URLError
 import urllib.request as request
@@ -118,6 +119,10 @@ class cdnCheck:
                 pass
             except RemoteDisconnected:
                 pass
+            except CertificateError:
+                pass
+            except ConnectionResetError:
+                pass
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
@@ -194,4 +199,5 @@ class cdnCheck:
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
+        print(dom.url)
         return self.data_digest(dom)

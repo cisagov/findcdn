@@ -11,8 +11,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE] [-v] [--all]
-  dyFront list  <domain>... [-o FILE] [-v] [--all]
+  dyFront file <fileIn> [-o FILE] [-v] [--all] [--threads=<thread_count>]
+  dyFront list  <domain>... [-o FILE] [-v] [--all] [--threads=<thread_count>]
   dyFront (-h | --help)
 
 Options:
@@ -23,6 +23,7 @@ Options:
   -v --verbose           Includes additional print statments.
   --all                  Includes both frontable and non frontable domains
                          in output.
+  -t --threads=<thread_count>  Number of threads [default: 70].
 """
 
 # Standard Python Libraries
@@ -34,12 +35,15 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-from schema import And, Or, Schema, SchemaError
+from schema import And, Or, Schema, SchemaError, Use
 import validators
 
 # Internal Libraries
 from ._version import __version__
 from .frontingEngine import check_frontable
+
+MAX_THREADS = 1000
+DEFAULT_THREADS = 70
 
 
 def write_json(json_dump: str, output: str) -> int:
@@ -59,6 +63,7 @@ def main(
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,
+    threads: int = DEFAULT_THREADS,
 ) -> str:
     """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
@@ -67,10 +72,12 @@ def main(
             print(f"{item} is not a valid domain", file=sys.stderr)
             return "Failed"
 
-    print("%d Domains Validated" % len(domain_list))
+    if verbose:
+        print("%d Domains Validated" % len(domain_list))
+        print("Starting domain fronting search with %d threads." % threads)
 
     domain_dict = {}
-    processed_list = check_frontable(domain_list)
+    processed_list = check_frontable(domain_list, threads)
     for domain in processed_list:
         if domain.frontable or all_domains:
             domain_dict[domain.url] = {
@@ -111,6 +118,11 @@ def interactive() -> int:
                     error='Output file "' + str(args["--output"]) + '" already exists!',
                 ),
             ),
+            "--threads": And(
+                Use(int),
+                lambda thread_count: MAX_THREADS > thread_count > 0,
+                error="Thread count must be between 0 and " + str(MAX_THREADS),
+            ),
             "<fileIn>": Or(
                 None,
                 And(
@@ -149,6 +161,7 @@ def interactive() -> int:
             validated_args["--output"],
             validated_args["--verbose"],
             validated_args["--all"],
+            validated_args["--threads"],
         )
         == "Failed"
     ):

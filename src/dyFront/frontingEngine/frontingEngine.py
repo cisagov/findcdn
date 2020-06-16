@@ -8,6 +8,7 @@ if a given domain or set of domains are frontable.
 """
 
 # Standard Python Libraries
+import threading
 from typing import List
 
 # Internal Libraries
@@ -42,8 +43,16 @@ class Chef:
         detective = detectCDN.cdnCheck()
 
         # Iterate over all domains and run checks
+        threads = list()
         for domain in self.pot.domains:
-            detective.all_checks(domain)  # Multithreading Point
+            detective.all_checks(domain)
+            x = threading.Thread(
+                target=detective.all_checks, args=(domain,), daemon=True
+            )  # Multithreading Point
+            threads.append(x)
+            x.start()
+        for _, thread in enumerate(threads):
+            thread.join()
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""

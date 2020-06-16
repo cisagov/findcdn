@@ -45,11 +45,15 @@ class Chef:
         # Iterate over all domains and run checks
         threads = list()
         for domain in self.pot.domains:
-            detective.all_checks(domain)
+            # Create thread
             x = threading.Thread(
                 target=detective.all_checks, args=(domain,), daemon=True
-            )  # Multithreading Point
+            )
+
+            # Add thread to pool
             threads.append(x)
+
+            # Launch thread
             x.start()
         for _, thread in enumerate(threads):
             thread.join()

@@ -49,15 +49,16 @@ class Chef:
 
         # Use Concurrent futures to multithread with pools
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = executor.map(
-                detective.all_checks,
-                self.pot.domains,
-                [self.verbose for _ in self.pot.domains],
-            )
+            results = {
+                executor.submit(detective.all_checks, domain, self.verbose,)
+                for domain in self.pot.domains
+            }
 
-            for _ in results:
+            for _ in concurrent.futures.as_completed(results):
                 if self.pbar is not None:
                     self.pbar.update(1)
+                else:
+                    pass
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""

@@ -113,19 +113,26 @@ class cdnCheck:
         PROTOCOLS = ["https://"]
         for PROTOCOL in PROTOCOLS:
             try:
-                response = request.urlopen(PROTOCOL + dom.url)  # nosec
-                HEADERS = ["server", "via"]
-                for value in HEADERS:
-                    if response.headers[value] is not None:
-                        dom.headers.append(response.headers[value])
+                req = request.Request(
+                    PROTOCOL + dom.url,
+                    data=None,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+                    },
+                )
+                response = request.urlopen(req)  # nosec
             except URLError:
-                pass
+                continue
             except RemoteDisconnected:
-                pass
+                continue
             except CertificateError:
-                pass
+                continue
             except ConnectionResetError:
-                pass
+                continue
+            HEADERS = ["server", "via"]
+            for value in HEADERS:
+                if response.headers[value] is not None:
+                    dom.headers.append(response.headers[value])
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
@@ -204,4 +211,7 @@ class cdnCheck:
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
-        return self.data_digest(dom)
+        x = self.data_digest(dom)
+        if len(dom.cdns) > 0:
+            print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
+        return x

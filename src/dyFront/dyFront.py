@@ -35,6 +35,7 @@ from typing import Any, Dict
 # Third-Party Libraries
 import docopt
 from schema import And, Or, Schema, SchemaError
+from tqdm import tqdm
 import validators
 
 # Internal Libraries
@@ -59,6 +60,7 @@ def main(
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,
+    pbar: tqdm = None,
 ) -> str:
     """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
@@ -75,7 +77,7 @@ def main(
     frontable_count = 0
 
     # Check domains
-    processed_list = check_frontable(domain_list)
+    processed_list = check_frontable(domain_list, pbar, verbose)
 
     # Parse the domain data
     for domain in processed_list:
@@ -109,8 +111,10 @@ def main(
 
 def interactive() -> int:
     """Collect the arguments."""
+    # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
-    # Validate and convert arguments as needed
+
+    # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
         {
             "--output": Or(
@@ -153,12 +157,20 @@ def interactive() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
+    # Create status bar
+    domain_count = 0
+    for _ in domain_list:
+        domain_count += 1
+    pbar = tqdm(total=domain_count)
+
+    # Start main
     if (
         main(
             domain_list,
             validated_args["--output"],
             validated_args["--verbose"],
             validated_args["--all"],
+            pbar,
         )
         == "Failed"
     ):

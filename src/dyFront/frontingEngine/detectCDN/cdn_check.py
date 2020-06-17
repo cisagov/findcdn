@@ -211,14 +211,15 @@ class cdnCheck:
             return_code = 0
         return return_code
 
-    def all_checks(self, dom: Domain):
+    def all_checks(self, dom: Domain, verbose: bool = False):
         """Option to run everything in this library then digest."""
         self.ip(dom)
         self.cname(dom)
         self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
-        x = self.data_digest(dom)
-        if len(dom.cdns) > 0:
-            print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
-        return x
+        return_code = self.data_digest(dom)
+        if verbose:
+            if len(dom.cdns) > 0:
+                print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
+        return return_code

@@ -11,6 +11,9 @@ if a given domain or set of domains are frontable.
 import concurrent.futures
 from typing import List
 
+# Third-Party Libraries
+from tqdm import tqdm
+
 # Internal Libraries
 from . import detectCDN
 
@@ -33,9 +36,11 @@ class DomainPot:
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
-    def __init__(self, pot: DomainPot):
+    def __init__(self, pot: DomainPot, pbar: tqdm = None, verbose: bool = False):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
+        self.pbar: tqdm = pbar
+        self.verbose: bool = verbose
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
@@ -44,7 +49,15 @@ class Chef:
 
         # Use Concurrent futures to multithread with pools
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(detective.all_checks, self.pot.domains)
+            results = executor.map(
+                detective.all_checks,
+                self.pot.domains,
+                [self.verbose for _ in self.pot.domains],
+            )
+
+            for _ in results:
+                if self.pbar is not None:
+                    self.pbar.update(1)
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""
@@ -58,13 +71,13 @@ class Chef:
         self.check_front()
 
 
-def check_frontable(domains: List[str]):
+def check_frontable(domains: List[str], pbar: tqdm = None, verbose: bool = False):
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
     # Our chef to manage pot
-    chef = Chef(dp)
+    chef = Chef(dp, pbar, verbose)
 
     # Run analysis for all domains
     chef.run_checks()

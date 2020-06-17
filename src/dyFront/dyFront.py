@@ -70,9 +70,16 @@ def main(
     if verbose:
         print("%d Domains Validated" % len(domain_list))
 
+    # Define domain dict and counter for jsons
     domain_dict = {}
+    frontable_count = 0
+
+    # Check domains
     processed_list = check_frontable(domain_list)
+
+    # Parse the domain data
     for domain in processed_list:
+        frontable_count += int(domain.frontable)
         if domain.frontable or all_domains:
             domain_dict[domain.url] = {
                 "IP": str(domain.ip)[1:-1],
@@ -82,11 +89,13 @@ def main(
                 if domain.frontable
                 else "Domain Not Frontable",
             }
+
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    json_dict["frontable_count"] = str(frontable_count)
     json_dict["domains"] = domain_dict  # type: ignore
-    json_dump = json.dumps(json_dict, indent=4, sort_keys=True)
+    json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
 
     if output_path is None:
         print(json_dump)

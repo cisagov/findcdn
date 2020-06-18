@@ -47,10 +47,7 @@ def test_grab_cdn():
     ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[0].url)
     assert checked_domains[1].cdns == [
         ".cloudfront.net",
-        ".awsdn",
-    ], "Did not detect {} from {}.".format(
-        [".cloudfront.net", ".awsdn"], checked_domains[1].url
-    )
+    ], "Did not detect {} from {}.".format([".cloudfront.net"], checked_domains[1].url)
     assert checked_domains[2].cdns == [
         ".cloudflare.com"
     ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[2].url)

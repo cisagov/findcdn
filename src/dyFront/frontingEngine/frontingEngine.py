@@ -71,20 +71,21 @@ class Chef:
             # Comb future objects for completed task pool.
             for future in concurrent.futures.as_completed(results):
                 try:
-                    # Try and grab feature result
+                    # Try and grab feature result to dequeue job
                     future.result(timeout=30)
                 except concurrent.futures.TimeoutError as e:
                     # Tell us we dropped it. Should log this instead.
                     print(f"Dropped due to: {e}")
 
-                # Update status bar
-                pending = f"Pending: {executor._work_queue.qsize()} jobs"
-                threads = f"Threads: {len(executor._threads)}"
-                self.pbar.set_description(f"[{pending}]==[{threads}]")
+                # Update status bar if allowed
                 if self.pbar is not None:
-                    self.pbar.update(1)
-                else:
-                    pass
+                    pending = f"Pending: {executor._work_queue.qsize()} jobs"
+                    threads = f"Threads: {len(executor._threads)}"
+                    self.pbar.set_description(f"[{pending}]==[{threads}]")
+                    if self.pbar is not None:
+                        self.pbar.update(1)
+                    else:
+                        pass
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""

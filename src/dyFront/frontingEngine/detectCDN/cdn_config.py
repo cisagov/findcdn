@@ -84,7 +84,6 @@ CDNs = {
     "youtube.": "Google",
     ".googleusercontent.com": "Google",
     "googlehosted.com": "Google",
-    ".gstatic.com": "Google",
     ".insnw.net": "InstartLogic",
     ".inscname.net": "InstartLogic",
     ".internapcdn.net": "Internap",

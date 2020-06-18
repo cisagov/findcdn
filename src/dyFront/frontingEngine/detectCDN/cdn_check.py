@@ -120,7 +120,8 @@ class cdnCheck:
                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
                     },
                 )
-                response = request.urlopen(req)  # nosec
+                # Making the timeout 50 as to not hang thread.
+                response = request.urlopen(req, timeout=60)  # nosec
             except URLError:
                 continue
             except RemoteDisconnected:
@@ -132,12 +133,13 @@ class cdnCheck:
             except SSLError:
                 continue
             except Exception as e:
-                print("Unexpected Exception: %s" % str(e))
+                print(f"[{e}]: {dom.url}")
                 continue
             HEADERS = ["server", "via"]
             for value in HEADERS:
                 if response.headers[value] is not None:
                     dom.headers.append(response.headers[value])
+        return 0
 
     def whois(self, dom: Domain):
         """Scrape WHOIS data for the org or asn_description."""
@@ -161,7 +163,7 @@ class cdnCheck:
             except ASNRegistryError:
                 pass
             except Exception as e:
-                print("Unexpected Exception: %s" % str(e))
+                print(f"[{e}]: {dom.url}")
         dom.whois_data = whois_data
 
     def CDNid(self, dom: Domain, data_blob: List):

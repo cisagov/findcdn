@@ -72,23 +72,6 @@ def test_broken_cname():
     assert return_code != 0, "This fake site should return a non 0 code."
 
 
-def test_broken_namesrv():
-    """Test a non-working domain namesrv resolving feature."""
-    dom_in = Domain(
-        "notarealdomain.fakedomaindne.com",
-        list(),
-        list(),
-        list(),
-        list(),
-        list(),
-        list(),
-        list(),
-    )
-    check = cdnCheck()
-    return_code = check.namesrv(dom_in)
-    assert return_code != 0, "This fake site should return a non 0 code."
-
-
 def test_https_lookup():
     """Test the header resolving feature."""
     dom_in = Domain(

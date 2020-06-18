@@ -33,6 +33,22 @@ class DomainPot:
             self.domains.append(domin)
 
 
+def chef_executor(domain: detectCDN.Domain, verbosity: bool = False):
+    """Attempt to make the method "threadsafe" by giving each worker its own detector."""
+    # Define detector
+    detective = detectCDN.cdnCheck()
+
+    # Run checks
+    try:
+        detective.all_checks(domain, verbosity)
+    except BaseException:
+        # Incase some uncaught error somewhere
+        return 1
+
+    # Return 0 for success
+    return 0
+
+
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
@@ -44,17 +60,27 @@ class Chef:
 
     def grab_cdn(self):
         """Check for CDNs used be domain list."""
-        # Define detector
-        detective = detectCDN.cdnCheck()
-
         # Use Concurrent futures to multithread with pools
         with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Assign workers and assign to results list
             results = {
-                executor.submit(detective.all_checks, domain, self.verbose,)
+                executor.submit(chef_executor, domain, self.verbose,)
                 for domain in self.pot.domains
             }
 
-            for _ in concurrent.futures.as_completed(results):
+            # Comb future objects for completed task pool.
+            for future in concurrent.futures.as_completed(results):
+                try:
+                    # Try and grab feature result
+                    future.result(timeout=30)
+                except concurrent.futures.TimeoutError as e:
+                    # Tell us we dropped it. Should log this instead.
+                    print(f"Dropped due to: {e}")
+
+                # Update status bar
+                pending = f"Pending: {executor._work_queue.qsize()} jobs"
+                threads = f"Threads: {len(executor._threads)}"
+                self.pbar.set_description(f"[{pending}]==[{threads}]")
                 if self.pbar is not None:
                     self.pbar.update(1)
                 else:

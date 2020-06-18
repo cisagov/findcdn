@@ -72,19 +72,6 @@ def test_broken_cname():
     assert return_code != 0, "This fake site should return a non 0 code."
 
 
-def test_namesrv():
-    """Test the namesrv resolving feature."""
-    dom_in = Domain(
-        "google.com", list(), list(), list(), list(), list(), list(), list()
-    )
-    check = cdnCheck()
-    check.namesrv(dom_in)
-
-    assert (
-        "ns1.google.com." in dom_in.namesrvs
-    ), "google.com should have ns1.google.com. as a nameserver"
-
-
 def test_broken_namesrv():
     """Test a non-working domain namesrv resolving feature."""
     dom_in = Domain(

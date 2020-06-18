@@ -93,21 +93,6 @@ class cdnCheck:
             return 4
         return 0
 
-    def namesrv(self, dom: Domain) -> int:
-        """Collect nameservers for potential cdn suggestions."""
-        try:
-            response = query(dom.url, "ns")
-            dom.namesrvs = [server.to_text() for server in response]
-        except NoAnswer:
-            return 1
-        except NoNameservers:
-            return 2
-        except NXDOMAIN:
-            return 3
-        except Timeout:
-            return 4
-        return 0
-
     def https_lookup(self, dom: Domain):
         """Read 'server' header for CDN hints."""
         PROTOCOLS = ["https://"]
@@ -217,7 +202,6 @@ class cdnCheck:
         """Option to run everything in this library then digest."""
         self.ip(dom)
         self.cname(dom)
-        self.namesrv(dom)
         self.https_lookup(dom)
         self.whois(dom)
         return_code = self.data_digest(dom)

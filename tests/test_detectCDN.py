@@ -3,11 +3,10 @@
 
 # Third-Party Libraries
 import dns.resolver
+import pytest
 
 # cisagov Libraries
 from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
-
-# from unittest.mock import patch
 
 
 def test_ip():
@@ -15,7 +14,7 @@ def test_ip():
     dns.resolver.default_resolver = dns.resolver.Resolver()
     dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
     dom_in = Domain(
-        "dns.google.com", list(), list(), list(), list(), list(), list(), list()
+        "dns.google.com", list(), list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
     check.ip(dom_in)
@@ -36,16 +35,81 @@ def test_broken_ip():
         list(),
         list(),
         list(),
+        list(),
     )
     check = cdnCheck()
     return_code = check.ip(dom_in)
     assert return_code != 0, "This fake site should return a non 0 code."
 
 
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys_bad_domain():
+    """Non-working domain to test censys feature with."""
+    dom_in = Domain("wewewewewewewewe.com")
+    check = cdnCheck()
+    result = check.censys(dom_in)
+
+    # Assertions
+    assert result == 2, "Censys should not return data."
+
+
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys_check_uid_secret():
+    """Check if system variables correctly grabbed."""
+    check = cdnCheck()
+    assert check.UID is not None, "UID Needs to be defined to use Censys."
+    assert check.SECRET is not None, "SECRET Needs to be defined to use Censys."
+
+    # Set these to None
+    check.UID = None
+    check.SECRET = None
+
+    result = check.censys
+    assert result != 1, "Method should not run if UID and SECRET are not defined."
+
+
+@pytest.mark.skipif(
+    'os.getenv("CENSYS_SECRET") == None or os.getenv("CENSYS_UID") == None',
+    reason="Environment var not set",
+)
+def test_censys():
+    """Check basic functionality of the censys module."""
+    dom_in = Domain(
+        "amazon.com",
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
+    check = cdnCheck()
+    check.censys(dom_in)
+
+    # Assertions
+    assert len(dom_in.censys_data) > 0, "Data should be returned for known good data."
+
+    # Test for our intended data inside the returned data
+    data_found = False
+    for data in dom_in.censys_data:
+        if "cloudfront" in data:
+            data_found = True
+    assert data_found, "Data returned does not match known data of amazon.com."
+
+
 def test_cname():
     """Test the CNAME resolving feature."""
     dom_in = Domain(
-        "www.asu.edu", list(), list(), list(), list(), list(), list(), list()
+        "www.asu.edu", list(), list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
     check.cname(dom_in)
@@ -66,6 +130,7 @@ def test_broken_cname():
         list(),
         list(),
         list(),
+        list(),
     )
     check = cdnCheck()
     return_code = check.cname(dom_in)
@@ -75,7 +140,7 @@ def test_broken_cname():
 def test_namesrv():
     """Test the namesrv resolving feature."""
     dom_in = Domain(
-        "google.com", list(), list(), list(), list(), list(), list(), list()
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
     check.namesrv(dom_in)
@@ -96,6 +161,7 @@ def test_broken_namesrv():
         list(),
         list(),
         list(),
+        list(),
     )
     check = cdnCheck()
     return_code = check.namesrv(dom_in)
@@ -105,7 +171,7 @@ def test_broken_namesrv():
 def test_https_lookup():
     """Test the header resolving feature."""
     dom_in = Domain(
-        "google.com", list(), list(), list(), list(), list(), list(), list()
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
     check.https_lookup(dom_in)
@@ -124,6 +190,7 @@ def test_broken_https_lookup():
         list(),
         list(),
         list(),
+        list(),
     )
     check = cdnCheck()
     check.https_lookup(dom_in)
@@ -133,7 +200,7 @@ def test_broken_https_lookup():
 def test_whois():
     """Test the whois resolving feature."""
     dom_in = Domain(
-        "google.com", list(), list(), list(), list(), list(), list(), list()
+        "google.com", list(), list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
     check.ip(dom_in)
@@ -155,6 +222,7 @@ def test_broken_whois():
         list(),
         list(),
         list(),
+        list(),
     )
     check = cdnCheck()
     check.ip(dom_in)
@@ -164,7 +232,9 @@ def test_broken_whois():
 
 def test_all_checks():
     """Run all checks."""
-    dom_in = Domain("login.gov", list(), list(), list(), list(), list(), list(), list())
+    dom_in = Domain(
+        "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.all_checks(dom_in)
 
@@ -175,7 +245,9 @@ def test_all_checks():
 
 def test_all_checks_by_name():
     """Run all checks and get CDN name."""
-    dom_in = Domain("login.gov", list(), list(), list(), list(), list(), list(), list())
+    dom_in = Domain(
+        "login.gov", list(), list(), list(), list(), list(), list(), list(), list()
+    )
     check = cdnCheck()
     check.all_checks(dom_in)
 
@@ -190,6 +262,7 @@ def test_all_checks_bad():
     dns.resolver.default_resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
     dom = Domain(
         "super.definitelynot.notarealdomain.fakedomaindne.com",
+        list(),
         list(),
         list(),
         list(),

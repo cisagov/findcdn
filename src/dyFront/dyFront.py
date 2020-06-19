@@ -158,10 +158,7 @@ def interactive() -> int:
         domain_list = validated_args["<domain>"]
 
     # Create status bar
-    domain_count = 0
-    for _ in domain_list:
-        domain_count += 1
-    pbar = tqdm(total=domain_count)
+    pbar = tqdm(total=len(domain_list))
 
     # Start main
     if (

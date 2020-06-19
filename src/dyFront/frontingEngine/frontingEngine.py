@@ -53,7 +53,7 @@ def chef_executor(domain: detectCDN.Domain, verbosity: bool = False):
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
-    def __init__(self, pot: DomainPot, pbar: tqdm = None, verbose: bool = False):
+    def __init__(self, pot: DomainPot, pbar: bool = False, verbose: bool = False):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
         self.pbar: tqdm = pbar
@@ -64,6 +64,7 @@ class Chef:
     ):
         """Check for CDNs used be domain list."""
         # Use Concurrent futures to multithread with pools
+        print(f"Using {threads} threads.")
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             # If double, Double contents to combat CDN cache misses
             newpot = []
@@ -72,7 +73,9 @@ class Chef:
                     newpot.append(domain)
             for domain in self.pot.domains:
                 newpot.append(domain)
-            self.pbar = tqdm(total=len(newpot))
+
+            if self.pbar:
+                pbar = tqdm(total=len(newpot))
 
             # Assign workers and assign to results list
             results = {
@@ -90,12 +93,12 @@ class Chef:
                     print(f"Dropped due to: {e}")
 
                 # Update status bar if allowed
-                if self.pbar is not None:
+                if self.pbar:
                     pending = f"Pending: {executor._work_queue.qsize()} jobs"  # type: ignore
                     threads = f"Threads: {len(executor._threads)}"  # type: ignore
-                    self.pbar.set_description(f"[{pending}]==[{threads}]")
+                    pbar.set_description(f"[{pending}]==[{threads}]")
                     if self.pbar is not None:
-                        self.pbar.update(1)
+                        pbar.update(1)
                     else:
                         pass
 
@@ -115,7 +118,7 @@ class Chef:
 
 def check_frontable(
     domains: List[str],
-    pbar: tqdm = None,
+    pbar: bool = False,
     verbose: bool = False,
     threads: int = min(32, os.cpu_count() + 4),  # type: ignore
     double: bool = False,

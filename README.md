@@ -82,11 +82,12 @@ installing the module.
 ### Usage and examples
 
 ```bash
-dyFront file <fileIn> [-o FILE]
-dyFront list <domain>... [-o FILE]
+dyFront file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+dyFront list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+dyFront (-h | --help)
 
-dyFront file domains.txt -o output_frontable.txt
-dyFront list dhs.gov cisa.gov -o output_frontable.txt
+dyFront file domains.txt -o output_frontable.txt -t 17 -d
+dyFront list dhs.gov cisa.gov -o output_frontable.txt -v
 dyFront list cisa.gov
 ```
 
@@ -97,25 +98,35 @@ dyFront list cisa.gov
   --version              Show the current version.
   -o FILE --output=FILE  If specified, then the JSON output file will be
                          set to the specified value.
+  -v --verbose           Includes additional print statments.
+  --all                  Includes domains with and without a CDN
+                         in output.
+  -d --double            Run the checks twice to increase accuracy.
+  -t --threads=<thread_count>  Number of threads, otherwise use default.
 ```
 
 #### Sample Output
 
 ```bash
-user2@ubuntu:~$ dyFront list censys.io
-1 Domains Validated
+user2@ubuntu:~$ dyFront list asu.edu -t 7 --double
+Using 7 threads.
+[Pending: 0 jobs]==[Threads: 2]: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:00<00:00,  2.22it/s]
 {
-    "date": "06/09/2020, 08:48:40",
+    "date": "06/19/2020, 13:00:38",
+    "CDN_count": "1",
     "domains": {
-        "censys.io": {
-            "IP": "'104.26.11.245', '104.26.10.245', '172.67.68.81'",
-            "Status": "Domain Frontable",
+        "asu.edu": {
+            "IP": "'104.16.50.14'",
             "cdns": "'.cloudflare.com'",
             "cdns_by_names": "'Cloudflare'"
         }
     }
 }
+Domain processing completed.
+1 domains had CDN's out of 1.
+
 ```
+[![asciicast](https://asciinema.org/a/341337.svg)](https://asciinema.org/a/341337)
 
 ## How Does it Work
 
@@ -136,7 +147,6 @@ user2@ubuntu:~$ dyFront list censys.io
   - Will scrape data from:
     - HTTPS Server Headers.
     - CNAME records.
-    - Nameservers Used.
     - WHOIS data.
   - From each of these, it runs a fingerprint scan to identify any CDNs defined
     in `cdn_config.py` which may be substrings inside of the data found here.

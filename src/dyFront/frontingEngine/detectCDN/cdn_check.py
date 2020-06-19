@@ -122,7 +122,10 @@ class cdnCheck:
                 continue
             HEADERS = ["server", "via"]
             for value in HEADERS:
-                if response.headers[value] is not None:
+                if (
+                    response.headers[value] is not None
+                    and response.headers[value] not in dom.headers
+                ):
                     dom.headers.append(response.headers[value])
         return 0
 
@@ -149,7 +152,9 @@ class cdnCheck:
                 pass
             except Exception as e:
                 print(f"[{e}]: {dom.url}")
-        dom.whois_data = whois_data
+        for data in whois_data:
+            if data not in dom.whois_data:
+                dom.whois_data.append(data)
 
     def CDNid(self, dom: Domain, data_blob: List):
         """Identify any CDN name in list recieved."""

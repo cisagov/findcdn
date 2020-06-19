@@ -35,7 +35,6 @@ from typing import Any, Dict
 # Third-Party Libraries
 import docopt
 from schema import And, Or, Schema, SchemaError, Use
-from tqdm import tqdm
 import validators
 
 # Internal Libraries
@@ -60,7 +59,7 @@ def main(
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,
-    pbar: tqdm = None,
+    pbar: bool = False,
     threads: int = None,
 ) -> str:
     """Take in a list of domains and determine the CDN for each."""
@@ -168,9 +167,6 @@ def interactive() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
-    # Create status bar
-    pbar = tqdm(total=len(domain_list))
-
     # Start main
     if (
         main(
@@ -178,7 +174,7 @@ def interactive() -> int:
             validated_args["--output"],
             validated_args["--verbose"],
             validated_args["--all"],
-            pbar,
+            True,
             validated_args["--threads"],
         )
         == "Failed"

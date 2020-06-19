@@ -21,6 +21,38 @@ important for understanding potential routes for Command and Control traffic by
 bad actors who may be exfiltrating information to an alternate domain through a
 trusted domain you own.
 
+## **_Disclaimer_**
+
+The main intention for this project was as previously stated, meant to be a
+catch-all solution for detecting if a domain can be fronted. Due to
+complications in determining metrics for frontability, we decided to change the
+direction of how the project developed.</br> Such issues come from how we want
+to check for domain fronting. There is no ultimate fingerprinting we can do to
+tell if a domain is frontable. The best way to do so is using one of the methods
+we describe in
+[the wiki](https://github.com/Pascal-0x90/dyFront/wiki/Domain-Fronting) for this
+repo. Due to this, we decided we should build a tool which is able to accurately
+detect if a domain is using a CDN or not. With the results from the output of
+the tool, someone can use another tool in conjunction with the results to test
+for frontability of a domain using the standard domain fronting techniques. This
+is due to the vast amount of CDN providers which exist and some providers such
+as Akamai are impratical to purchase services and resources to test due to the
+high dollar amount for obtaining resources we can test fronting against. This is
+the idea that a user needs a resource of some sort to be able to test fronting a
+domain which in this case seems impractical to automate due to the overhead
+needed. </br> The further development of this project will consist of adding
+resources and findings in regards to domain fronting techniques, playbooks for
+specific CDNs, and potentially adding a tool to help detect CDNs based on the
+output JSON file. </br>
+
+### Summary
+
+- Project now is for CDN detection
+  - A result of not being able to support domain fronting detection for every
+    CDN.
+- Resources, Notes, and playbooks are available in the Wiki for the repository.
+- Any feed-back, improvements, or additional playbooks are always appreciated.
+
 ## Getting Started
 
 `dyFront` requires **Python 3.7+**. Python 2 is not supported. </br> `dyFront`
@@ -95,18 +127,19 @@ user2@ubuntu:~$ dyFront list censys.io
   - Output frontable domains in JSON to stdout and to a file if seleted.
 - The Fronting Engine.
   - Organizes all domains into a "pot".
-  - `Chef` will use the CDN Detection library to obtain all CDNs for each domain.
-  - `Chef` then runs analysis to set the boolean `frontable` value if it
-  detects a domain is frontable and returns the list of domains back to the
-  runner file.
+  - `Chef` will use the CDN Detection library to obtain all CDNs for each
+    domain.
+  - `Chef` then runs analysis to set the boolean `frontable` value if it detects
+    a domain is frontable and returns the list of domains back to the runner
+    file.
 - CDN Detection.
   - Will scrape data from:
     - HTTPS Server Headers.
     - CNAME records.
     - Nameservers Used.
     - WHOIS data.
-  - From each of these, it runs a  fingerprint scan to identify any CDNs defined
-  in `cdn_config.py` which may be substrings inside of the data found here.
+  - From each of these, it runs a fingerprint scan to identify any CDNs defined
+    in `cdn_config.py` which may be substrings inside of the data found here.
 
 ## More In-Depth Look at Domain Fronting
 

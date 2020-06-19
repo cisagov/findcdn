@@ -11,8 +11,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE] [-v] [--all]
-  dyFront list  <domain>... [-o FILE] [-v] [--all]
+  dyFront file <fileIn> [-o FILE] [-v] [--all] [--threads=<thread_count>]
+  dyFront list  <domain>... [-o FILE] [-v] [--all] [--threads=<thread_count>]
   dyFront (-h | --help)
 
 Options:
@@ -23,6 +23,7 @@ Options:
   -v --verbose           Includes additional print statments.
   --all                  Includes both frontable and non frontable domains
                          in output.
+  -t --threads=<thread_count>  Number of threads, otherwise use default.
 """
 
 # Standard Python Libraries
@@ -34,7 +35,7 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-from schema import And, Or, Schema, SchemaError
+from schema import And, Or, Schema, SchemaError, Use
 from tqdm import tqdm
 import validators
 
@@ -61,6 +62,7 @@ def main(
     verbose: bool = False,
     all_domains: bool = False,
     pbar: tqdm = None,
+    threads: int = None,
 ) -> str:
     """Take in a list of domains and determine if they are frontable."""
     # Validate domains in list
@@ -77,7 +79,10 @@ def main(
     frontable_count = 0
 
     # Check domains
-    processed_list = check_frontable(domain_list, pbar, verbose)
+    if threads is None:
+        processed_list = check_frontable(domain_list, pbar, verbose)
+    else:
+        processed_list = check_frontable(domain_list, pbar, verbose, threads)
 
     # Parse the domain data
     for domain in processed_list:
@@ -115,7 +120,6 @@ def interactive() -> int:
     """Collect the arguments."""
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
-
     # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
         {
@@ -135,11 +139,18 @@ def interactive() -> int:
                     error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
                 ),
             ),
+            "--threads": Or(
+                None,
+                And(
+                    Use(int),
+                    lambda thread_count: thread_count > 0,
+                    error="Thread count must be greater than 0",
+                ),
+            ),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }
     )
-
     try:
         validated_args: Dict[str, Any] = schema.validate(args)
     except SchemaError as err:
@@ -170,6 +181,7 @@ def interactive() -> int:
             validated_args["--verbose"],
             validated_args["--all"],
             pbar,
+            validated_args["--threads"],
         )
         == "Failed"
     ):

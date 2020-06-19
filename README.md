@@ -108,7 +108,7 @@ dyFront list cisa.gov
 #### Sample Output
 
 ```bash
-user2@ubuntu:~$ dyFront list asu.edu -t 7 --double
+user2@ubuntu:~$ dyFront list asu.edu -t 2 --double
 Using 7 threads.
 [Pending: 0 jobs]==[Threads: 2]: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:00<00:00,  2.22it/s]
 {

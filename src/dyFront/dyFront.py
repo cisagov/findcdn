@@ -10,8 +10,8 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE] [-v] [--all] [--threads=<thread_count>]
-  dyFront list  <domain>... [-o FILE] [-v] [--all] [--threads=<thread_count>]
+  dyFront file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+  dyFront list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
   dyFront (-h | --help)
 
 Options:
@@ -22,6 +22,7 @@ Options:
   -v --verbose           Includes additional print statments.
   --all                  Includes domains with and without a CDN
                          in output.
+  -d --double            Run the checks twice to increase accuracy.
   -t --threads=<thread_count>  Number of threads, otherwise use default.
 """
 
@@ -60,6 +61,7 @@ def main(
     verbose: bool = False,
     all_domains: bool = False,
     pbar: bool = False,
+    double_in: bool = False,
     threads: int = None,
 ) -> str:
     """Take in a list of domains and determine the CDN for each."""
@@ -78,9 +80,11 @@ def main(
 
     # Check domains
     if threads is None:
-        processed_list = check_frontable(domain_list, pbar, verbose)
+        processed_list = check_frontable(domain_list, pbar, verbose, double=double_in)
     else:
-        processed_list = check_frontable(domain_list, pbar, verbose, threads)
+        processed_list = check_frontable(
+            domain_list, pbar, verbose, threads, double=double_in
+        )
 
     # Parse the domain data
     for domain in processed_list:
@@ -175,6 +179,7 @@ def interactive() -> int:
             validated_args["--verbose"],
             validated_args["--all"],
             True,
+            validated_args["--double"],
             validated_args["--threads"],
         )
         == "Failed"

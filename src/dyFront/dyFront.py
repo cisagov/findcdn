@@ -2,12 +2,11 @@
 
 """dyFront is a security research and reporting tool.
 
-dyFront determine what domain names from a passed in list are domain
-frontable (https://en.wikipedia.org/wiki/Domain_fronting) and exports them to a file.
+dyFront determine what CDN a domain has and exports it to a file.
 
 EXIT STATUS
     This utility exits with one of the following values:
-    0   Frontable domains successfully printed to file
+    0   Domain CDN's successfully printed to file
     >0  An error occurred.
 
 Usage:
@@ -21,7 +20,7 @@ Options:
   -o FILE --output=FILE  If specified, then the JSON output file will be
                          set to the specified value.
   -v --verbose           Includes additional print statments.
-  --all                  Includes both frontable and non frontable domains
+  --all                  Includes domains with and without a CDN
                          in output.
   -t --threads=<thread_count>  Number of threads, otherwise use default.
 """
@@ -64,7 +63,7 @@ def main(
     pbar: tqdm = None,
     threads: int = None,
 ) -> str:
-    """Take in a list of domains and determine if they are frontable."""
+    """Take in a list of domains and determine the CDN for each."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
@@ -76,7 +75,7 @@ def main(
 
     # Define domain dict and counter for jsons
     domain_dict = {}
-    frontable_count = 0
+    CDN_count = 0
 
     # Check domains
     if threads is None:
@@ -86,21 +85,20 @@ def main(
 
     # Parse the domain data
     for domain in processed_list:
-        frontable_count += int(domain.frontable)
-        if domain.frontable or all_domains:
+        if len(domain.cdns) > 0:
+            CDN_count += 1
+
+        if len(domain.cdns) > 0 or all_domains:
             domain_dict[domain.url] = {
                 "IP": str(domain.ip)[1:-1],
                 "cdns": str(domain.cdns)[1:-1],
                 "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-                "Status": "Domain Frontable"
-                if domain.frontable
-                else "Domain Not Frontable",
             }
 
     # Run report
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["frontable_count"] = str(frontable_count)
+    json_dict["CDN_count"] = str(CDN_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
     if output_path is None or verbose:
@@ -110,8 +108,8 @@ def main(
             print("FAILED")
             return "Failed"
     print(
-        "Domain processing completed.\n%d frontable domains found out of %d."
-        % (frontable_count, len(domain_list))
+        "Domain processing completed.\n%d domains had CDN's out of %d."
+        % (CDN_count, len(domain_list))
     )
     return json_dump
 

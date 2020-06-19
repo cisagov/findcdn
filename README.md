@@ -51,7 +51,7 @@ installing the module.
 
 ```bash
 dyFront file <fileIn> [-o FILE]
-dyFront list  <domain>... [-o FILE]
+dyFront list <domain>... [-o FILE]
 
 dyFront file domains.txt -o output_frontable.txt
 dyFront list dhs.gov cisa.gov -o output_frontable.txt

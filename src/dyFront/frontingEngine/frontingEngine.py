@@ -9,6 +9,7 @@ if a given domain or set of domains are frontable.
 
 # Standard Python Libraries
 import concurrent.futures
+import os
 from typing import List
 
 # Third-Party Libraries
@@ -58,14 +59,25 @@ class Chef:
         self.pbar: tqdm = pbar
         self.verbose: bool = verbose
 
-    def grab_cdn(self):
+    def grab_cdn(
+        self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
+    ):
         """Check for CDNs used be domain list."""
         # Use Concurrent futures to multithread with pools
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            # If double, Double contents to combat CDN cache misses
+            newpot = []
+            if double:
+                for domain in self.pot.domains:
+                    newpot.append(domain)
+            for domain in self.pot.domains:
+                newpot.append(domain)
+            self.pbar = tqdm(total=len(newpot))
+
             # Assign workers and assign to results list
             results = {
                 executor.submit(chef_executor, domain, self.verbose,)
-                for domain in self.pot.domains
+                for domain in newpot
             }
 
             # Comb future objects for completed task pool.
@@ -79,8 +91,8 @@ class Chef:
 
                 # Update status bar if allowed
                 if self.pbar is not None:
-                    pending = f"Pending: {executor._work_queue.qsize()} jobs"
-                    threads = f"Threads: {len(executor._threads)}"
+                    pending = f"Pending: {executor._work_queue.qsize()} jobs"  # type: ignore
+                    threads = f"Threads: {len(executor._threads)}"  # type: ignore
                     self.pbar.set_description(f"[{pending}]==[{threads}]")
                     if self.pbar is not None:
                         self.pbar.update(1)
@@ -93,13 +105,21 @@ class Chef:
             if len(domain.cdns) > 0:
                 domain.frontable = True
 
-    def run_checks(self):
+    def run_checks(
+        self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
+    ):
         """Run analysis on the internal domain pool."""
-        self.grab_cdn()
+        self.grab_cdn(threads, double)
         self.check_front()
 
 
-def check_frontable(domains: List[str], pbar: tqdm = None, verbose: bool = False):
+def check_frontable(
+    domains: List[str],
+    pbar: tqdm = None,
+    verbose: bool = False,
+    threads: int = min(32, os.cpu_count() + 4),  # type: ignore
+    double: bool = False,
+):
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
@@ -108,7 +128,7 @@ def check_frontable(domains: List[str], pbar: tqdm = None, verbose: bool = False
     chef = Chef(dp, pbar, verbose)
 
     # Run analysis for all domains
-    chef.run_checks()
+    chef.run_checks(threads, double)
 
     # Return all domains for further parsing
     return chef.pot.domains

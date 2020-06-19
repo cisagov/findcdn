@@ -21,6 +21,29 @@ important for understanding potential routes for Command and Control traffic by
 bad actors who may be exfiltrating information to an alternate domain through a
 trusted domain you own.
 
+## ***Disclaimer***
+
+The main intention for this project was as previously stated, meant to be a
+catch-all solution for detecting if a domain can be fronted. Due to
+complications in determining metrics for frontability, we decided to change the
+direction of how the project developed.</br> Such issues come from how we want
+to check for domain fronting. There is no ultimate fingerprinting we can do to
+tell if a domain is frontable. The best way to do so is using one of the methods
+we describe in [the wiki](https://github.com/Pascal-0x90/dyFront/wiki/Domain-Fronting)
+for this repo. Due to this, we decided we should build a tool which is able to accurately
+detect if a domain is using a CDN or not. With the results from the output of the
+tool, someone can use another tool in conjunction with the results to test for
+frontability of a domain using the standard domain fronting techniques. This is
+due to the vast amount of CDN providers which exist and some providers such as
+Akamai are impratical to purchase services and resources to test due to the
+high dollar amount for obtaining resources we can test fronting against. This
+is the idea that a user needs a resource of some sort to be able to test
+fronting a domain which in this case seems impractical to automate due to the
+overhead needed. </br> The further development of this project will consist of adding
+resources and findings in regards to domain fronting techniques, playbooks for
+specific CDNs, and potentially adding a tool to help detect CDNs based on the
+output JSON file.
+
 ## Getting Started
 
 `dyFront` requires **Python 3.7+**. Python 2 is not supported. </br> `dyFront`

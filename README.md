@@ -42,7 +42,12 @@ fronting a domain which in this case seems impractical to automate due to the
 overhead needed. </br> The further development of this project will consist of adding
 resources and findings in regards to domain fronting techniques, playbooks for
 specific CDNs, and potentially adding a tool to help detect CDNs based on the
-output JSON file.
+output JSON file. </br>
+### Summary
+* Project now is for CDN detection
+  * A result of not being able to support domain fronting detection for every CDN.
+* Resources, Notes, and playbooks are available in the Wiki for the repository. 
+* Any feed-back, improvements, or additional playbooks are always appreciated. 
 
 ## Getting Started
 

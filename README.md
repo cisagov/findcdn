@@ -126,7 +126,8 @@ Domain processing completed.
 1 domains had CDN's out of 1.
 
 ```
-[![asciicast](https://asciinema.org/a/341337.svg)](https://asciinema.org/a/341337)
+
+[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/dyFront/develop/example.gif)](https://raw.githubusercontent.com/Pascal-0x90/dyFront/develop/example.gif)
 
 ## How Does it Work
 

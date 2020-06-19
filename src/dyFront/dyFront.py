@@ -98,15 +98,17 @@ def main(
     json_dict["frontable_count"] = str(frontable_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
-
-    if output_path is None:
+    if output_path is None or verbose:
         print(json_dump)
-        return json_dump
-    else:
+    if output_path is not None:
         if write_json(json_dump, output_path):
-            return json_dump
-        else:
+            print("FAILED")
             return "Failed"
+    print(
+        "Domain processing completed.\n%d frontable domains found out of %d."
+        % (frontable_count, len(domain_list))
+    )
+    return json_dump
 
 
 def interactive() -> int:

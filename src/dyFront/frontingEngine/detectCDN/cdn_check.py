@@ -206,6 +206,8 @@ class cdnCheck:
         self.whois(dom)
         return_code = self.data_digest(dom)
         if verbose:
-            # if len(dom.cdns) > 0:
-            print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
+            if len(dom.cdns) > 0:
+                print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
+            else:
+                print(f"{dom.url} does not use a CDN")
         return return_code

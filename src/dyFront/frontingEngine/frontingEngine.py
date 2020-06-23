@@ -64,6 +64,7 @@ class Chef:
     ):
         """Check for CDNs used be domain list."""
         # Use Concurrent futures to multithread with pools
+        job_count = 0
         print(f"Using {threads} threads.")
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
             # If double, Double contents to combat CDN cache misses
@@ -73,9 +74,9 @@ class Chef:
                     newpot.append(domain)
             for domain in self.pot.domains:
                 newpot.append(domain)
-
+            job_count = len(newpot)
             if self.pbar:
-                pbar = tqdm(total=len(newpot))
+                pbar = tqdm(total=job_count)
 
             # Assign workers and assign to results list
             results = {
@@ -101,6 +102,9 @@ class Chef:
                         pbar.update(1)
                     else:
                         pass
+
+        # Return the amount of jobs done and error code
+        return (job_count, 0)
 
     def check_front(self):
         """For each domain, check if domain is frontable using naive metric."""

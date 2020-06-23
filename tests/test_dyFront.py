@@ -47,6 +47,43 @@ def test_list_working():
     assert return_code == 0, "interactive() should return successfully"
 
 
+def test_list_working_double(capsys):
+    """Working domain list to test -d with."""
+    with patch.object(
+        sys,
+        "argv",
+        ["bogus", "list", "google.com", "facebook.com", "login.gov", "-v", "-d"],
+    ):
+        return_code = dyFront.dyFront.interactive()
+        captured = capsys.readouterr()
+    assert return_code == 0, "interactive() should return successfully"
+    assert "completed: 6" in captured.out
+
+
+def test_list_working_verbose(capsys):
+    """Working domain list to test -v with."""
+    with patch.object(
+        sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov", "-v"]
+    ):
+        return_code = dyFront.dyFront.interactive()
+        captured = capsys.readouterr()
+    assert return_code == 0, "interactive() should return successfully"
+    assert "3 Domains Validated" in captured.out
+
+
+def test_list_working_tcount(capsys):
+    """Working domain list to test -t with."""
+    with patch.object(
+        sys,
+        "argv",
+        ["bogus", "list", "google.com", "facebook.com", "login.gov", "-t", "3"],
+    ):
+        return_code = dyFront.dyFront.interactive()
+        captured = capsys.readouterr()
+    assert return_code == 0, "interactive() should return successfully"
+    assert "Using 3 threads" in captured.out
+
+
 def test_list_broken():
     """Broken domain list to test with."""
     with patch.object(

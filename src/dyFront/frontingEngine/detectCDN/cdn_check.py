@@ -58,44 +58,56 @@ class cdnCheck:
         """Initialize the orchestrator of analysis."""
         self.running = False
 
-    def ip(self, dom: Domain) -> int:
+    def ip(self, dom: Domain) -> List[int]:
         """Determine IP addresses the domain resolves to."""
-        try:
-            response = query(dom.url)
-            # Assign any found IP addresses
-            dom.ip = [str(ip.address) for ip in response]
-        except NoAnswer:
-            return 1
-        except NoNameservers:
-            return 2
-        except NXDOMAIN:
-            return 3
-        except Timeout:
-            return 4
-        return 0
+        dom_list: List[str] = [dom.url, "www." + dom.url]
+        return_codes = []
+        ip_list = []
+        for domain in dom_list:
+            try:
+                response = query(domain)
+                # Assign any found IP addresses
+                for ip in response:
+                    if str(ip.address) not in ip_list and str(ip.address) not in dom.ip:
+                        ip_list.append(str(ip.address))
+            except NoAnswer:
+                return_codes.append(1)
+            except NoNameservers:
+                return_codes.append(2)
+            except NXDOMAIN:
+                return_codes.append(3)
+            except Timeout:
+                return_codes.append(4)
+        for addr in ip_list:
+            dom.ip.append(addr)
+        return return_codes
 
-    def cname(self, dom: Domain) -> int:
+    def cname(self, dom: Domain) -> List[int]:
         """Collect CNAME records on domain."""
+        # init local vars
+        dom_list = [dom.url, "www." + dom.url]
+        return_code = []
         resolver = Resolver()
         resolver.timeout = 10
         resolver.lifetime = 10
         cname_query = resolver.query
-        try:
-            response = cname_query(dom.url, "cname")
-            dom.cnames = [record.to_text() for record in response]
-        except NoAnswer:
-            return 1
-        except NoNameservers:
-            return 2
-        except NXDOMAIN:
-            return 3
-        except Timeout:
-            return 4
-        return 0
+        for domain in dom_list:
+            try:
+                response = cname_query(domain, "cname")
+                dom.cnames = [record.to_text() for record in response]
+            except NoAnswer:
+                return_code.append(1)
+            except NoNameservers:
+                return_code.append(2)
+            except NXDOMAIN:
+                return_code.append(3)
+            except Timeout:
+                return_code.append(4)
+        return return_code
 
-    def https_lookup(self, dom: Domain):
+    def https_lookup(self, dom: Domain) -> int:
         """Read 'server' header for CDN hints."""
-        PROTOCOLS = ["https://"]
+        PROTOCOLS = ["https://", "https://www."]
         for PROTOCOL in PROTOCOLS:
             try:
                 req = request.Request(
@@ -129,7 +141,7 @@ class cdnCheck:
                     dom.headers.append(response.headers[value])
         return 0
 
-    def whois(self, dom: Domain):
+    def whois(self, dom: Domain) -> int:
         """Scrape WHOIS data for the org or asn_description."""
         try:
             if len(dom.ip) <= 0:
@@ -155,6 +167,8 @@ class cdnCheck:
         for data in whois_data:
             if data not in dom.whois_data:
                 dom.whois_data.append(data)
+        # Everything was successful
+        return 0
 
     def CDNid(self, dom: Domain, data_blob: List):
         """Identify any CDN name in list recieved."""
@@ -186,9 +200,10 @@ class cdnCheck:
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 
-    def data_digest(self, dom: Domain):
+    def data_digest(self, dom: Domain) -> int:
         """Digest all data collected and assign to CDN list."""
         return_code = 1
+        # Iterate through all attributes for substrings
         if len(dom.cnames) > 0 and not None:
             self.CDNid(dom, dom.cnames)
             return_code = 0
@@ -203,13 +218,18 @@ class cdnCheck:
             return_code = 0
         return return_code
 
-    def all_checks(self, dom: Domain, verbose: bool = False):
+    def all_checks(self, dom: Domain, verbose: bool = False) -> int:
         """Option to run everything in this library then digest."""
+        # Obtain each attributes data
         self.ip(dom)
         self.cname(dom)
         self.https_lookup(dom)
         self.whois(dom)
+
+        # Digest the data
         return_code = self.data_digest(dom)
+
+        # Extra case if we want verbosity for each domain check
         if verbose:
             if len(dom.cdns) > 0:
                 print(f"{dom.url} has the following CDNs:\n{dom.cdns}")

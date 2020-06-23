@@ -43,8 +43,11 @@ def test_grab_cdn():
 
     # Assertions
     assert checked_domains[0].cdns == [
-        ".cloudflare.com"
-    ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[0].url)
+        ".cloudflare.net",
+        ".cloudflare.com",
+    ], "Did not detect {} from {}.".format(
+        [".cloudflare.net", ".cloudflare.com"], checked_domains[0].url
+    )
     assert checked_domains[1].cdns == [
         ".cloudfront.net",
     ], "Did not detect {} from {}.".format([".cloudfront.net"], checked_domains[1].url)
@@ -70,9 +73,10 @@ def test_check_front():
         if dom.frontable:
             frontable += 1
 
-    assert frontable == 2, "Too many frontable domains counted."
+    assert frontable == 3, "Too many frontable domains counted."
     assert checked_domains[0].url == "asu.edu" and checked_domains[0].cdns == [
-        ".cloudflare.com"
+        ".cloudflare.net",
+        ".cloudflare.com",
     ], ("Incorrect CDN detected for %s" % checked_domains[0].url)
     assert checked_domains[1].url == "censys.io" and checked_domains[1].cdns == [
         ".cloudflare.com"
@@ -98,7 +102,12 @@ def test_check_frontable():
     for dom in objects:
         if dom.frontable:
             frontable[dom.url] = dom.cdns
-    expected = {"asu.edu": [".cloudflare.com"], "censys.io": [".cloudflare.com"]}
+    expected = {
+        "asu.edu": [".cloudflare.net", ".cloudflare.com"],
+        "censys.io": [".cloudflare.com"],
+        "adobe.com": [".edgekey.net", ".akamaitechnologies.fr"],
+    }
+
     # Assertions
     assert len(frontable) > 0, "Returned frontable list is empty."
     assert frontable == expected, "Returned domains do not match."

@@ -80,11 +80,15 @@ def main(
 
     # Check domains
     if threads is None:
-        processed_list = check_frontable(domain_list, pbar, verbose, double=double_in)
+        processed_list, cnt, err = check_frontable(
+            domain_list, pbar, verbose, double=double_in
+        )
     else:
-        processed_list = check_frontable(
+        processed_list, cnt, err = check_frontable(
             domain_list, pbar, verbose, threads, double=double_in
         )
+        if err:
+            pass
 
     # Parse the domain data
     for domain in processed_list:

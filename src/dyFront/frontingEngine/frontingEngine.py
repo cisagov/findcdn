@@ -10,7 +10,7 @@ if a given domain or set of domains are frontable.
 # Standard Python Libraries
 import concurrent.futures
 import os
-from typing import List
+from typing import List, Tuple
 
 # Third-Party Libraries
 from tqdm import tqdm
@@ -114,10 +114,11 @@ class Chef:
 
     def run_checks(
         self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
-    ):
+    ) -> Tuple[int, int]:
         """Run analysis on the internal domain pool."""
-        self.grab_cdn(threads, double)
+        cnt, err = self.grab_cdn(threads, double)
         self.check_front()
+        return (cnt, err)
 
 
 def check_frontable(
@@ -126,7 +127,7 @@ def check_frontable(
     verbose: bool = False,
     threads: int = min(32, os.cpu_count() + 4),  # type: ignore
     double: bool = False,
-):
+) -> Tuple[List[detectCDN.Domain], int, int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
@@ -135,7 +136,7 @@ def check_frontable(
     chef = Chef(dp, pbar, verbose)
 
     # Run analysis for all domains
-    chef.run_checks(threads, double)
+    cnt, err = chef.run_checks(threads, double)
 
     # Return all domains for further parsing
-    return chef.pot.domains
+    return (chef.pot.domains, cnt, err)

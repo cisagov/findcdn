@@ -97,7 +97,7 @@ def test_run_checks():
 def test_check_frontable():
     """Test the return of a list of frontable domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects = dyFront.frontingEngine.check_frontable(domains)
+    objects, cnt, err = dyFront.frontingEngine.check_frontable(domains)
     frontable = {}
     for dom in objects:
         if dom.frontable:

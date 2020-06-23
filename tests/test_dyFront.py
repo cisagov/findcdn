@@ -63,7 +63,16 @@ def test_list_working_double(capsys):
 def test_list_working_verbose(capsys):
     """Working domain list to test -v with."""
     with patch.object(
-        sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov", "-v"]
+        sys,
+        "argv",
+        [
+            "bogus",
+            "list",
+            "google.com",
+            "facebook.com",
+            "superfake.thisisnotarealwebsiteforsure.com",
+            "-v",
+        ],
     ):
         return_code = dyFront.dyFront.interactive()
         captured = capsys.readouterr()

@@ -31,7 +31,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 # Third-Party Libraries
 import docopt
@@ -63,13 +63,13 @@ def main(
     pbar: bool = False,
     double_in: bool = False,
     threads: int = None,
-) -> str:
+) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
             print(f"{item} is not a valid domain", file=sys.stderr)
-            return "Failed"
+            return ("Failed", 0)
 
     if verbose:
         print("%d Domains Validated" % len(domain_list))
@@ -87,8 +87,6 @@ def main(
         processed_list, cnt, err = check_frontable(
             domain_list, pbar, verbose, threads, double=double_in
         )
-        if err:
-            pass
 
     # Parse the domain data
     for domain in processed_list:
@@ -113,12 +111,12 @@ def main(
     if output_path is not None:
         if write_json(json_dump, output_path):
             print("FAILED")
-            return "Failed"
+            return ("Failed", cnt)
     print(
         "Domain processing completed.\n%d domains had CDN's out of %d."
         % (CDN_count, len(domain_list))
     )
-    return json_dump
+    return (json_dump, cnt)
 
 
 def interactive() -> int:
@@ -176,18 +174,20 @@ def interactive() -> int:
         domain_list = validated_args["<domain>"]
 
     # Start main
-    if (
-        main(
-            domain_list,
-            validated_args["--output"],
-            validated_args["--verbose"],
-            validated_args["--all"],
-            True,
-            validated_args["--double"],
-            validated_args["--threads"],
-        )
-        == "Failed"
-    ):
+    json_dump, cnt = main(
+        domain_list,
+        validated_args["--output"],
+        validated_args["--verbose"],
+        validated_args["--all"],
+        True,
+        validated_args["--double"],
+        validated_args["--threads"],
+    )
+
+    if validated_args["--verbose"]:
+        print("Number of jobs completed: %d" % cnt)
+
+    if json_dump == "Failed":
         return 1
     else:
         return 0

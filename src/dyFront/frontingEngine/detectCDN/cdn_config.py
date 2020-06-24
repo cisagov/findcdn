@@ -119,7 +119,7 @@ CDNs = {
     ".cubecdn.net": "cubeCDN",
     ".cdn77.net": "CDN77",
     ".cdn77.org": "CDN77",
-    ".incapdns.net": "Incapsula",
+    "x.incapdns.net": "Incapsula",
     ".bitgravity.com": "BitGravity",
     ".r.worldcdn.net": "OnApp",
     ".r.worldssl.net": "OnApp",

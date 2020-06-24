@@ -23,14 +23,17 @@ success:
 
 ## Execution Steps
 
+**Fronted Domain:** The allowed domain you are using as a "mask".
+
+**Target Domain:** The domain you want to access, using the Fronted domain.
+
 1. First, compile and setup OpenSSL following the instructions in the INSTALL.md
    in the repository.
 
 2. Setup your headers in a file called `headers` which look like the following:
 
    ```html
-   GET / HTTP/1.1 Host:
-   <target_domain> User-Agent: front/1 Accept: */*</target_domain>
+   GET / HTTP/1.1 Host:[target_domain] User-Agent: front/1 Accept: */*
    ```
 
    This will be the header for which the CDN will direct our traffic.
@@ -43,8 +46,8 @@ success:
    $ export LD_LIBRARY_PATH=/path/to/openssl;
    $ ESNIRR=`dig +short txt _esni.www.cloudflare.com | sed -e 's/"//g'`
    $ (cat headers; sleep 5) | /path/to/openssl/apps/openssl s_client \
-   -CApath /etc/ssl/certs/ -tls1_3 -connect www.cloudflare.com:443 -esni <target_domain> \
-   -esnirr $ESNIRR -esni_strict -servername www.cloudflare.com
+   -CApath /etc/ssl/certs/ -tls1_3 -connect [fronted_domain]:443 -esni [target_domain] \
+   -esnirr $ESNIRR -esni_strict -servername [fronted_domain]
    ```
 
 ## Potential Issues and Errors

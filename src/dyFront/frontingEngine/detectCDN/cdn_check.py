@@ -65,8 +65,9 @@ class cdnCheck:
         ip_list = []
         for domain in dom_list:
             try:
+                # Query the domain
                 response = query(domain)
-                # Assign any found IP addresses
+                # Assign any found IP addresses to the object
                 for ip in response:
                     if str(ip.address) not in ip_list and str(ip.address) not in dom.ip:
                         ip_list.append(str(ip.address))
@@ -78,19 +79,25 @@ class cdnCheck:
                 return_codes.append(3)
             except Timeout:
                 return_codes.append(4)
+
+        # Append all addresses into IP_list
         for addr in ip_list:
             dom.ip.append(addr)
+        # Return listing of error codes
         return return_codes
 
     def cname(self, dom: Domain) -> List[int]:
         """Collect CNAME records on domain."""
-        # init local vars
+        # List of domains to check
         dom_list = [dom.url, "www." + dom.url]
+        # Our codes to return
         return_code = []
+        # Seutp resolver and timeouts
         resolver = Resolver()
         resolver.timeout = 10
         resolver.lifetime = 10
         cname_query = resolver.query
+        # Iterate through all domains in list
         for domain in dom_list:
             try:
                 response = cname_query(domain, "cname")
@@ -107,9 +114,12 @@ class cdnCheck:
 
     def https_lookup(self, dom: Domain) -> int:
         """Read 'server' header for CDN hints."""
+        # List of domains with different protocols to check.
         PROTOCOLS = ["https://", "https://www."]
+        # Iterate through all protocols
         for PROTOCOL in PROTOCOLS:
             try:
+                # Some domains only respond when we have a User-Agent defined.
                 req = request.Request(
                     PROTOCOL + dom.url,
                     data=None,
@@ -130,8 +140,11 @@ class cdnCheck:
             except SSLError:
                 continue
             except Exception as e:
+                # Define an exception just in case we missed one.
                 print(f"[{e}]: {dom.url}")
                 continue
+            # Define headers to check for the response
+            # to grab strings for later parsing.
             HEADERS = ["server", "via"]
             for value in HEADERS:
                 if (
@@ -143,6 +156,7 @@ class cdnCheck:
 
     def whois(self, dom: Domain) -> int:
         """Scrape WHOIS data for the org or asn_description."""
+        # Make sure we have Ip addresses to check
         try:
             if len(dom.ip) <= 0:
                 raise NoIPaddress
@@ -150,9 +164,11 @@ class cdnCheck:
             return 1
         # Define temp list to assign
         whois_data = []
+        # Iterate through all the IP addresses in object
         for ip in dom.ip:
             try:
                 response = IPWhois(ip)
+                # These two should be where we can find substrings hinting to CDN
                 org = response.lookup_rdap()["network"]["name"]
                 if org != "BAREFRUIT-ERRORHANDLING":
                     whois_data.append(org)
@@ -171,7 +187,13 @@ class cdnCheck:
         return 0
 
     def CDNid(self, dom: Domain, data_blob: List):
-        """Identify any CDN name in list recieved."""
+        """
+        Identify any CDN name in list recieved.
+
+        All of these will be doing some sort of substring analysis
+        on each string from any list passed to it. This will help
+        us identify the CDN which could be used.
+        """
         for data in data_blob:
             # Make sure we do not try to analyze None type data
             if data is None:

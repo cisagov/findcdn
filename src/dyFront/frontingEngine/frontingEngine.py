@@ -75,6 +75,7 @@ class Chef:
             for domain in self.pot.domains:
                 newpot.append(domain)
             job_count = len(newpot)
+            # Setup pbar with correct amount size
             if self.pbar:
                 pbar = tqdm(total=job_count)
 

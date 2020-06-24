@@ -4,9 +4,7 @@
 
 **Working As of Date (WAD):** 06/24/20
 
-**CDN Organization:** CloudFront
-
-**Potential CDN Endpoints:** TODO
+**CDN Organization:** AWS CloudFront
 
 ## Conditions To meet
 

@@ -108,7 +108,7 @@ Domain processing completed.
 
 ```
 
-[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/example.gif)](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/example.gif)
+[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)
 
 ## How Does it Work
 

@@ -5,7 +5,7 @@
 import dns.resolver
 
 # cisagov Libraries
-from dyFront.frontingEngine.detectCDN import Domain, cdnCheck
+from dyFront.cdnEngine.detectCDN import Domain, cdnCheck
 
 # from unittest.mock import patch
 

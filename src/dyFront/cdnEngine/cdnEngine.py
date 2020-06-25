@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 """
-Summary: frontingEngine orchestrates frontability of domains.
+Summary: cdnEngine orchestrates frontability of domains.
 
-Description: frontingEngine is a simple solution for detection
+Description: cdnEngine is a simple solution for detection
 if a given domain or set of domains are frontable.
 """
 

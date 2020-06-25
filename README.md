@@ -6,46 +6,27 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findCDN.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findCDN/context:python)
 [![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findCDN/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findCDN)
 
-`findCDN`, or "Do you Front?", is a tool to scan and detect the ability to use
-Domain Fronting, on a domain. `findCDN` can save results to a file or just
+`findCDN`, is a tool which can scan and detect what kind of Content Distribution
+Network (CDN) a domain is using. `findCDN` can save results to a file or just
 output to stdout.
 
-`findCDN` was developed to help organizations discover if their hosted domains
-are susceptible to Domain Fronting. Domain fronting is an attack which allows
-for circumvention of domain blocks set in place by firewalls. Where a firewall
-may block a user from accessing `abcd.com` which uses CDN EFG, domain `zyx.com`
-which is not blocked on the given firewall and also uses EFG, a user can access
-`abcd.com` by using domain fronting and making the firewall think `zyx.com` is
-being accessed instead. Detecting if your domain is susceptible to this is
-important for understanding potential routes for Command and Control traffic by
-bad actors who may be exfiltrating information to an alternate domain through a
-trusted domain you own.
+`findCDN` helps users of the tool accurately determine what CDN a domain is
+using. The list of supported domains is listed in the
+[cdn_config.py](https://github.com/Pascal-0x90/findCDN/blob/develop/src/findCDN/cdnEngine/detectCDN/cdn_config.py)
+file in the repository. The library can be implemented as a standalone tool or a
+importable module you can use in your project. In both cases you can define an
+output file which the results can be written to. </br>
 
-## **_Disclaimer_**
+The original purpose of this tool was to automatically detect Domain
+Frontability of a domain which uses a CDN. Due to the amount of overhead for
+detection, we moved the development of the tool into a CDN detection only tool.
+We use our wiki to further describe what Domain Fronting is, our research notes,
+design decisions, and playbooks for fronting specific domains. If any one has
+access to a CDN which we have failed to front or have no playbook for yet, feel
+free to make a new playbook using the template playbook and make a pull request
+to the repository.
 
-The main intention for this project was as previously stated, meant to be a
-catch-all solution for detecting if a domain can be fronted. Due to
-complications in determining metrics for frontability, we decided to change the
-direction of how the project developed.</br> Such issues come from how we want
-to check for domain fronting. There is no ultimate fingerprinting we can do to
-tell if a domain is frontable. The best way to do so is using one of the methods
-we describe in
-[the wiki](https://github.com/Pascal-0x90/findCDN/wiki/Domain-Fronting) for this
-repo. Due to this, we decided we should build a tool which is able to accurately
-detect if a domain is using a CDN or not. With the results from the output of
-the tool, someone can use another tool in conjunction with the results to test
-for frontability of a domain using the standard domain fronting techniques. This
-is due to the vast amount of CDN providers which exist and some providers such
-as Akamai are impratical to purchase services and resources to test due to the
-high dollar amount for obtaining resources we can test fronting against. This is
-the idea that a user needs a resource of some sort to be able to test fronting a
-domain which in this case seems impractical to automate due to the overhead
-needed. </br> The further development of this project will consist of adding
-resources and findings in regards to domain fronting techniques, playbooks for
-specific CDNs, and potentially adding a tool to help detect CDNs based on the
-output JSON file. </br>
-
-### Summary
+## Project Change Summary
 
 - Project now is for CDN detection
   - A result of not being able to support domain fronting detection for every
@@ -141,8 +122,8 @@ Domain processing completed.
   - Organizes all domains into a "pot".
   - `Chef` will use the CDN Detection library to obtain all CDNs for each
     domain.
-  - `Chef` then runs analysis to set the boolean `frontable` value if it detects
-    a domain is frontable and returns the list of domains back to the runner
+  - `Chef` then runs analysis to set the boolean has_cdn value if it detects a
+    domain is has a CDN then returns the list of domains back to the runner
     file.
 - CDN Detection.
   - Will scrape data from:
@@ -151,27 +132,6 @@ Domain processing completed.
     - WHOIS data.
   - From each of these, it runs a fingerprint scan to identify any CDNs defined
     in `cdn_config.py` which may be substrings inside of the data found here.
-
-## More In-Depth Look at Domain Fronting
-
-There are a variate amount of uses for Domain Fronting, from bypassing
-censorship to using it in command and control communications to bypass
-restrictions of a firewall by making use of a domain which is trusted and
-allowing communication then to the unintended website. Such examples can be seen
-in how
-[APT29 managed command and control](https://www.fireeye.com/blog/threat-research/2017/03/apt29_domain_frontin.html).
-</br></br> The following are a listing of resources which go into more detail
-about what domain fronting is, how it can be used, and common methods for
-detection:
-
-- [Domain Fronting in a nutshell](https://www.andreafortuna.org/2018/05/07/domain-fronting-in-a-nutshell/)
-- [A 101 on Domain Fronting](https://digi.ninja/blog/domain_fronting.php)
-- [Domain Fronting Technique T1172 - MITRE ATT&CK Framework](https://attack.mitre.org/techniques/T1172/)
-- [Blocking-resistant Communication Through Domain Fronting](https://www.bamsoftware.com/papers/fronting/)
-- [Domain Fronting - Wikipedia](https://en.wikipedia.org/wiki/Domain_fronting)
-- [rvrsh3ll/FindFrontableDomains](https://github.com/rvrsh3ll/FindFrontableDomains)
-- [Traversing the Kill-Chain - Vincent Yiu](https://gsec.hitb.org/materials/sg2018/D2%20-%20Traversing%20the%20Kill-Chain%20-%20The%20New%20Shiny%20in%202018%20-%20Vincent%20Yiu.pdf)
-- [SSL Domain Fronting 101](https://medium.com/rvrsh3ll/ssl-domain-fronting-101-4348d410c56f)
 
 ## Contributing
 

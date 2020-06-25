@@ -48,7 +48,7 @@ class Domain:
         self.namesrvs = namsrvs
         self.headers = headers
         self.whois_data = whois_data
-        self.frontable = False
+        self.cdn_present = False
 
 
 class cdnCheck:

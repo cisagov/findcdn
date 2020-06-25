@@ -107,22 +107,22 @@ class Chef:
         # Return the amount of jobs done and error code
         return (job_count, 0)
 
-    def check_front(self):
+    def has_cdn(self):
         """For each domain, check if domain is frontable using naive metric."""
         for domain in self.pot.domains:
             if len(domain.cdns) > 0:
-                domain.frontable = True
+                domain.cdn_present = True
 
     def run_checks(
         self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
     ) -> Tuple[int, int]:
         """Run analysis on the internal domain pool."""
         cnt, err = self.grab_cdn(threads, double)
-        self.check_front()
+        self.has_cdn()
         return (cnt, err)
 
 
-def check_frontable(
+def run_checks(
     domains: List[str],
     pbar: bool = False,
     verbose: bool = False,

@@ -2,7 +2,7 @@
 
 """dyFront is a security research and reporting tool.
 
-dyFront determine what CDN a domain has and exports it to a file.
+dyFront determine what CDN a domain has and prints or exports the results as json.
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -40,7 +40,7 @@ import validators
 
 # Internal Libraries
 from ._version import __version__
-from .frontingEngine import check_frontable
+from .frontingEngine import run_checks
 
 
 def write_json(json_dump: str, output: str) -> int:
@@ -64,7 +64,7 @@ def main(
     double_in: bool = False,
     threads: int = None,
 ) -> Tuple[str, int]:
-    """Take in a list of domains and determine the CDN for each."""
+    """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
@@ -80,11 +80,11 @@ def main(
 
     # Check domains
     if threads is None:
-        processed_list, cnt, err = check_frontable(
+        processed_list, cnt, err = run_checks(
             domain_list, pbar, verbose, double=double_in
         )
     else:
-        processed_list, cnt, err = check_frontable(
+        processed_list, cnt, err = run_checks(
             domain_list, pbar, verbose, threads, double=double_in
         )
 
@@ -100,7 +100,7 @@ def main(
                 "cdns_by_names": str(domain.cdns_by_name)[1:-1],
             }
 
-    # Run report
+    # Create JSON from the results and return (results, successful jobs)
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     json_dict["CDN_count"] = str(CDN_count)
@@ -120,7 +120,7 @@ def main(
 
 
 def interactive() -> int:
-    """Collect the arguments."""
+    """Collect the arguments and run the main program."""
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed with schema

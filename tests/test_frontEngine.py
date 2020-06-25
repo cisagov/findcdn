@@ -59,7 +59,7 @@ def test_grab_cdn():
     ], "Did not detect {} from {}.".format([".cloudflare.com"], checked_domains[3].url)
 
 
-def test_check_front():
+def test_has_cdn():
     """Test that of a set of frontable and non frontable domains, which ones are frontable."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     pot = dyFront.frontingEngine.DomainPot(domains)
@@ -68,12 +68,12 @@ def test_check_front():
     checked_domains = chef.pot.domains
 
     # Assertions
-    frontable = 0
+    cdn_present = 0
     for dom in checked_domains:
-        if dom.frontable:
-            frontable += 1
+        if dom.cdn_present:
+            cdn_present += 1
 
-    assert frontable == 3, "Too many frontable domains counted."
+    assert cdn_present == 3, "Too many cdn_present domains counted."
     assert checked_domains[0].url == "asu.edu" and checked_domains[0].cdns == [
         ".cloudflare.net",
         ".cloudflare.com",
@@ -94,14 +94,14 @@ def test_run_checks():
     assert len(chef.pot.domains) > 0, "Pot not stored correctly."
 
 
-def test_check_frontable():
-    """Test the return of a list of frontable domains."""
+def test_run_checks_fronting():
+    """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects, cnt, err = dyFront.frontingEngine.check_frontable(domains)
-    frontable = {}
+    objects, cnt, err = dyFront.frontingEngine.run_checks(domains)
+    cdn_present = {}
     for dom in objects:
-        if dom.frontable:
-            frontable[dom.url] = dom.cdns
+        if dom.cdn_present:
+            cdn_present[dom.url] = dom.cdns
     expected = {
         "asu.edu": [".cloudflare.net", ".cloudflare.com"],
         "censys.io": [".cloudflare.com"],
@@ -109,5 +109,5 @@ def test_check_frontable():
     }
 
     # Assertions
-    assert len(frontable) > 0, "Returned frontable list is empty."
-    assert frontable == expected, "Returned domains do not match."
+    assert len(cdn_present) > 0, "Returned cdn_present list is empty."
+    assert cdn_present == expected, "Returned domains do not match."

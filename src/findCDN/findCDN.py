@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-"""dyFront is a security research and reporting tool.
+"""findCDN is a security research and reporting tool.
 
-dyFront determine what CDN a domain has and prints or exports the results as json.
+findCDN determine what CDN a domain has and prints or exports the results as json.
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -10,9 +10,9 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  dyFront file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-  dyFront list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-  dyFront (-h | --help)
+  findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+  findCDN list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+  findCDN (-h | --help)
 
 Options:
   -h --help              Show this message.

@@ -1,16 +1,16 @@
 # Do You Front
 
-[![GitHub Build Status](https://github.com/Pascal-0x90/dyFront/workflows/build/badge.svg)](https://github.com/Pascal-0x90/dyFront/actions)
-[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/dyFront/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/dyFront?branch=develop)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/dyFront/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/dyFront.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/dyFront/context:python)
-[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/dyFront/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/dyFront)
+[![GitHub Build Status](https://github.com/Pascal-0x90/findCDN/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findCDN/actions)
+[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findCDN/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findCDN?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/findCDN.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findCDN/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findCDN.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findCDN/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findCDN/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findCDN)
 
-`dyFront`, or "Do you Front?", is a tool to scan and detect the ability to use
-Domain Fronting, on a domain. `dyFront` can save results to a file or just
+`findCDN`, or "Do you Front?", is a tool to scan and detect the ability to use
+Domain Fronting, on a domain. `findCDN` can save results to a file or just
 output to stdout.
 
-`dyFront` was developed to help organizations discover if their hosted domains
+`findCDN` was developed to help organizations discover if their hosted domains
 are susceptible to Domain Fronting. Domain fronting is an attack which allows
 for circumvention of domain blocks set in place by firewalls. Where a firewall
 may block a user from accessing `abcd.com` which uses CDN EFG, domain `zyx.com`
@@ -30,7 +30,7 @@ direction of how the project developed.</br> Such issues come from how we want
 to check for domain fronting. There is no ultimate fingerprinting we can do to
 tell if a domain is frontable. The best way to do so is using one of the methods
 we describe in
-[the wiki](https://github.com/Pascal-0x90/dyFront/wiki/Domain-Fronting) for this
+[the wiki](https://github.com/Pascal-0x90/findCDN/wiki/Domain-Fronting) for this
 repo. Due to this, we decided we should build a tool which is able to accurately
 detect if a domain is using a CDN or not. With the results from the output of
 the tool, someone can use another tool in conjunction with the results to test
@@ -55,13 +55,13 @@ output JSON file. </br>
 
 ## Getting Started
 
-`dyFront` requires **Python 3.7+**. Python 2 is not supported. </br> `dyFront`
+`findCDN` requires **Python 3.7+**. Python 2 is not supported. </br> `findCDN`
 can be installed as a module using `pip` and the `requirements.txt` file in the
 repository.
 
 ### Installed as a module
 
-`dyFront` can be installed via pip:
+`findCDN` can be installed via pip:
 
 ```bash
 pip install -r requirements.txt
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 It can then be run directly:
 
 ```bash
-dyFront list github.com
+findCDN list github.com
 ```
 
 **Note:** It is recommended to use a python virtual environment to install
@@ -82,13 +82,13 @@ installing the module.
 ### Usage and examples
 
 ```bash
-dyFront file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-dyFront list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-dyFront (-h | --help)
+findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+findCDN list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+findCDN (-h | --help)
 
-dyFront file domains.txt -o output_frontable.txt -t 17 -d
-dyFront list dhs.gov cisa.gov -o output_frontable.txt -v
-dyFront list cisa.gov
+findCDN file domains.txt -o output_frontable.txt -t 17 -d
+findCDN list dhs.gov cisa.gov -o output_frontable.txt -v
+findCDN list cisa.gov
 ```
 
 #### Options
@@ -108,7 +108,7 @@ dyFront list cisa.gov
 #### Sample Output
 
 ```bash
-user2@ubuntu:~$ dyFront list asu.edu -t 7 --double
+user2@ubuntu:~$ findCDN list asu.edu -t 7 --double
 Using 7 threads.
 [Pending: 0 jobs]==[Threads: 2]: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:00<00:00,  2.22it/s]
 {
@@ -127,13 +127,13 @@ Domain processing completed.
 
 ```
 
-[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/dyFront/develop/example.gif)](https://raw.githubusercontent.com/Pascal-0x90/dyFront/develop/example.gif)
+[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/example.gif)](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/example.gif)
 
 ## How Does it Work
 
-`dyFront` is broken into three sections:
+`findCDN` is broken into three sections:
 
-- dyFront's main runner file.
+- findCDN's main runner file.
   - Validates and organizes inputted domains.
   - Orchestrates the use of the Fronting Engine with set of domains.
   - Output frontable domains in JSON to stdout and to a file if seleted.

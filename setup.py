@@ -1,5 +1,5 @@
 """
-This is the setup module for the dyFront project.
+This is the setup module for the findCDN project.
 
 Based on:
 
@@ -31,16 +31,16 @@ def package_vars(version_file):
 
 
 setup(
-    name="dyFront",
+    name="findCDN",
     # Versions should comply with PEP440
-    version=package_vars("src/dyFront/_version.py")["__version__"],
+    version=package_vars("src/findCDN/_version.py")["__version__"],
     description="Example python library",
     long_description=readme(),
     long_description_content_type="text/markdown",
     # NCATS "homepage"
     url="https://www.us-cert.gov/resources/ncats",
     # The project's main homepage
-    download_url="https://github.com/Pascal-0x90/dyFront",
+    download_url="https://github.com/Pascal-0x90/findCDN",
     # Author details
     author="Cyber and Infrastructure Security Agency",
     author_email="ncats@hq.dhs.gov",
@@ -68,7 +68,7 @@ setup(
     keywords="skeleton",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"dyFront": ["data/*.txt"]},
+    package_data={"findCDN": ["data/*.txt"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
     install_requires=[
@@ -96,6 +96,6 @@ setup(
             "pytest",
         ]
     },
-    # Conveniently allows one to run the CLI tool as `dyFront`
-    entry_points={"console_scripts": ["dyFront = dyFront.dyFront:interactive"]},
+    # Conveniently allows one to run the CLI tool as `findCDN`
+    entry_points={"console_scripts": ["findCDN = findCDN.findCDN:interactive"]},
 )

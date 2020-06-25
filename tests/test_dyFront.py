@@ -1,5 +1,5 @@
 #!/usr/bin/env pytest -vs
-"""Tests for dyFront."""
+"""Tests for findCDN."""
 
 # Standard Python Libraries
 import os
@@ -10,18 +10,18 @@ from unittest.mock import patch
 import pytest
 
 # cisagov Libraries
-import dyFront
+import findCDN
 
 # define sources of version strings
 RELEASE_TAG = os.getenv("RELEASE_TAG")
-PROJECT_VERSION = dyFront.__version__
+PROJECT_VERSION = findCDN.__version__
 
 
 def test_stdout_version(capsys):
     """Verify that version string sent to stdout agrees with the module version."""
     with pytest.raises(SystemExit):
         with patch.object(sys, "argv", ["bogus", "--version"]):
-            dyFront.dyFront.interactive()
+            findCDN.findCDN.interactive()
     captured = capsys.readouterr()
     assert (
         captured.out == f"{PROJECT_VERSION}\n"
@@ -43,7 +43,7 @@ def test_list_working():
     with patch.object(
         sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov"]
     ):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
     assert return_code == 0, "interactive() should return successfully"
 
 
@@ -54,7 +54,7 @@ def test_list_working_double(capsys):
         "argv",
         ["bogus", "list", "google.com", "facebook.com", "login.gov", "-v", "-d"],
     ):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
         captured = capsys.readouterr()
     assert return_code == 0, "interactive() should return successfully"
     assert "completed: 6" in captured.out
@@ -74,7 +74,7 @@ def test_list_working_verbose(capsys):
             "-v",
         ],
     ):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
         captured = capsys.readouterr()
     assert return_code == 0, "interactive() should return successfully"
     assert "3 Domains Validated" in captured.out
@@ -87,7 +87,7 @@ def test_list_working_tcount(capsys):
         "argv",
         ["bogus", "list", "google.com", "facebook.com", "login.gov", "-t", "3"],
     ):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
         captured = capsys.readouterr()
     assert return_code == 0, "interactive() should return successfully"
     assert "Using 3 threads" in captured.out
@@ -100,14 +100,14 @@ def test_list_broken():
         "argv",
         ["bogus", "list", "google.com/searchtest", "facebook.com", "login.gov"],
     ):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
     assert return_code == 1, "interactive() should return failure"
 
 
 def test_file_working():
     """Working domain file to test with."""
-    with patch.object(sys, "argv", ["./dyFront", "file", "tests/validTest.txt"]):
-        return_code = dyFront.dyFront.interactive()
+    with patch.object(sys, "argv", ["./findCDN", "file", "tests/validTest.txt"]):
+        return_code = findCDN.findCDN.interactive()
     assert return_code == 0, "interactive() should return successfully"
 
 
@@ -117,14 +117,14 @@ def test_file_working():
 def test_file_broken():
     """Broken domain file to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):
-        return_code = dyFront.dyFront.interactive()
+        return_code = findCDN.findCDN.interactive()
     assert return_code != 0, "interactive() should return failure"
 
 
 def test_file_dne():
     """Working domain list to test with."""
-    with patch.object(sys, "argv", ["./dyFront", "file", "nosuchfile.txt"]):
-        return_code = dyFront.dyFront.interactive()
+    with patch.object(sys, "argv", ["./findCDN", "file", "nosuchfile.txt"]):
+        return_code = findCDN.findCDN.interactive()
     assert return_code != 0, "interactive() should return successfully"
 
 
@@ -132,7 +132,7 @@ def test_file_write(tmpdir):
     """Test writing to a file."""
     file = tmpdir.join("outputtest.txt")
     with patch.object(
-        sys, "argv", ["./dyFront", "list", "google.com", "-o", str(file)]
+        sys, "argv", ["./findCDN", "list", "google.com", "-o", str(file)]
     ):
-        dyFront.dyFront.interactive()
+        findCDN.findCDN.interactive()
     assert "google.com" in file.read()

@@ -2,13 +2,13 @@
 """Tests for cdnEngine."""
 
 # cisagov Libraries
-import dyFront
+import findCDN
 
 
 def test_domainpot_init():
     """Test if DomainPot can be instantiated correctly."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
-    pot = dyFront.cdnEngine.DomainPot(domains)
+    pot = findCDN.cdnEngine.DomainPot(domains)
 
     # Assertions
     for i in range(len(domains)):
@@ -26,18 +26,18 @@ def test_domainpot_init():
 def test_chef_init():
     """Test if Chef can be instantiated correctly."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
-    pot = dyFront.cdnEngine.DomainPot(domains)
-    chef = dyFront.cdnEngine.Chef(pot)
+    pot = findCDN.cdnEngine.DomainPot(domains)
+    chef = findCDN.cdnEngine.Chef(pot)
 
     # Assertions
-    assert type(chef.pot) == dyFront.cdnEngine.DomainPot
+    assert type(chef.pot) == findCDN.cdnEngine.DomainPot
 
 
 def test_grab_cdn():
     """Test if Chef can obtain proper CDNs of domains."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
-    pot = dyFront.cdnEngine.DomainPot(domains)
-    chef = dyFront.cdnEngine.Chef(pot)
+    pot = findCDN.cdnEngine.DomainPot(domains)
+    chef = findCDN.cdnEngine.Chef(pot)
     chef.run_checks()
     checked_domains = chef.pot.domains
 
@@ -62,8 +62,8 @@ def test_grab_cdn():
 def test_has_cdn():
     """Test that of a set of frontable and non frontable domains, which ones are frontable."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    pot = dyFront.cdnEngine.DomainPot(domains)
-    chef = dyFront.cdnEngine.Chef(pot)
+    pot = findCDN.cdnEngine.DomainPot(domains)
+    chef = findCDN.cdnEngine.Chef(pot)
     chef.run_checks()
     checked_domains = chef.pot.domains
 
@@ -86,8 +86,8 @@ def test_has_cdn():
 def test_run_checks():
     """Test the run_checks orchestator works."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    pot = dyFront.cdnEngine.DomainPot(domains)
-    chef = dyFront.cdnEngine.Chef(pot)
+    pot = findCDN.cdnEngine.DomainPot(domains)
+    chef = findCDN.cdnEngine.Chef(pot)
     chef.run_checks()
 
     # Assertions
@@ -97,7 +97,7 @@ def test_run_checks():
 def test_run_checks_fronting():
     """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects, cnt, err = dyFront.cdnEngine.run_checks(domains)
+    objects, cnt, err = findCDN.cdnEngine.run_checks(domains)
     cdn_present = {}
     for dom in objects:
         if dom.cdn_present:

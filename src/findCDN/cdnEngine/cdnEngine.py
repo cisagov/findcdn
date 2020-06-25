@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 """
-Summary: cdnEngine orchestrates frontability of domains.
+Summary: cdnEngine orchestrates CDN detection of domains.
 
 Description: cdnEngine is a simple solution for detection
-if a given domain or set of domains are frontable.
+if a given domain or set of domains use a CDN.
 """
 
 # Standard Python Libraries
@@ -108,7 +108,7 @@ class Chef:
         return (job_count, 0)
 
     def has_cdn(self):
-        """For each domain, check if domain is frontable using naive metric."""
+        """For each domain, check if domain contains CDNS. If so, tick cdn_present to true."""
         for domain in self.pot.domains:
             if len(domain.cdns) > 0:
                 domain.cdn_present = True
@@ -116,7 +116,7 @@ class Chef:
     def run_checks(
         self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
     ) -> Tuple[int, int]:
-        """Run analysis on the internal domain pool."""
+        """Run analysis on the internal domain pool using detectCDN library."""
         cnt, err = self.grab_cdn(threads, double)
         self.has_cdn()
         return (cnt, err)
@@ -139,5 +139,5 @@ def run_checks(
     # Run analysis for all domains
     cnt, err = chef.run_checks(threads, double)
 
-    # Return all domains for further parsing
+    # Return all domains in form domain_pool, count of jobs processed, error code
     return (chef.pot.domains, cnt, err)

@@ -31,7 +31,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Third-Party Libraries
 import docopt
@@ -56,7 +56,7 @@ def write_json(json_dump: str, output: str) -> int:
 
 
 def main(
-    domain_list: list,
+    domain_list: List[str],
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,

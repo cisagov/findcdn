@@ -60,7 +60,7 @@ modules and keep your environment clean. If you wish to do so, you will need
 [pyenv-virtualenv plugin](https://github.com/pyenv/pyenv-virtualenv) prior to
 installing the module.
 
-### Usage and examples
+### Standalone Usage and examples
 
 ```bash
 findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
@@ -109,6 +109,45 @@ Domain processing completed.
 ```
 
 [![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)
+
+### Library Usage
+
+Since this library can be installed as a module, the findCDN program can be
+called from and implemented in your own project allowing you to take advantage
+of the CDN detection power of findCDN. Simply import into your project and pass
+your list of domains you wish to analyze. In return, you will receive a json of
+only domains with a CDN or all domains depending on the option you choose. The
+status bar and output file options are also allowed too if you wish to utilize
+those utilities in the tool.
+
+The format is as follows:
+
+```python
+findCDN.main(
+    domain_list: list,
+    output_path: str = None,
+    verbose: bool = False,
+    all_domains: bool = False,
+    pbar: bool = False,
+    double_in: bool = False,
+    threads: int = None)
+```
+
+#### Example
+
+```python
+import findCDN
+import json
+import sys
+
+domains = ['google.com', 'cisa.gov', 'censys.io', 'yahoo.com', 'pbs.org', 'github.com']
+resp_json, cnt = findCDN.main(domains, output_path="../output", double_in=True, threads=23)
+
+dumped_json = json.loads(resp_json)
+
+for domain in dumped_json['domains']:
+  print(f"{domain} has CDNs:\n {dumped_json['domains'][domain]['cdns']}")
+```
 
 ## How Does it Work
 

@@ -1,4 +1,4 @@
-# Do You Front
+# findCDN
 
 [![GitHub Build Status](https://github.com/Pascal-0x90/findCDN/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findCDN/actions)
 [![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findCDN/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findCDN?branch=develop)

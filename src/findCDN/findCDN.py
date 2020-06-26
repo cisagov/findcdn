@@ -10,20 +10,24 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-  findCDN list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+  findCDN file <fileIn> [options]
+  findCDN list  <domain>... [options]
   findCDN (-h | --help)
 
 Options:
-  -h --help              Show this message.
-  --version              Show the current version.
-  -o FILE --output=FILE  If specified, then the JSON output file will be
-                         set to the specified value.
-  -v --verbose           Includes additional print statments.
-  --all                  Includes domains with and without a CDN
-                         in output.
-  -d --double            Run the checks twice to increase accuracy.
+  -h --help                    Show this message.
+  --version                    Show the current version.
+  -o FILE --output=FILE        If specified, then the JSON output file will be
+                               set to the specified value.
+  -v --verbose                 Includes additional print statements.
+  --all                        Includes domains with and without a CDN
+                               in output.
+  -d --double                  Run the checks twice to increase accuracy.
   -t --threads=<thread_count>  Number of threads, otherwise use default.
+  --timeout=<timeout>          Max duration in seconds to wait for a domain to
+                               respond, otherwise use default.
+  --user_agent=<user_agent>    Set the user agent to use, otherwise
+                               use default.
 """
 
 # Standard Python Libraries
@@ -63,6 +67,8 @@ def main(
     pbar: bool = False,
     double_in: bool = False,
     threads: int = None,
+    timeout: int = None,
+    user_agent: str = None,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
@@ -74,7 +80,7 @@ def main(
     if verbose:
         print("%d Domains Validated" % len(domain_list))
 
-    # Define domain dict and counter for jsons
+    # Define domain dict and counter for json
     domain_dict = {}
     CDN_count = 0
 
@@ -103,7 +109,7 @@ def main(
     # Create JSON from the results and return (results, successful jobs)
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["CDN_count"] = str(CDN_count)
+    json_dict["cdn_count"] = str(CDN_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
     if output_path is None or verbose:
@@ -150,6 +156,14 @@ def interactive() -> int:
                     error="Thread count must be greater than 0",
                 ),
             ),
+            "--timeout": Or(
+                None,
+                And(
+                    Use(int),
+                    lambda timeout: timeout > 0,
+                    error="The timeout duration must be greater than 0",
+                ),
+            ),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }
@@ -168,7 +182,7 @@ def interactive() -> int:
             with open(validated_args["<fileIn>"]) as f:
                 domain_list = [line.rstrip() for line in f]
         except IOError as e:
-            print("A file error occured: %s" % e, file=sys.stderr)
+            print("A file error occurred: %s" % e, file=sys.stderr)
             return 1
     else:
         domain_list = validated_args["<domain>"]
@@ -179,9 +193,11 @@ def interactive() -> int:
         validated_args["--output"],
         validated_args["--verbose"],
         validated_args["--all"],
-        True,
+        True,  # Show progress bar when running normally.
         validated_args["--double"],
         validated_args["--threads"],
+        validated_args["--timeout"],
+        validated_args["--user_agent"]
     )
 
     if validated_args["--verbose"]:

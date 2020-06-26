@@ -197,7 +197,7 @@ class cdnCheck:
 
     def CDNid(self, dom: Domain, data_blob: List):
         """
-        Identify any CDN name in list recieved.
+        Identify any CDN name in list received.
 
         All of these will be doing some sort of substring analysis
         on each string from any list passed to it. This will help

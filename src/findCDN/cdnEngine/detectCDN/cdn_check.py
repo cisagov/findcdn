@@ -14,14 +14,15 @@ from urllib.error import URLError
 import urllib.request as request
 
 # Third-Party Libraries
-from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers  # isort:skip
-from dns.resolver import Resolver, Timeout, query  # isort:skip
 from ipwhois import HTTPLookupError, IPDefinedError, IPWhois
 from ipwhois.exceptions import ASNRegistryError
 
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
 from .cdn_err import NoIPaddress
+
+from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers  # isort:skip
+from dns.resolver import Resolver, Timeout, query  # isort:skip
 
 
 class Domain:

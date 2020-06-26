@@ -172,6 +172,18 @@ for domain in dumped_json['domains']:
   - From each of these, it runs a fingerprint scan to identify any CDNs defined
     in `cdn_config.py` which may be substrings inside of the data found here.
 
+## More Information
+
+There is more information located
+[in our wiki page](https://github.com/Pascal-0x90/findCDN/wiki). Feel free to
+make pull requests for anything you would like to see added into the wiki of
+this repo. This can be any of the following:
+
+- Information pertaining to domain fronting.
+- Playbooks for fronting different domains.
+- Better detection methods for CDN.
+- General updates to current pages.
+
 ## Contributing
 
 We welcome contributions! Please see [here](CONTRIBUTING.md) for details.

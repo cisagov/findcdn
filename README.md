@@ -1,4 +1,4 @@
-# Do You Front
+# findCDN
 
 [![GitHub Build Status](https://github.com/Pascal-0x90/findCDN/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findCDN/actions)
 [![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findCDN/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findCDN?branch=develop)
@@ -67,8 +67,8 @@ findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
 findCDN list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
 findCDN (-h | --help)
 
-findCDN file domains.txt -o output_frontable.txt -t 17 -d
-findCDN list dhs.gov cisa.gov -o output_frontable.txt -v
+findCDN file domains.txt -o output_cdn.txt -t 17 -d
+findCDN list dhs.gov cisa.gov -o output_cnd.txt -v
 findCDN list cisa.gov
 ```
 
@@ -155,9 +155,9 @@ for domain in dumped_json['domains']:
 
 - findCDN's main runner file.
   - Validates and organizes inputted domains.
-  - Orchestrates the use of the Fronting Engine with set of domains.
-  - Output frontable domains in JSON to stdout and to a file if seleted.
-- The Fronting Engine.
+  - Orchestrates the use of the CDN Engine with set of domains.
+  - Output domain CDN's in JSON to stdout and to a file if seleted.
+- The CDN Engine.
   - Organizes all domains into a "pot".
   - `Chef` will use the CDN Detection library to obtain all CDNs for each
     domain.

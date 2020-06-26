@@ -42,8 +42,9 @@ def chef_executor(domain: detectCDN.Domain, verbosity: bool = False):
     # Run checks
     try:
         detective.all_checks(domain, verbosity)
-    except BaseException:
+    except Exception as e:
         # Incase some uncaught error somewhere
+        print(f"An unusual exception has occurred:\n{e}")
         return 1
 
     # Return 0 for success

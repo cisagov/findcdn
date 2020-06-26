@@ -66,9 +66,9 @@ def main(
     all_domains: bool = False,
     pbar: bool = False,
     double_in: bool = False,
-    threads: int = None,
-    timeout: int = None,
-    user_agent: str = None,
+    threads: int = 0,
+    timeout: int = 20,
+    user_agent=None,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
@@ -85,15 +85,9 @@ def main(
     CDN_count = 0
 
     # Check domains
-    if threads is None:
-        processed_list, cnt, err = run_checks(
-            domain_list, pbar, verbose, double=double_in
-        )
-    else:
-        processed_list, cnt, err = run_checks(
-            domain_list, pbar, verbose, threads, double=double_in
-        )
-
+    processed_list, cnt, err = run_checks(
+        domain_list, pbar, verbose, double_in, threads, timeout, user_agent
+    )
     # Parse the domain data
     for domain in processed_list:
         if len(domain.cdns) > 0:
@@ -197,7 +191,7 @@ def interactive() -> int:
         validated_args["--double"],
         validated_args["--threads"],
         validated_args["--timeout"],
-        validated_args["--user_agent"]
+        validated_args["--user_agent"],
     )
 
     if validated_args["--verbose"]:

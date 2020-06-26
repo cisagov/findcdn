@@ -34,14 +34,19 @@ class DomainPot:
             self.domains.append(domin)
 
 
-def chef_executor(domain: detectCDN.Domain, verbosity: bool = False):
+def chef_executor(
+    domain: detectCDN.Domain,
+    timeout: int = 20,
+    user_agent: str = None,
+    verbosity: bool = False,
+):
     """Attempt to make the method "threadsafe" by giving each worker its own detector."""
     # Define detector
     detective = detectCDN.cdnCheck()
 
     # Run checks
     try:
-        detective.all_checks(domain, verbosity)
+        detective.all_checks(domain, verbosity, timeout=timeout, agent=user_agent)
     except BaseException:
         # Incase some uncaught error somewhere
         return 1
@@ -53,20 +58,43 @@ def chef_executor(domain: detectCDN.Domain, verbosity: bool = False):
 class Chef:
     """Chef will run analysis on the domains in the DomainPot."""
 
-    def __init__(self, pot: DomainPot, pbar: bool = False, verbose: bool = False):
+    def __init__(
+        self,
+        pot: DomainPot,
+        pbar: bool = False,
+        verbose: bool = False,
+        threads: int = None,
+        timeout: int = 20,
+        user_agent: str = None,
+    ):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
         self.pbar: tqdm = pbar
         self.verbose: bool = verbose
+        self.timeout: int = timeout
+        self.agent = user_agent
+
+        # Determine thread count
+        if threads:
+            self.threads = threads
+        else:
+            cpu_count = os.cpu_count()
+            if cpu_count is None:
+                cpu_count = 0
+            self.threads = min(32, cpu_count + 4)  # type: ignore
 
     def grab_cdn(
-        self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
+        self, double: bool = False  # type: ignore
     ):
         """Check for CDNs used be domain list."""
         # Use Concurrent futures to multithread with pools
         job_count = 0
-        print(f"Using {threads} threads.")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+
+        # Give user the amount of threads:
+        print(f"Using {self.threads} threads")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.threads
+        ) as executor:
             # If double, Double contents to combat CDN cache misses
             newpot = []
             if double:
@@ -81,7 +109,9 @@ class Chef:
 
             # Assign workers and assign to results list
             results = {
-                executor.submit(chef_executor, domain, self.verbose,)
+                executor.submit(
+                    chef_executor, domain, self.timeout, self.agent, self.verbose,
+                )
                 for domain in newpot
             }
 
@@ -113,11 +143,9 @@ class Chef:
             if len(domain.cdns) > 0:
                 domain.cdn_present = True
 
-    def run_checks(
-        self, threads: int = min(32, os.cpu_count() + 4), double: bool = False  # type: ignore
-    ) -> Tuple[int, int]:
+    def run_checks(self, double: bool = False) -> Tuple[int, int]:
         """Run analysis on the internal domain pool using detectCDN library."""
-        cnt, err = self.grab_cdn(threads, double)
+        cnt, err = self.grab_cdn(double)
         self.has_cdn()
         return (cnt, err)
 
@@ -126,18 +154,26 @@ def run_checks(
     domains: List[str],
     pbar: bool = False,
     verbose: bool = False,
-    threads: int = min(32, os.cpu_count() + 4),  # type: ignore
     double: bool = False,
+    threads: int = 0,
+    timeout: int = 20,
+    user_agent: str = None,
 ) -> Tuple[List[detectCDN.Domain], int, int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
+    # Check for none type parameteres
+    if threads is None:
+        threads = 0
+    if timeout is None:
+        timeout = 20
+
     # Our chef to manage pot
-    chef = Chef(dp, pbar, verbose)
+    chef = Chef(dp, pbar, verbose, threads, timeout, user_agent)
 
     # Run analysis for all domains
-    cnt, err = chef.run_checks(threads, double)
+    cnt, err = chef.run_checks(double)
 
     # Return all domains in form domain_pool, count of jobs processed, error code
     return (chef.pot.domains, cnt, err)

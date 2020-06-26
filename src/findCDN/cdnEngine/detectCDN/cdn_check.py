@@ -24,6 +24,10 @@ from .cdn_err import NoIPaddress
 from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers  # isort:skip
 from dns.resolver import Resolver, Timeout, query  # isort:skip
 
+# Global Variables
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+LIFETIME = 10
+
 
 class Domain:
     """Domain class allows for storage of metadata on domain."""
@@ -86,7 +90,7 @@ class cdnCheck:
         # Return listing of error codes
         return return_codes
 
-    def cname(self, dom: Domain) -> List[int]:
+    def cname(self, dom: Domain, timeout: int = 20) -> List[int]:
         """Collect CNAME records on domain."""
         # List of domains to check
         dom_list = [dom.url, "www." + dom.url]
@@ -94,8 +98,8 @@ class cdnCheck:
         return_code = []
         # Seutp resolver and timeouts
         resolver = Resolver()
-        resolver.timeout = 10
-        resolver.lifetime = 10
+        resolver.timeout = timeout
+        resolver.lifetime = LIFETIME
         cname_query = resolver.query
         # Iterate through all domains in list
         for domain in dom_list:
@@ -112,8 +116,13 @@ class cdnCheck:
                 return_code.append(4)
         return return_code
 
-    def https_lookup(self, dom: Domain) -> int:
+    def https_lookup(
+        self, dom: Domain, timeout: int = 20, agent: str = USER_AGENT
+    ) -> int:
         """Read 'server' header for CDN hints."""
+        # Setup agent
+        if not agent:
+            agent = USER_AGENT
         # List of domains with different protocols to check.
         PROTOCOLS = ["https://", "https://www."]
         # Iterate through all protocols
@@ -121,14 +130,10 @@ class cdnCheck:
             try:
                 # Some domains only respond when we have a User-Agent defined.
                 req = request.Request(
-                    PROTOCOL + dom.url,
-                    data=None,
-                    headers={
-                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-                    },
+                    PROTOCOL + dom.url, data=None, headers={"User-Agent": agent},
                 )
                 # Making the timeout 50 as to not hang thread.
-                response = request.urlopen(req, timeout=60)  # nosec
+                response = request.urlopen(req, timeout=timeout)  # nosec
             except URLError:
                 continue
             except RemoteDisconnected:
@@ -249,12 +254,14 @@ class cdnCheck:
             return_code = 0
         return return_code
 
-    def all_checks(self, dom: Domain, verbose: bool = False) -> int:
+    def all_checks(
+        self, dom: Domain, verbose: bool = False, timeout: int = 20, agent=USER_AGENT,
+    ) -> int:
         """Option to run everything in this library then digest."""
         # Obtain each attributes data
         self.ip(dom)
-        self.cname(dom)
-        self.https_lookup(dom)
+        self.cname(dom, timeout)
+        self.https_lookup(dom, timeout, agent)
         self.whois(dom)
 
         # Digest the data

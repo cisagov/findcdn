@@ -60,7 +60,7 @@ def test_grab_cdn():
 
 
 def test_has_cdn():
-    """Test that of a set of frontable and non frontable domains, which ones are frontable."""
+    """Test that of a set of domains with a without a CDN return correctly."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     pot = findCDN.cdnEngine.DomainPot(domains)
     chef = findCDN.cdnEngine.Chef(pot)
@@ -94,7 +94,7 @@ def test_run_checks():
     assert len(chef.pot.domains) > 0, "Pot not stored correctly."
 
 
-def test_run_checks_fronting():
+def test_run_checks_present():
     """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     objects, cnt, err = findCDN.cdnEngine.run_checks(domains)

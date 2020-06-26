@@ -141,7 +141,7 @@ class cdnCheck:
                 continue
             except Exception as e:
                 # Define an exception just in case we missed one.
-                print(f"[{e}]: {dom.url}")
+                print(f"[{e}]: https://{dom.url}")
                 continue
             # Define headers to check for the response
             # to grab strings for later parsing.
@@ -169,9 +169,18 @@ class cdnCheck:
             try:
                 response = IPWhois(ip)
                 # These two should be where we can find substrings hinting to CDN
-                org = response.lookup_rdap()["network"]["name"]
-                if org != "BAREFRUIT-ERRORHANDLING":
-                    whois_data.append(org)
+                try:
+                    org = response.lookup_whois()["asn_description"]
+                    if org != "BAREFRUIT-ERRORHANDLING":
+                        whois_data.append(org)
+                except AttributeError:
+                    pass
+                try:
+                    org = response.lookup_rdap()["network"]["name"]
+                    if org != "BAREFRUIT-ERRORHANDLING":
+                        whois_data.append(org)
+                except AttributeError:
+                    pass
             except HTTPLookupError:
                 pass
             except IPDefinedError:
@@ -179,7 +188,7 @@ class cdnCheck:
             except ASNRegistryError:
                 pass
             except Exception as e:
-                print(f"[{e}]: {dom.url}")
+                print(f"[{e}]: {dom.url} for {ip}")
         for data in whois_data:
             if data not in dom.whois_data:
                 dom.whois_data.append(data)

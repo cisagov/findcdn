@@ -47,8 +47,9 @@ def chef_executor(
     # Run checks
     try:
         detective.all_checks(domain, verbosity, timeout=timeout, agent=user_agent)
-    except BaseException:
+    except Exception as e:
         # Incase some uncaught error somewhere
+        print(f"An unusual exception has occurred:\n{e}")
         return 1
 
     # Return 0 for success

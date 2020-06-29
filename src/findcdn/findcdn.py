@@ -66,9 +66,9 @@ def main(
     all_domains: bool = False,
     pbar: bool = False,
     double_in: bool = False,
-    threads: int = 0,
-    timeout: int = 20,
-    user_agent=None,
+    threads: int = None,
+    timeout: int = None,
+    user_agent: str = None,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list

@@ -85,7 +85,7 @@ def test_list_working_tcount(capsys):
     with patch.object(
         sys,
         "argv",
-        ["bogus", "list", "google.com", "facebook.com", "login.gov", "-t", "3"],
+        ["bogus", "list", "google.com", "facebook.com", "login.gov", "-t", "3", "-v"],
     ):
         return_code = findcdn.findcdn.interactive()
         captured = capsys.readouterr()

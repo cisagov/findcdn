@@ -5,6 +5,12 @@
 import findcdn
 
 
+# Test Global Variables
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+TIMEOUT = 30
+THREADS = 0   # If 0 then cdnEngine uses CPU count to set thread count
+
+
 def test_domainpot_init():
     """Test if DomainPot can be instantiated correctly."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
@@ -27,7 +33,7 @@ def test_chef_init():
     """Test if Chef can be instantiated correctly."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
     pot = findcdn.cdnEngine.DomainPot(domains)
-    chef = findcdn.cdnEngine.Chef(pot)
+    chef = findcdn.cdnEngine.Chef(pot, THREADS, TIMEOUT, USER_AGENT)
 
     # Assertions
     assert type(chef.pot) == findcdn.cdnEngine.DomainPot
@@ -37,7 +43,7 @@ def test_grab_cdn():
     """Test if Chef can obtain proper CDNs of domains."""
     domains = ["asu.edu", "login.gov", "censys.io", "realpython.com"]
     pot = findcdn.cdnEngine.DomainPot(domains)
-    chef = findcdn.cdnEngine.Chef(pot)
+    chef = findcdn.cdnEngine.Chef(pot, THREADS, TIMEOUT, USER_AGENT)
     chef.run_checks()
     checked_domains = chef.pot.domains
 
@@ -63,7 +69,7 @@ def test_has_cdn():
     """Test that of a set of domains with a without a CDN return correctly."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     pot = findcdn.cdnEngine.DomainPot(domains)
-    chef = findcdn.cdnEngine.Chef(pot)
+    chef = findcdn.cdnEngine.Chef(pot, THREADS, TIMEOUT, USER_AGENT)
     chef.run_checks()
     checked_domains = chef.pot.domains
 
@@ -87,7 +93,7 @@ def test_run_checks():
     """Test the run_checks orchestator works."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
     pot = findcdn.cdnEngine.DomainPot(domains)
-    chef = findcdn.cdnEngine.Chef(pot)
+    chef = findcdn.cdnEngine.Chef(pot, THREADS, TIMEOUT, USER_AGENT)
     chef.run_checks()
 
     # Assertions
@@ -97,7 +103,7 @@ def test_run_checks():
 def test_run_checks_present():
     """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects, cnt, err = findcdn.cdnEngine.run_checks(domains)
+    objects, cnt, err = findcdn.cdnEngine.run_checks(domains, THREADS, TIMEOUT, USER_AGENT)
     cdn_present = {}
     for dom in objects:
         if dom.cdn_present:

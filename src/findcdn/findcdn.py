@@ -46,6 +46,11 @@ import validators
 from ._version import __version__
 from .cdnEngine import run_checks
 
+# Global Variables
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+TIMEOUT = 30
+THREADS = 1
+
 
 def write_json(json_dump: str, output: str) -> int:
     """Write dict as JSON to output file."""
@@ -66,9 +71,9 @@ def main(
     all_domains: bool = False,
     pbar: bool = False,
     double_in: bool = False,
-    threads: int = None,
-    timeout: int = None,
-    user_agent: str = None,
+    threads: int = THREADS,
+    timeout: int = TIMEOUT,
+    user_agent: str = USER_AGENT,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
@@ -86,8 +91,9 @@ def main(
 
     # Check domains
     processed_list, cnt, err = run_checks(
-        domain_list, pbar, verbose, double_in, threads, timeout, user_agent
+        domain_list, pbar, verbose, double_in, threads, timeout, user_agent,
     )
+
     # Parse the domain data
     for domain in processed_list:
         if len(domain.cdns) > 0:

@@ -18,6 +18,11 @@ from tqdm import tqdm
 # Internal Libraries
 from . import detectCDN
 
+# Global Variables
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+TIMEOUT = 30
+THREADS = 1
+
 
 class DomainPot:
     """DomainPot defines the "pot" which Domain objects are stored."""
@@ -65,7 +70,7 @@ class Chef:
         pbar: bool = False,
         verbose: bool = False,
         threads: int = None,
-        timeout: int = 20,
+        timeout: int = TIMEOUT,
         user_agent: str = None,
     ):
         """Give the chef the pot to use."""
@@ -76,7 +81,7 @@ class Chef:
         self.agent = user_agent
 
         # Determine thread count
-        if threads:
+        if threads and threads != 0:
             self.threads = threads
         else:
             cpu_count = os.cpu_count()
@@ -156,19 +161,21 @@ def run_checks(
     pbar: bool = False,
     verbose: bool = False,
     double: bool = False,
-    threads: int = 0,
-    timeout: int = 20,
-    user_agent: str = None,
+    threads: int = THREADS,
+    timeout: int = TIMEOUT,
+    user_agent: str = USER_AGENT,
 ) -> Tuple[List[detectCDN.Domain], int, int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
     # Check for none type parameteres
-    if threads is None:
-        threads = 0
-    if timeout is None:
-        timeout = 20
+    if not threads:
+        threads = THREADS
+    if not timeout:
+        timeout = TIMEOUT
+    if not user_agent:
+        user_agent = USER_AGENT
 
     # Our chef to manage pot
     chef = Chef(dp, pbar, verbose, threads, timeout, user_agent)

@@ -35,7 +35,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Third-Party Libraries
 import docopt
@@ -49,7 +49,7 @@ from .cdnEngine import run_checks
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 TIMEOUT = 30
-THREADS = 0   # If 0 then cdnEngine uses CPU count to set thread count
+THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
 def write_json(json_dump: str, output: str) -> int:
@@ -71,9 +71,9 @@ def main(
     all_domains: bool = False,
     pbar: bool = False,
     double_in: bool = False,
-    threads: int = THREADS,
-    timeout: int = TIMEOUT,
-    user_agent: str = USER_AGENT,
+    threads: Optional[int] = THREADS,
+    timeout: Optional[int] = TIMEOUT,
+    user_agent: Optional[str] = USER_AGENT,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list

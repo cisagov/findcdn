@@ -10,7 +10,7 @@ if a given domain or set of domains use a CDN.
 # Standard Python Libraries
 import concurrent.futures
 import os
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 # Third-Party Libraries
 from tqdm import tqdm
@@ -35,10 +35,7 @@ class DomainPot:
 
 
 def chef_executor(
-    domain: detectCDN.Domain,
-    timeout: int,
-    user_agent: str,
-    verbosity: bool,
+    domain: detectCDN.Domain, timeout: int, user_agent: str, verbosity: bool,
 ):
     """Attempt to make the method "threadsafe" by giving each worker its own detector."""
     # Define detector
@@ -46,7 +43,9 @@ def chef_executor(
 
     # Run checks
     try:
-        detective.all_checks(domain, verbosity, timeout=timeout, agent=user_agent)
+        detective.all_checks(
+            domain, verbose=verbosity, timeout=timeout, agent=user_agent
+        )
     except Exception as e:
         # Incase some uncaught error somewhere
         print(f"An unusual exception has occurred:\n{e}")
@@ -62,9 +61,9 @@ class Chef:
     def __init__(
         self,
         pot: DomainPot,
-        threads: int,
-        timeout: int,
-        user_agent: str,
+        threads: Optional[int],
+        timeout: Optional[int],
+        user_agent: Optional[str],
         pbar: bool = False,
         verbose: bool = False,
     ):
@@ -72,7 +71,7 @@ class Chef:
         self.pot: DomainPot = pot
         self.pbar: tqdm = pbar
         self.verbose: bool = verbose
-        self.timeout: int = timeout
+        self.timeout: Optional[int] = timeout
         self.agent = user_agent
 
         # Determine thread count
@@ -156,9 +155,9 @@ class Chef:
 
 def run_checks(
     domains: List[str],
-    threads: int,
-    timeout: int,
-    user_agent: str,
+    threads: Optional[int],
+    timeout: Optional[int],
+    user_agent: Optional[str],
     pbar: bool = False,
     verbose: bool = False,
     double: bool = False,

@@ -4,11 +4,10 @@
 # cisagov Libraries
 import findcdn
 
-
 # Test Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 TIMEOUT = 30
-THREADS = 0   # If 0 then cdnEngine uses CPU count to set thread count
+THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
 def test_domainpot_init():
@@ -103,7 +102,9 @@ def test_run_checks():
 def test_run_checks_present():
     """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects, cnt, err = findcdn.cdnEngine.run_checks(domains, THREADS, TIMEOUT, USER_AGENT)
+    objects, cnt, err = findcdn.cdnEngine.run_checks(
+        domains, THREADS, TIMEOUT, USER_AGENT
+    )
     cdn_present = {}
     for dom in objects:
         if dom.cdn_present:

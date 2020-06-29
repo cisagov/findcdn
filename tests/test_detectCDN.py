@@ -7,7 +7,9 @@ import dns.resolver
 # cisagov Libraries
 from findcdn.cdnEngine.detectCDN import Domain, cdnCheck
 
-# from unittest.mock import patch
+# Globals
+TIMEOUT = 10
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 
 
 def test_ip():
@@ -48,7 +50,7 @@ def test_cname():
         "www.asu.edu", list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
-    check.cname(dom_in)
+    check.cname(dom_in, timeout=TIMEOUT)
 
     assert (
         "www.asu.edu.cdn.cloudflare.net." in dom_in.cnames
@@ -68,7 +70,7 @@ def test_broken_cname():
         list(),
     )
     check = cdnCheck()
-    return_code = check.cname(dom_in)
+    return_code = check.cname(dom_in, timeout=TIMEOUT)
     assert return_code != 0, "This fake site should return a non 0 code."
 
 
@@ -78,7 +80,7 @@ def test_https_lookup():
         "google.com", list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
-    check.https_lookup(dom_in)
+    check.https_lookup(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
 
     assert "gws" in dom_in.headers, "google.com should have gws as a header"
 
@@ -96,7 +98,7 @@ def test_broken_https_lookup():
         list(),
     )
     check = cdnCheck()
-    check.https_lookup(dom_in)
+    check.https_lookup(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
     assert len(dom_in.headers) <= 0, "There should be no response."
 
 
@@ -136,7 +138,7 @@ def test_all_checks():
     """Run all checks."""
     dom_in = Domain("login.gov", list(), list(), list(), list(), list(), list(), list())
     check = cdnCheck()
-    check.all_checks(dom_in)
+    check.all_checks(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
 
     assert (
         ".cloudfront.net" in dom_in.cdns
@@ -147,7 +149,7 @@ def test_all_checks_by_name():
     """Run all checks and get CDN name."""
     dom_in = Domain("login.gov", list(), list(), list(), list(), list(), list(), list())
     check = cdnCheck()
-    check.all_checks(dom_in)
+    check.all_checks(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
 
     assert (
         ".cloudfront.net" in dom_in.cdns
@@ -170,7 +172,7 @@ def test_all_checks_bad():
     )
     print(dom.url, dom.cdns, dom.cnames, dom.headers, dom.whois_data, dom.ip)
     check = cdnCheck()
-    return_code = check.all_checks(dom)
+    return_code = check.all_checks(dom, timeout=TIMEOUT, agent=USER_AGENT)
     print(return_code)
     print(dom.url, dom.cdns, dom.cnames, dom.headers, dom.whois_data, dom.ip)
     assert return_code != 0, "This fake site should return a non 0 code."

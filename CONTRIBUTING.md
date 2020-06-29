@@ -13,7 +13,7 @@ be in this repository.
 ## Issues
 
 If you want to report a bug or request a new feature, the most direct method is
-to [create an issue](https://github.com/cisagov/findCDN/issues) in this
+to [create an issue](https://github.com/cisagov/findcdn/issues) in this
 repository. We recommend that you first search through existing issues (both
 open and closed) to check if your particular issue has already been reported. If
 it has then you might want to add a comment to the existing issue. If it hasn't
@@ -22,7 +22,7 @@ then feel free to create a new one.
 ## Pull requests
 
 If you choose to
-[submit a pull request](https://github.com/cisagov/findCDN/pulls), you will
+[submit a pull request](https://github.com/cisagov/findcdn/pulls), you will
 notice that our continuous integration (CI) system runs a fairly extensive set
 of linters, syntax checkers, system, and unit tests. Your pull request may fail
 these checks, and that's OK. If you want you can stop there and wait for us to
@@ -91,9 +91,9 @@ Once `pyenv` and `pyenv-virtualenv` are installed on your system, you can create
 and configure the Python virtual environment with these commands:
 
 ```console
-cd findCDN
-pyenv virtualenv <python_version_to_use> findCDN
-pyenv local findCDN
+cd findcdn
+pyenv virtualenv <python_version_to_use> findcdn
+pyenv local findcdn
 pip install --requirement requirements-dev.txt
 ```
 

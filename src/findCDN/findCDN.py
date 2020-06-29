@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-"""findCDN is a security research and reporting tool.
+"""findcdn is a security research and reporting tool.
 
-findCDN determine what CDN a domain has and prints or exports the results as json.
+findcdn determine what CDN a domain has and prints or exports the results as json.
 
 EXIT STATUS
     This utility exits with one of the following values:
@@ -10,9 +10,9 @@ EXIT STATUS
     >0  An error occurred.
 
 Usage:
-  findCDN file <fileIn> [options]
-  findCDN list  <domain>... [options]
-  findCDN (-h | --help)
+  findcdn file <fileIn> [options]
+  findcdn list  <domain>... [options]
+  findcdn (-h | --help)
 
 Options:
   -h --help                    Show this message.

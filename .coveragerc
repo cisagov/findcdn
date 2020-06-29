@@ -2,7 +2,7 @@
 # https://coverage.readthedocs.io/en/latest/config.html
 
 [run]
-source = src/findCDN
+source = src/findcdn
 omit =
 branch = true
 

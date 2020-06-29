@@ -1,5 +1,5 @@
 """
-This is the setup module for the findCDN project.
+This is the setup module for the findcdn project.
 
 Based on:
 
@@ -31,16 +31,16 @@ def package_vars(version_file):
 
 
 setup(
-    name="findCDN",
+    name="findcdn",
     # Versions should comply with PEP440
-    version=package_vars("src/findCDN/_version.py")["__version__"],
+    version=package_vars("src/findcdn/_version.py")["__version__"],
     description="Example python library",
     long_description=readme(),
     long_description_content_type="text/markdown",
     # NCATS "homepage"
     url="https://www.us-cert.gov/resources/ncats",
     # The project's main homepage
-    download_url="https://github.com/Pascal-0x90/findCDN",
+    download_url="https://github.com/Pascal-0x90/findcdn",
     # Author details
     author="Cyber and Infrastructure Security Agency",
     author_email="ncats@hq.dhs.gov",
@@ -68,7 +68,7 @@ setup(
     keywords="skeleton",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    package_data={"findCDN": ["data/*.txt"]},
+    package_data={"findcdn": ["data/*.txt"]},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
     install_requires=[
@@ -96,6 +96,6 @@ setup(
             "pytest",
         ]
     },
-    # Conveniently allows one to run the CLI tool as `findCDN`
-    entry_points={"console_scripts": ["findCDN = findCDN.findCDN:interactive"]},
+    # Conveniently allows one to run the CLI tool as `findcdn`
+    entry_points={"console_scripts": ["findcdn = findcdn.findcdn:interactive"]},
 )

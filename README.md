@@ -1,18 +1,18 @@
-# findCDN
+# findcdn
 
-[![GitHub Build Status](https://github.com/Pascal-0x90/findCDN/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findCDN/actions)
-[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findCDN/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findCDN?branch=develop)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/findCDN.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findCDN/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findCDN.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findCDN/context:python)
-[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findCDN/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findCDN)
+[![GitHub Build Status](https://github.com/Pascal-0x90/findcdn/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findcdn/actions)
+[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findcdn/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findcdn?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findcdn/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findcdn/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findcdn/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findcdn)
 
-`findCDN`, is a tool which can scan and detect what kind of Content Distribution
-Network (CDN) a domain is using. `findCDN` can save results to a file or just
+`findcdn`, is a tool which can scan and detect what kind of Content Distribution
+Network (CDN) a domain is using. `findcdn` can save results to a file or just
 output to stdout.
 
-`findCDN` helps users of the tool accurately determine what CDN a domain is
+`findcdn` helps users of the tool accurately determine what CDN a domain is
 using. The list of supported domains is listed in the
-[cdn_config.py](https://github.com/Pascal-0x90/findCDN/blob/develop/src/findCDN/cdnEngine/detectCDN/cdn_config.py)
+[cdn_config.py](https://github.com/Pascal-0x90/findcdn/blob/develop/src/findcdn/cdnEngine/detectCDN/cdn_config.py)
 file in the repository. The library can be implemented as a standalone tool or a
 importable module you can use in your project. In both cases you can define an
 output file which the results can be written to. </br>
@@ -36,13 +36,13 @@ to the repository.
 
 ## Getting Started
 
-`findCDN` requires **Python 3.7+**. Python 2 is not supported. </br> `findCDN`
+`findcdn` requires **Python 3.7+**. Python 2 is not supported. </br> `findcdn`
 can be installed as a module using `pip` and the `requirements.txt` file in the
 repository.
 
 ### Installed as a module
 
-`findCDN` can be installed via pip:
+`findcdn` can be installed via pip:
 
 ```bash
 pip install -r requirements.txt
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 It can then be run directly:
 
 ```bash
-findCDN list github.com
+findcdn list github.com
 ```
 
 **Note:** It is recommended to use a python virtual environment to install
@@ -63,13 +63,13 @@ installing the module.
 ### Standalone Usage and examples
 
 ```bash
-findCDN file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-findCDN list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-findCDN (-h | --help)
+findcdn file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+findcdn list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+findcdn (-h | --help)
 
-findCDN file domains.txt -o output_cdn.txt -t 17 -d
-findCDN list dhs.gov cisa.gov -o output_cnd.txt -v
-findCDN list cisa.gov
+findcdn file domains.txt -o output_cdn.txt -t 17 -d
+findcdn list dhs.gov cisa.gov -o output_cnd.txt -v
+findcdn list cisa.gov
 ```
 
 #### Options
@@ -89,7 +89,7 @@ findCDN list cisa.gov
 #### Sample Output
 
 ```bash
-user2@ubuntu:~$ findCDN list asu.edu -t 7 --double
+user2@ubuntu:~$ findcdn list asu.edu -t 7 --double
 Using 7 threads.
 [Pending: 0 jobs]==[Threads: 2]: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:00<00:00,  2.22it/s]
 {
@@ -108,13 +108,13 @@ Domain processing completed.
 
 ```
 
-[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)](https://raw.githubusercontent.com/Pascal-0x90/findCDN/develop/findCDN.gif)
+[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findcdn/develop/findcdn.gif)](https://raw.githubusercontent.com/Pascal-0x90/findcdn/develop/findcdn.gif)
 
 ### Library Usage
 
-Since this library can be installed as a module, the findCDN program can be
+Since this library can be installed as a module, the findcdn program can be
 called from and implemented in your own project allowing you to take advantage
-of the CDN detection power of findCDN. Simply import into your project and pass
+of the CDN detection power of findcdn. Simply import into your project and pass
 your list of domains you wish to analyze. In return, you will receive a json of
 only domains with a CDN or all domains depending on the option you choose. The
 status bar and output file options are also allowed too if you wish to utilize
@@ -123,7 +123,7 @@ those utilities in the tool.
 The format is as follows:
 
 ```python
-findCDN.main(
+findcdn.main(
     domain_list: list,
     output_path: str = None,
     verbose: bool = False,
@@ -136,12 +136,12 @@ findCDN.main(
 #### Example
 
 ```python
-import findCDN
+import findcdn
 import json
 import sys
 
 domains = ['google.com', 'cisa.gov', 'censys.io', 'yahoo.com', 'pbs.org', 'github.com']
-resp_json, cnt = findCDN.main(domains, output_path="../output", double_in=True, threads=23)
+resp_json, cnt = findcdn.main(domains, output_path="../output", double_in=True, threads=23)
 
 dumped_json = json.loads(resp_json)
 
@@ -151,9 +151,9 @@ for domain in dumped_json['domains']:
 
 ## How Does it Work
 
-`findCDN` is broken into three sections:
+`findcdn` is broken into three sections:
 
-- findCDN's main runner file.
+- findcdn's main runner file.
   - Validates and organizes inputted domains.
   - Orchestrates the use of the CDN Engine with set of domains.
   - Output domain CDN's in JSON to stdout and to a file if seleted.
@@ -175,7 +175,7 @@ for domain in dumped_json['domains']:
 ## More Information
 
 There is more information located
-[in our wiki page](https://github.com/Pascal-0x90/findCDN/wiki). Feel free to
+[in our wiki page](https://github.com/Pascal-0x90/findcdn/wiki). Feel free to
 make pull requests for anything you would like to see added into the wiki of
 this repo. This can be any of the following:
 

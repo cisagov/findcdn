@@ -27,6 +27,7 @@ from dns.resolver import Resolver, Timeout, query  # isort:skip
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 LIFETIME = 10
+TIMEOUT = 30
 
 
 class Domain:
@@ -90,7 +91,7 @@ class cdnCheck:
         # Return listing of error codes
         return return_codes
 
-    def cname(self, dom: Domain, timeout: int = 20) -> List[int]:
+    def cname(self, dom: Domain, timeout: int = TIMEOUT) -> List[int]:
         """Collect CNAME records on domain."""
         # List of domains to check
         dom_list = [dom.url, "www." + dom.url]
@@ -117,7 +118,7 @@ class cdnCheck:
         return return_code
 
     def https_lookup(
-        self, dom: Domain, timeout: int = 20, agent: str = USER_AGENT
+        self, dom: Domain, timeout: int = TIMEOUT, agent: str = USER_AGENT
     ) -> int:
         """Read 'server' header for CDN hints."""
         # Setup agent
@@ -255,7 +256,11 @@ class cdnCheck:
         return return_code
 
     def all_checks(
-        self, dom: Domain, verbose: bool = False, timeout: int = 20, agent=USER_AGENT,
+        self,
+        dom: Domain,
+        verbose: bool = False,
+        timeout: int = TIMEOUT,
+        agent=USER_AGENT,
     ) -> int:
         """Option to run everything in this library then digest."""
         # Obtain each attributes data

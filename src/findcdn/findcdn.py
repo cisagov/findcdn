@@ -49,7 +49,7 @@ from .cdnEngine import run_checks
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 TIMEOUT = 30
-THREADS = 1
+THREADS = 0   # If 0 then cdnEngine uses CPU count to set thread count
 
 
 def write_json(json_dump: str, output: str) -> int:
@@ -91,7 +91,7 @@ def main(
 
     # Check domains
     processed_list, cnt, err = run_checks(
-        domain_list, pbar, verbose, double_in, threads, timeout, user_agent,
+        domain_list, threads, timeout, user_agent, pbar, verbose, double_in,
     )
 
     # Parse the domain data
@@ -174,6 +174,14 @@ def interactive() -> int:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
         return 1
+
+    # Check for None params then set default
+    if validated_args["--user_agent"] is None:
+        validated_args["--user_agent"] = USER_AGENT
+    if validated_args["--timeout"] is None:
+        validated_args["--timeout"] = TIMEOUT
+    if validated_args["--threads"] is None:
+        validated_args["--threads"] = THREADS
 
     # Add domains to a list
     domain_list = []

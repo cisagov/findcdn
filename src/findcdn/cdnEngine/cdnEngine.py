@@ -18,11 +18,6 @@ from tqdm import tqdm
 # Internal Libraries
 from . import detectCDN
 
-# Global Variables
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-TIMEOUT = 30
-THREADS = 1
-
 
 class DomainPot:
     """DomainPot defines the "pot" which Domain objects are stored."""
@@ -33,17 +28,17 @@ class DomainPot:
 
         # Convert to list of type domain
         for dom in domains:
-            domin = detectCDN.Domain(
+            dom_in = detectCDN.Domain(
                 dom, list(), list(), list(), list(), list(), list(), list()
             )
-            self.domains.append(domin)
+            self.domains.append(dom_in)
 
 
 def chef_executor(
     domain: detectCDN.Domain,
-    timeout: int = 20,
-    user_agent: str = None,
-    verbosity: bool = False,
+    timeout: int,
+    user_agent: str,
+    verbosity: bool,
 ):
     """Attempt to make the method "threadsafe" by giving each worker its own detector."""
     # Define detector
@@ -67,11 +62,11 @@ class Chef:
     def __init__(
         self,
         pot: DomainPot,
+        threads: int,
+        timeout: int,
+        user_agent: str,
         pbar: bool = False,
         verbose: bool = False,
-        threads: int = None,
-        timeout: int = TIMEOUT,
-        user_agent: str = None,
     ):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
@@ -96,8 +91,11 @@ class Chef:
         # Use Concurrent futures to multithread with pools
         job_count = 0
 
-        # Give user the amount of threads:
-        print(f"Using {self.threads} threads")
+        if self.verbose:
+            # Give user information about the run:
+            print(f"Using {self.threads} threads with a {self.timeout} second timeout")
+            print(f"User Agent: {self.agent}\n")
+
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.threads
         ) as executor:
@@ -158,27 +156,19 @@ class Chef:
 
 def run_checks(
     domains: List[str],
+    threads: int,
+    timeout: int,
+    user_agent: str,
     pbar: bool = False,
     verbose: bool = False,
     double: bool = False,
-    threads: int = THREADS,
-    timeout: int = TIMEOUT,
-    user_agent: str = USER_AGENT,
 ) -> Tuple[List[detectCDN.Domain], int, int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
-    # Check for none type parameteres
-    if not threads:
-        threads = THREADS
-    if not timeout:
-        timeout = TIMEOUT
-    if not user_agent:
-        user_agent = USER_AGENT
-
     # Our chef to manage pot
-    chef = Chef(dp, pbar, verbose, threads, timeout, user_agent)
+    chef = Chef(dp, threads, timeout, user_agent, pbar, verbose)
 
     # Run analysis for all domains
     cnt, err = chef.run_checks(double)

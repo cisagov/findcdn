@@ -81,8 +81,8 @@ class Chef:
         else:
             cpu_count = os.cpu_count()
             if cpu_count is None:
-                cpu_count = 0
-            self.threads = min(32, cpu_count + 4)  # type: ignore
+                cpu_count = 1
+            self.threads = cpu_count  # type: ignore
 
     def grab_cdn(
         self, double: bool = False  # type: ignore

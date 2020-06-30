@@ -9,6 +9,7 @@ if a given domain or set of domains use a CDN.
 
 # Standard Python Libraries
 import concurrent.futures
+import math
 import os
 from typing import List, Tuple
 
@@ -44,7 +45,8 @@ def chef_executor(
     # Run checks
     try:
         detective.all_checks(
-            domain, verbose=verbosity, timeout=timeout, agent=user_agent
+            # Timeout is split by .4 so that each chunk can only take less than half.
+            domain, verbose=verbosity, timeout=math.ceil(timeout * .4), agent=user_agent
         )
     except Exception as e:
         # Incase some uncaught error somewhere
@@ -122,7 +124,7 @@ class Chef:
             for future in concurrent.futures.as_completed(results):
                 try:
                     # Try and grab feature result to dequeue job
-                    future.result(timeout=30)
+                    future.result(timeout=self.timeout)
                 except concurrent.futures.TimeoutError as e:
                     # Tell us we dropped it. Should log this instead.
                     print(f"Dropped due to: {e}")

@@ -48,7 +48,7 @@ from .cdnEngine import run_checks
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-TIMEOUT = 30
+TIMEOUT = 60
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
@@ -159,12 +159,12 @@ def interactive() -> int:
             "--threads": And(
                 Use(int),
                 lambda thread_count: thread_count >= 0,
-                error="Thread count must be positive",
+                error="Thread count must be a positive number",
             ),
             "--timeout": And(
                 Use(int),
                 lambda timeout: timeout > 0,
-                error="The timeout duration must be greater than 0",
+                error="The timeout duration must be a number greater than 0",
             ),
             "--user_agent": And(str, error="The user agent must be a string.",),
             "<domain>": And(list, error="Please format the domains as a list."),

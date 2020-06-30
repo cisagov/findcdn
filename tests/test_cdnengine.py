@@ -102,7 +102,7 @@ def test_run_checks():
 def test_run_checks_present():
     """Test the return of a list of cdn_present domains."""
     domains = ["asu.edu", "censys.io", "bannerhealth.com", "adobe.com"]
-    objects, cnt, err = findcdn.cdnEngine.run_checks(
+    objects, cnt = findcdn.cdnEngine.run_checks(
         domains, THREADS, TIMEOUT, USER_AGENT
     )
     cdn_present = {}

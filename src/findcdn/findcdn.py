@@ -90,7 +90,7 @@ def main(
     CDN_count = 0
 
     # Check domains
-    processed_list, cnt, err = run_checks(
+    processed_list, cnt = run_checks(
         domain_list, threads, timeout, user_agent, pbar, verbose, double_in,
     )
 
@@ -130,7 +130,7 @@ def interactive() -> int:
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
 
-    # Check for None params then set default
+    # Check for None params then set default if found
     if args["--user_agent"] is None:
         args["--user_agent"] = USER_AGENT
     if args["--threads"] is None:

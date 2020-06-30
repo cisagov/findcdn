@@ -143,7 +143,7 @@ class Chef:
                         pass
 
         # Return the amount of jobs done and error code
-        return (job_count, 0)
+        return job_count
 
     def has_cdn(self):
         """For each domain, check if domain contains CDNS. If so, tick cdn_present to true."""
@@ -153,9 +153,9 @@ class Chef:
 
     def run_checks(self, double: bool = False) -> Tuple[int, int]:
         """Run analysis on the internal domain pool using detectCDN library."""
-        cnt, err = self.grab_cdn(double)
+        cnt = self.grab_cdn(double)
         self.has_cdn()
-        return (cnt, err)
+        return cnt
 
 
 def run_checks(
@@ -175,7 +175,7 @@ def run_checks(
     chef = Chef(dp, threads, timeout, user_agent, pbar, verbose)
 
     # Run analysis for all domains
-    cnt, err = chef.run_checks(double)
+    cnt = chef.run_checks(double)
 
     # Return all domains in form domain_pool, count of jobs processed, error code
-    return (chef.pot.domains, cnt, err)
+    return (chef.pot.domains, cnt)

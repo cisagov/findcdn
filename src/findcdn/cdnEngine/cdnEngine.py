@@ -36,7 +36,11 @@ class DomainPot:
 
 
 def chef_executor(
-    domain: detectCDN.Domain, timeout: int, user_agent: str, verbosity: bool,
+    domain: detectCDN.Domain,
+    timeout: int,
+    user_agent: str,
+    verbosity: bool,
+    interactive: bool,
 ):
     """Attempt to make the method "threadsafe" by giving each worker its own detector."""
     # Define detector
@@ -50,10 +54,12 @@ def chef_executor(
             verbose=verbosity,
             timeout=math.ceil(timeout * 0.4),
             agent=user_agent,
+            interactive=interactive,
         )
     except Exception as e:
         # Incase some uncaught error somewhere
-        print(f"An unusual exception has occurred:\n{e}")
+        if interactive or verbosity:
+            print(f"An unusual exception has occurred:\n{e}")
         return 1
 
     # Return 0 for success
@@ -69,15 +75,16 @@ class Chef:
         threads: int,
         timeout: int,
         user_agent: str,
-        pbar: bool = False,
+        interactive: bool = False,
         verbose: bool = False,
     ):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
-        self.pbar: tqdm = pbar
+        self.pbar: tqdm = interactive
         self.verbose: bool = verbose
         self.timeout: int = timeout
         self.agent = user_agent
+        self.interactive = interactive
 
         # Determine thread count
         if threads and threads != 0:
@@ -118,7 +125,12 @@ class Chef:
             # Assign workers and assign to results list
             results = {
                 executor.submit(
-                    chef_executor, domain, self.timeout, self.agent, self.verbose,
+                    chef_executor,
+                    domain,
+                    self.timeout,
+                    self.agent,
+                    self.verbose,
+                    self.interactive,
                 )
                 for domain in newpot
             }
@@ -130,7 +142,8 @@ class Chef:
                     future.result(timeout=self.timeout)
                 except concurrent.futures.TimeoutError as e:
                     # Tell us we dropped it. Should log this instead.
-                    print(f"Dropped due to: {e}")
+                    if self.interactive or self.verbose:
+                        print(f"Dropped due to: {e}")
 
                 # Update status bar if allowed
                 if self.pbar:
@@ -163,7 +176,7 @@ def run_checks(
     threads: int,
     timeout: int,
     user_agent: str,
-    pbar: bool = False,
+    interactive: bool = False,
     verbose: bool = False,
     double: bool = False,
 ) -> Tuple[List[detectCDN.Domain], int]:
@@ -172,7 +185,7 @@ def run_checks(
     dp = DomainPot(domains)
 
     # Our chef to manage pot
-    chef = Chef(dp, threads, timeout, user_agent, pbar, verbose)
+    chef = Chef(dp, threads, timeout, user_agent, interactive, verbose)
 
     # Run analysis for all domains
     cnt = chef.run_checks(double)

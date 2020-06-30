@@ -80,7 +80,9 @@ def test_https_lookup():
         "google.com", list(), list(), list(), list(), list(), list(), list()
     )
     check = cdnCheck()
-    check.https_lookup(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
+    check.https_lookup(
+        dom_in, timeout=TIMEOUT, agent=USER_AGENT, interactive=False, verbose=False
+    )
 
     assert "gws" in dom_in.headers, "google.com should have gws as a header"
 
@@ -98,7 +100,9 @@ def test_broken_https_lookup():
         list(),
     )
     check = cdnCheck()
-    check.https_lookup(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
+    check.https_lookup(
+        dom_in, timeout=TIMEOUT, agent=USER_AGENT, interactive=False, verbose=False
+    )
     assert len(dom_in.headers) <= 0, "There should be no response."
 
 
@@ -109,7 +113,7 @@ def test_whois():
     )
     check = cdnCheck()
     check.ip(dom_in)
-    check.whois(dom_in)
+    check.whois(dom_in, interactive=False, verbose=False)
 
     assert (
         "GOOGLE" in dom_in.whois_data
@@ -130,7 +134,7 @@ def test_broken_whois():
     )
     check = cdnCheck()
     check.ip(dom_in)
-    return_code = check.whois(dom_in)
+    return_code = check.whois(dom_in, interactive=False, verbose=False)
     assert return_code != 0, "This fake site should return a non 0 code."
 
 

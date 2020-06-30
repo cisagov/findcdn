@@ -115,7 +115,9 @@ class cdnCheck:
                 return_code.append(4)
         return return_code
 
-    def https_lookup(self, dom: Domain, timeout: int, agent: str) -> int:
+    def https_lookup(
+        self, dom: Domain, timeout: int, agent: str, interactive: bool, verbose: bool
+    ) -> int:
         """Read 'server' header for CDN hints."""
         # List of domains with different protocols to check.
         PROTOCOLS = ["https://", "https://www."]
@@ -140,7 +142,8 @@ class cdnCheck:
                 continue
             except Exception as e:
                 # Define an exception just in case we missed one.
-                print(f"[{e}]: https://{dom.url}")
+                if interactive or verbose:
+                    print(f"[{e}]: https://{dom.url}")
                 continue
             # Define headers to check for the response
             # to grab strings for later parsing.
@@ -153,7 +156,7 @@ class cdnCheck:
                     dom.headers.append(response.headers[value])
         return 0
 
-    def whois(self, dom: Domain) -> int:
+    def whois(self, dom: Domain, interactive: bool, verbose: bool) -> int:
         """Scrape WHOIS data for the org or asn_description."""
         # Make sure we have Ip addresses to check
         try:
@@ -187,7 +190,8 @@ class cdnCheck:
             except ASNRegistryError:
                 pass
             except Exception as e:
-                print(f"[{e}]: {dom.url} for {ip}")
+                if interactive or verbose:
+                    print(f"[{e}]: {dom.url} for {ip}")
         for data in whois_data:
             if data not in dom.whois_data:
                 dom.whois_data.append(data)
@@ -249,14 +253,19 @@ class cdnCheck:
         return return_code
 
     def all_checks(
-        self, dom: Domain, timeout: int, agent: str, verbose: bool = False,
+        self,
+        dom: Domain,
+        timeout: int,
+        agent: str,
+        verbose: bool = False,
+        interactive: bool = False,
     ) -> int:
         """Option to run everything in this library then digest."""
         # Obtain each attributes data
         self.ip(dom)
         self.cname(dom, timeout)
-        self.https_lookup(dom, timeout, agent)
-        self.whois(dom)
+        self.https_lookup(dom, timeout, agent, interactive, verbose)
+        self.whois(dom, interactive, verbose)
 
         # Digest the data
         return_code = self.data_digest(dom)

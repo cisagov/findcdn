@@ -52,13 +52,14 @@ TIMEOUT = 60  # Time in seconds
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
-def write_json(json_dump: str, output: str) -> int:
+def write_json(json_dump: str, output: str, verbose: bool, interactive: bool) -> int:
     """Write dict as JSON to output file."""
     try:
         outfile = open(output, "x")
     except Exception as e:
-        print("Unable to open output file:\n%s" % (e), file=sys.stderr)
-        return 1
+        if verbose or interactive:
+            print("Unable to open output file:\n%s" % (e), file=sys.stderr)
+            return 1
     outfile.write(json_dump)
     outfile.close()
     return 0
@@ -69,7 +70,7 @@ def main(
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,
-    pbar: bool = False,
+    interactive: bool = False,
     double_in: bool = False,
     threads: int = THREADS,
     timeout: int = TIMEOUT,
@@ -91,7 +92,7 @@ def main(
 
     # Check domain list
     processed_list, cnt = run_checks(
-        domain_list, threads, timeout, user_agent, pbar, verbose, double_in,
+        domain_list, threads, timeout, user_agent, interactive, verbose, double_in,
     )
 
     # Parse the domain data
@@ -112,17 +113,18 @@ def main(
     json_dict["cdn_count"] = str(CDN_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
-    if output_path is None or verbose:
+    if (output_path is None and interactive) or verbose:
         print(json_dump)
     if output_path is not None:
-        if write_json(json_dump, output_path):
-            print("FAILED")
+        if write_json(json_dump, output_path, verbose, interactive):
+            if verbose or interactive:
+                print("FAILED")
             return ("Failed", cnt)
-    # TODO(DoctorEww): add this message to interactive mode only.
-    print(
-        "Domain processing completed.\n%d domains had CDN's out of %d."
-        % (CDN_count, len(domain_list))
-    )
+    if interactive or verbose:
+        print(
+            "Domain processing completed.\n%d domains had CDN's out of %d."
+            % (CDN_count, len(domain_list))
+        )
     return (json_dump, cnt)
 
 

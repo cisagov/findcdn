@@ -46,7 +46,10 @@ def chef_executor(
     try:
         detective.all_checks(
             # Timeout is split by .4 so that each chunk can only take less than half.
-            domain, verbose=verbosity, timeout=math.ceil(timeout * .4), agent=user_agent
+            domain,
+            verbose=verbosity,
+            timeout=math.ceil(timeout * 0.4),
+            agent=user_agent,
         )
     except Exception as e:
         # Incase some uncaught error somewhere

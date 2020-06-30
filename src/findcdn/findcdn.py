@@ -6,7 +6,7 @@ findcdn determine what CDN a domain has and prints or exports the results as jso
 
 EXIT STATUS
     This utility exits with one of the following values:
-    0   Domain CDN's successfully printed to file
+    0   The list of domain's CDNs were successfully exported or printed to a file.
     >0  An error occurred.
 
 Usage:
@@ -18,14 +18,14 @@ Options:
   -h --help                    Show this message.
   --version                    Show the current version.
   -o FILE --output=FILE        If specified, then the JSON output file will be
-                               set to the specified value.
+                               created at the specified value.
   -v --verbose                 Includes additional print statements.
   --all                        Includes domains with and without a CDN
                                in output.
   -d --double                  Run the checks twice to increase accuracy.
   -t --threads=<thread_count>  Number of threads, otherwise use default.
   --timeout=<timeout>          Max duration in seconds to wait for a domain to
-                               respond, otherwise use default.
+                               conclude processing, otherwise use default.
   --user_agent=<user_agent>    Set the user agent to use, otherwise
                                use default.
 """
@@ -48,7 +48,7 @@ from .cdnEngine import run_checks
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-TIMEOUT = 60
+TIMEOUT = 60  # Time in seconds
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
@@ -89,7 +89,7 @@ def main(
     domain_dict = {}
     CDN_count = 0
 
-    # Check domains
+    # Check domain list
     processed_list, cnt = run_checks(
         domain_list, threads, timeout, user_agent, pbar, verbose, double_in,
     )
@@ -118,6 +118,7 @@ def main(
         if write_json(json_dump, output_path):
             print("FAILED")
             return ("Failed", cnt)
+    # TODO(DoctorEww): add this message to interactive mode only.
     print(
         "Domain processing completed.\n%d domains had CDN's out of %d."
         % (CDN_count, len(domain_list))
@@ -126,7 +127,7 @@ def main(
 
 
 def interactive() -> int:
-    """Collect the arguments and run the main program."""
+    """Collect command arguments and run the main program."""
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
 

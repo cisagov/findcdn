@@ -151,7 +151,7 @@ class Chef:
             if len(domain.cdns) > 0:
                 domain.cdn_present = True
 
-    def run_checks(self, double: bool = False) -> Tuple[int, int]:
+    def run_checks(self, double: bool = False) -> int:
         """Run analysis on the internal domain pool using detectCDN library."""
         cnt = self.grab_cdn(double)
         self.has_cdn()
@@ -166,7 +166,7 @@ def run_checks(
     pbar: bool = False,
     verbose: bool = False,
     double: bool = False,
-) -> Tuple[List[detectCDN.Domain], int, int]:
+) -> Tuple[List[detectCDN.Domain], int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)

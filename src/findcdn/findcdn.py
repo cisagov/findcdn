@@ -35,7 +35,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Third-Party Libraries
 import docopt
@@ -71,9 +71,9 @@ def main(
     all_domains: bool = False,
     pbar: bool = False,
     double_in: bool = False,
-    threads: Optional[int] = THREADS,
-    timeout: Optional[int] = TIMEOUT,
-    user_agent: Optional[str] = USER_AGENT,
+    threads: int = THREADS,
+    timeout: int = TIMEOUT,
+    user_agent: str = USER_AGENT,
 ) -> Tuple[str, int]:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
@@ -129,6 +129,14 @@ def interactive() -> int:
     """Collect the arguments and run the main program."""
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
+
+    # Check for None params then set default
+    if args["--user_agent"] is None:
+        args["--user_agent"] = USER_AGENT
+    if args["--threads"] is None:
+        args["--threads"] = THREADS
+    if args["--timeout"] is None:
+        args["--timeout"] = TIMEOUT
     # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
         {
@@ -148,22 +156,17 @@ def interactive() -> int:
                     error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
                 ),
             ),
-            "--threads": Or(
-                None,
-                And(
-                    Use(int),
-                    lambda thread_count: thread_count > 0,
-                    error="Thread count must be greater than 0",
-                ),
+            "--threads": And(
+                Use(int),
+                lambda thread_count: thread_count >= 0,
+                error="Thread count must be positive",
             ),
-            "--timeout": Or(
-                None,
-                And(
-                    Use(int),
-                    lambda timeout: timeout > 0,
-                    error="The timeout duration must be greater than 0",
-                ),
+            "--timeout": And(
+                Use(int),
+                lambda timeout: timeout > 0,
+                error="The timeout duration must be greater than 0",
             ),
+            "--user_agent": And(str, error="The user agent must be a string.",),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }
@@ -174,14 +177,6 @@ def interactive() -> int:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
         return 1
-
-    # Check for None params then set default
-    if validated_args["--user_agent"] is None:
-        validated_args["--user_agent"] = USER_AGENT
-    if validated_args["--timeout"] is None:
-        validated_args["--timeout"] = TIMEOUT
-    if validated_args["--threads"] is None:
-        validated_args["--threads"] = THREADS
 
     # Add domains to a list
     domain_list = []

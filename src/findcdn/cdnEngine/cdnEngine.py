@@ -10,7 +10,7 @@ if a given domain or set of domains use a CDN.
 # Standard Python Libraries
 import concurrent.futures
 import os
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 # Third-Party Libraries
 from tqdm import tqdm
@@ -61,9 +61,9 @@ class Chef:
     def __init__(
         self,
         pot: DomainPot,
-        threads: Optional[int],
-        timeout: Optional[int],
-        user_agent: Optional[str],
+        threads: int,
+        timeout: int,
+        user_agent: str,
         pbar: bool = False,
         verbose: bool = False,
     ):
@@ -71,7 +71,7 @@ class Chef:
         self.pot: DomainPot = pot
         self.pbar: tqdm = pbar
         self.verbose: bool = verbose
-        self.timeout: Optional[int] = timeout
+        self.timeout: int = timeout
         self.agent = user_agent
 
         # Determine thread count
@@ -155,9 +155,9 @@ class Chef:
 
 def run_checks(
     domains: List[str],
-    threads: Optional[int],
-    timeout: Optional[int],
-    user_agent: Optional[str],
+    threads: int,
+    timeout: int,
+    user_agent: str,
     pbar: bool = False,
     verbose: bool = False,
     double: bool = False,

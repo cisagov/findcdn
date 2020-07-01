@@ -35,7 +35,7 @@ import datetime
 import json
 import os
 import sys
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 # Third-Party Libraries
 import docopt
@@ -45,6 +45,7 @@ import validators
 # Internal Libraries
 from ._version import __version__
 from .cdnEngine import run_checks
+from .findcdn_err import FileWriteError, InvalidDomain, OutputFileExists
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
@@ -52,17 +53,15 @@ TIMEOUT = 60  # Time in seconds
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
 
-def write_json(json_dump: str, output: str, verbose: bool, interactive: bool) -> int:
+def write_json(json_dump: str, output: str, verbose: bool, interactive: bool):
     """Write dict as JSON to output file."""
     try:
-        outfile = open(output, "x")
+        with open(output, "x") as outfile:
+            outfile.write(json_dump)
+    except FileExistsError:
+        raise OutputFileExists(output)
     except Exception as e:
-        if verbose or interactive:
-            print("Unable to open output file:\n%s" % (e), file=sys.stderr)
-            return 1
-    outfile.write(json_dump)
-    outfile.close()
-    return 0
+        raise FileWriteError(e)
 
 
 def main(
@@ -75,13 +74,12 @@ def main(
     threads: int = THREADS,
     timeout: int = TIMEOUT,
     user_agent: str = USER_AGENT,
-) -> Tuple[str, int]:
+) -> str:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
-            print(f"{item} is not a valid domain", file=sys.stderr)
-            return ("Failed", 0)
+            raise InvalidDomain(item)
 
     if verbose:
         print("%d Domains Validated" % len(domain_list))
@@ -116,16 +114,16 @@ def main(
     if (output_path is None and interactive) or verbose:
         print(json_dump)
     if output_path is not None:
-        if write_json(json_dump, output_path, verbose, interactive):
-            if verbose or interactive:
-                print("FAILED")
-            return ("Failed", cnt)
+        write_json(json_dump, output_path, verbose, interactive)
     if interactive or verbose:
         print(
             "Domain processing completed.\n%d domains had CDN's out of %d."
             % (CDN_count, len(domain_list))
         )
-    return (json_dump, cnt)
+    if verbose:
+        print(f"{cnt} jobs completed!")
+
+    return json_dump
 
 
 def interactive() -> int:
@@ -140,6 +138,7 @@ def interactive() -> int:
         args["--threads"] = THREADS
     if args["--timeout"] is None:
         args["--timeout"] = TIMEOUT
+
     # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
         {
@@ -193,27 +192,31 @@ def interactive() -> int:
     else:
         domain_list = validated_args["<domain>"]
 
-    # Start main
-    json_dump, cnt = main(
-        domain_list,
-        validated_args["--output"],
-        validated_args["--verbose"],
-        validated_args["--all"],
-        True,  # Show progress bar when running normally.
-        validated_args["--double"],
-        validated_args["--threads"],
-        validated_args["--timeout"],
-        validated_args["--user_agent"],
-    )
-
-    if validated_args["--verbose"]:
-        print("Number of jobs completed: %d" % cnt)
-
-    if json_dump == "Failed":
+    # Start main runner of program with supplied inputs.
+    try:
+        main(
+            domain_list,
+            validated_args["--output"],
+            validated_args["--verbose"],
+            validated_args["--all"],
+            True,  # Launch in interactive mode.
+            validated_args["--double"],
+            validated_args["--threads"],
+            validated_args["--timeout"],
+            validated_args["--user_agent"],
+        )
+    except OutputFileExists as ofe:
+        print(ofe.message)
         return 1
-    else:
-        return 0
+    except FileWriteError as fwe:
+        print(fwe.message)
+        return 2
+    except InvalidDomain as invdom:
+        print(invdom.message)
+        return 3
+    return 0
 
 
 if __name__ == "__main__":
+    """Launch program in interactive mode"""
     sys.exit(interactive())

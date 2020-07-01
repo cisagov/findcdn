@@ -57,7 +57,7 @@ def test_list_working_double(capsys):
         return_code = findcdn.findcdn.interactive()
         captured = capsys.readouterr()
     assert return_code == 0, "interactive() should return successfully"
-    assert "completed: 6" in captured.out
+    assert "6 jobs completed" in captured.out
 
 
 def test_list_working_verbose(capsys):
@@ -101,7 +101,7 @@ def test_list_broken():
         ["bogus", "list", "google.com/searchtest", "facebook.com", "login.gov"],
     ):
         return_code = findcdn.findcdn.interactive()
-    assert return_code == 1, "interactive() should return failure"
+    assert return_code == 3, "interactive() should return failure"
 
 
 def test_file_working():

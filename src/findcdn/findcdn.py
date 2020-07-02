@@ -45,7 +45,9 @@ import validators
 # Internal Libraries
 from ._version import __version__
 from .cdnEngine import run_checks
-from .findcdn_err import FileWriteError, InvalidDomain, OutputFileExists
+
+from .findcdn_err import FileWriteError, InvalidDomain, NoDomains  # isort:skip
+from .findcdn_err import OutputFileExists  # isort:skip
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
@@ -76,6 +78,10 @@ def main(
     user_agent: str = USER_AGENT,
 ) -> str:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
+    # Make sure the list passed is got something in it
+    if len(domain_list) <= 0:
+        raise NoDomains("error")
+
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
@@ -223,6 +229,9 @@ def interactive() -> int:
     except InvalidDomain as invdom:
         print(invdom.message)
         return 3
+    except NoDomains as nd:
+        print(nd.message)
+        return 4
     return 0
 
 

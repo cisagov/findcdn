@@ -276,4 +276,6 @@ class cdnCheck:
                 print(f"{dom.url} has the following CDNs:\n{dom.cdns}")
             else:
                 print(f"{dom.url} does not use a CDN")
+
+        # Return to calling function
         return return_code

@@ -81,6 +81,7 @@ def main(
         if validators.domain(item) is not True:
             raise InvalidDomain(item)
 
+    # Show the validated domains if in verbose mode
     if verbose:
         print("%d Domains Validated" % len(domain_list))
 
@@ -95,9 +96,11 @@ def main(
 
     # Parse the domain data
     for domain in processed_list:
+        # Track the count of the domain has cdns
         if len(domain.cdns) > 0:
             CDN_count += 1
 
+        # Setup formatting for json output
         if len(domain.cdns) > 0 or all_domains:
             domain_dict[domain.url] = {
                 "IP": str(domain.ip)[1:-1],
@@ -111,8 +114,12 @@ def main(
     json_dict["cdn_count"] = str(CDN_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
+
+    # Show the dump to stdout if verbose or interactive
     if (output_path is None and interactive) or verbose:
         print(json_dump)
+
+    # Export to file if file provided
     if output_path is not None:
         write_json(json_dump, output_path, verbose, interactive)
     if interactive or verbose:
@@ -123,6 +130,7 @@ def main(
     if verbose:
         print(f"{cnt} jobs completed!")
 
+    # Return json dump to callee
     return json_dump
 
 
@@ -205,6 +213,7 @@ def interactive() -> int:
             validated_args["--timeout"],
             validated_args["--user_agent"],
         )
+    # Check for all potential exceptions
     except OutputFileExists as ofe:
         print(ofe.message)
         return 1

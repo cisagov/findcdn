@@ -88,8 +88,10 @@ class Chef:
 
         # Determine thread count
         if threads and threads != 0:
+            # Threads defined by user assign
             self.threads = threads
         else:
+            # No user defined threads, get it from os.cpu_count()
             cpu_count = os.cpu_count()
             if cpu_count is None:
                 cpu_count = 1
@@ -147,6 +149,7 @@ class Chef:
 
                 # Update status bar if allowed
                 if self.pbar:
+                    # We type ignore these as its "illegal" to access private attributes of an object
                     pending = f"Pending: {executor._work_queue.qsize()} jobs"  # type: ignore
                     threads = f"Threads: {len(executor._threads)}"  # type: ignore
                     pbar.set_description(f"[{pending}]==[{threads}]")

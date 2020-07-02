@@ -6,33 +6,17 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findcdn/context:python)
 [![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findcdn/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findcdn)
 
-`findcdn`, is a tool which can scan and detect what kind of Content Distribution
-Network (CDN) a domain is using. `findcdn` can save results to a file or just
-output to stdout.
+`findcdn`, is a tool that can scan and detect the kind of
+[Content Distribution Network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network)
+a domain uses. `findcdn` can save results to a file, be used as a module, or
+just output to stdout.
 
 `findcdn` helps users of the tool accurately determine what CDN a domain is
 using. The list of supported domains is listed in the
 [cdn_config.py](https://github.com/Pascal-0x90/findcdn/blob/develop/src/findcdn/cdnEngine/detectCDN/cdn_config.py)
-file in the repository. The library can be implemented as a standalone tool or a
-importable module you can use in your project. In both cases you can define an
-output file which the results can be written to. </br>
-
-The original purpose of this tool was to automatically detect Domain
-Frontability of a domain which uses a CDN. Due to the amount of overhead for
-detection, we moved the development of the tool into a CDN detection only tool.
-We use our wiki to further describe what Domain Fronting is, our research notes,
-design decisions, and playbooks for fronting specific domains. If any one has
-access to a CDN which we have failed to front or have no playbook for yet, feel
-free to make a new playbook using the template playbook and make a pull request
-to the repository.
-
-## Project Change Summary
-
-- Project now is for CDN detection
-  - A result of not being able to support domain fronting detection for every
-    CDN.
-- Resources, Notes, and playbooks are available in the Wiki for the repository.
-- Any feed-back, improvements, or additional playbooks are always appreciated.
+file in the repository. The library can be implemented as a standalone tool or
+an importable module in your project. In both cases, the results can be written
+to an output file.</br>
 
 ## Getting Started
 
@@ -40,7 +24,7 @@ to the repository.
 can be installed as a module using `pip` and the `requirements.txt` file in the
 repository.
 
-### Installed as a module
+### Installed as a Module
 
 `findcdn` can be installed via pip:
 
@@ -57,10 +41,10 @@ findcdn list github.com
 **Note:** It is recommended to use a python virtual environment to install
 modules and keep your environment clean. If you wish to do so, you will need
 [pyenv](https://github.com/pyenv/pyenv) and the
-[pyenv-virtualenv plugin](https://github.com/pyenv/pyenv-virtualenv) prior to
+[pyenv-virtualenv plugin](https://github.com/pyenv/pyenv-virtualenv) before
 installing the module.
 
-### Standalone Usage and examples
+### Standalone Usage and Examples
 
 ```bash
 findcdn file <fileIn> [options]
@@ -117,20 +101,19 @@ Domain processing completed.
 
 ### Library Usage
 
-Since this library can be installed as a module, the findcdn program can be
-called from and implemented in your own project allowing you to take advantage
-of the CDN detection power of findcdn. Simply import into your project and pass
-your list of domains you wish to analyze. In return, you will receive a json of
-only domains with a CDN or all domains depending on the option you choose. The
-status bar and output file options are also allowed too if you wish to utilize
-those utilities in the tool.
+Since `findcdn` can be installed as a module, its CDN detection power can be
+called from and implemented in any project. First, import `findcdn` into your
+project, as shown above. Then, pass it a list of domains to analyze. After
+processing, the program will return a JSON object containing the inputted
+domains and the CDNs they use.
 
-The format is as follows:
+The way `findcdn` functions is determined by the passed in options; the current
+possible options and an example are written below for your convenience:
 
 ```python
 findcdn.main(
     domain_list: List[str],  # List of domains to search
-    output_path: str = None,  # if included, output results to json
+    output_path: str = None,  # if included, output results to JSON
     verbose: bool = False,  # Verbose mode (more printing!)
     all_domains: bool = False,  # Includes domains that dont have cdn's in the output
     interactive: bool = False,  # Includes a progress bar (normally used for command line)
@@ -160,36 +143,55 @@ for domain in dumped_json['domains']:
 
 `findcdn` is broken into three sections:
 
-- findcdn's main runner file.
-  - Validates and organizes inputted domains.
-  - Orchestrates the use of the CDN Engine with set of domains.
-  - Output domain CDN's in JSON to stdout and to a file if seleted.
-- The CDN Engine.
-  - Organizes all domains into a "pot".
-  - `Chef` will use the CDN Detection library to obtain all CDNs for each
-    domain.
-  - `Chef` then runs analysis to set the boolean has_cdn value if it detects a
-    domain is has a CDN then returns the list of domains back to the runner
-    file.
-- CDN Detection.
+- findcdn's main runner file
+  - Validates and organizes inputted domains
+  - Orchestrates the use of the CDN Engine using a list of domains
+  - Output domain CDN's in JSON to stdout and a file if selected
+- The CDN Engine
+  - Organizes all domains into a "pot"
+  - `Chef` will use the CDN Detection library to obtain all CDNs for each domain
+  - `Chef` then runs an analysis to set the boolean has_cdn value if it detects
+    a domain is has a CDN then returns the list of domains to the runner file
+- CDN Detection
   - Will scrape data from:
-    - HTTPS Server Headers.
-    - CNAME records.
-    - WHOIS data.
+    - HTTPS Server Headers
+    - CNAME records
+    - WHOIS data
   - From each of these, it runs a fingerprint scan to identify any CDNs defined
-    in `cdn_config.py` which may be substrings inside of the data found here.
+    in `cdn_config.py`.
+
+## History
+
+This tool's original purpose was to automatically detect if a domain that uses a
+CDN is frontable. Due to the significant overhead for fronting detection, we
+pivoted the development of this tool to be exclusively a CDN _detection_ tool.
+We use our [wiki](https://github.com/Pascal-0x90/findcdn/wiki) to describe
+further what Domain Fronting is, our research notes, design decisions, and
+playbooks for fronting specific domains. If you find any additional frontable
+domains or any flaws in the current playbooks, please consider
+[contributing!](CONTRIBUTING.md)
+
+### Project Change Summary
+
+- The project is now for CDN _detection_.
+  - Determining frontability was infeasible for every CDN provider.
+- Resources, Notes, and playbooks are now available in the
+  [wiki](https://github.com/Pascal-0x90/findcdn/wiki) of this repository.
+- Any feedback, improvements, or additional playbooks are always appreciated.
 
 ## More Information
 
 There is more information located
-[in our wiki page](https://github.com/Pascal-0x90/findcdn/wiki). Feel free to
-make pull requests for anything you would like to see added into the wiki of
-this repo. This can be any of the following:
+[on our wiki page](https://github.com/Pascal-0x90/findcdn/wiki). We encourage
+you to make feature requests or [contribute](CONTRIBUTING.md) anything you would
+like to see added into the project or wiki.
 
-- Information pertaining to domain fronting.
-- Playbooks for fronting different domains.
-- Better detection methods for CDN.
-- General updates to current pages.
+This can be any of the following:
+
+- Information pertaining to domain fronting
+- Playbooks for fronting different domains
+- Better detection methods for CDN
+- General updates to current wiki pages
 
 ## Contributing
 

@@ -63,10 +63,11 @@ installing the module.
 ### Standalone Usage and examples
 
 ```bash
-findcdn file <fileIn> [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
-findcdn list  <domain>... [-o FILE] [-v] [-d] [--all] [--threads=<thread_count>]
+findcdn file <fileIn> [options]
+findcdn list  <domain>... [options]
 findcdn (-h | --help)
 
+findcnd -h
 findcdn file domains.txt -o output_cdn.txt -t 17 -d
 findcdn list dhs.gov cisa.gov -o output_cnd.txt -v
 findcdn list cisa.gov
@@ -75,15 +76,19 @@ findcdn list cisa.gov
 #### Options
 
 ```plaintext
-  -h --help              Show this message.
-  --version              Show the current version.
-  -o FILE --output=FILE  If specified, then the JSON output file will be
-                         set to the specified value.
-  -v --verbose           Includes additional print statments.
-  --all                  Includes domains with and without a CDN
-                         in output.
-  -d --double            Run the checks twice to increase accuracy.
+  -h --help                    Show this message.
+  --version                    Show the current version.
+  -o FILE --output=FILE        If specified, then the JSON output file will be
+                               created at the specified value.
+  -v --verbose                 Includes additional print statements.
+  --all                        Includes domains with and without a CDN
+                               in output.
+  -d --double                  Run the checks twice to increase accuracy.
   -t --threads=<thread_count>  Number of threads, otherwise use default.
+  --timeout=<timeout>          Max duration in seconds to wait for a domain to
+                               conclude processing, otherwise use default.
+  --user_agent=<user_agent>    Set the user agent to use, otherwise
+                               use default.
 ```
 
 #### Sample Output
@@ -124,13 +129,16 @@ The format is as follows:
 
 ```python
 findcdn.main(
-    domain_list: list,
-    output_path: str = None,
-    verbose: bool = False,
-    all_domains: bool = False,
-    pbar: bool = False,
-    double_in: bool = False,
-    threads: int = None)
+    domain_list: List[str],  # List of domains to search
+    output_path: str = None,  # if included, output results to json
+    verbose: bool = False,  # Verbose mode (more printing!)
+    all_domains: bool = False,  # Includes domains that dont have cdn's in the output
+    interactive: bool = False,  # Includes a progress bar (normally used for command line)
+    double_in: bool = False,  #D ouble the number of tries on a domain to increase accuracy
+    threads: int = THREADS,  # Number of threads to use
+    timeout: int = TIMEOUT,  # How long to wait on a domain
+    user_agent: str = USER_AGENT,  # User Agent to use
+) -> str:
 ```
 
 #### Example
@@ -138,15 +146,14 @@ findcdn.main(
 ```python
 import findcdn
 import json
-import sys
 
 domains = ['google.com', 'cisa.gov', 'censys.io', 'yahoo.com', 'pbs.org', 'github.com']
-resp_json, cnt = findcdn.main(domains, output_path="../output", double_in=True, threads=23)
+resp_json = findcdn.main(domains, output_path="output.json", double_in=True, threads=23)
 
 dumped_json = json.loads(resp_json)
 
 for domain in dumped_json['domains']:
-  print(f"{domain} has CDNs:\n {dumped_json['domains'][domain]['cdns']}")
+    print(f"{domain} has CDNs:\n {dumped_json['domains'][domain]['cdns']}")
 ```
 
 ## How Does it Work

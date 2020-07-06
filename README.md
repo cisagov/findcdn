@@ -37,7 +37,9 @@ It can then be run directly:
 ```bash
 findcdn list github.com
 ```
+
 Alternatively you can install quickly to any project with:
+
 ```bash
 pip install git+https://github.com/Pascal-0x90/findcdn.git
 ```

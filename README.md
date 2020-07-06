@@ -39,7 +39,7 @@ findcdn list github.com
 ```
 Alternatively you can install quickly to any project with:
 ```bash
-pip install git+git@github.com:Pascal-0x90/findcdn.git
+pip install git+https://github.com/Pascal-0x90/findcdn.git
 ```
 
 **Note:** It is recommended to use a python virtual environment to install

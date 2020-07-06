@@ -37,6 +37,10 @@ It can then be run directly:
 ```bash
 findcdn list github.com
 ```
+Alternatively you can install quickly to any project with:
+```bash
+pip install git+git@github.com:Pascal-0x90/findcdn.git
+```
 
 **Note:** It is recommended to use a python virtual environment to install
 modules and keep your environment clean. If you wish to do so, you will need

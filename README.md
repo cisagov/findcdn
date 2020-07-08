@@ -127,7 +127,7 @@ findcdn.main(
     threads: int = THREADS,  # Number of threads to use
     timeout: int = TIMEOUT,  # How long to wait on a domain
     user_agent: str = USER_AGENT,  # User Agent to use
-) -> str:
+)
 ```
 
 #### Example

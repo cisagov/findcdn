@@ -28,19 +28,19 @@ repository.
 
 `findcdn` can be installed via pip:
 
-```bash
+```console
 pip install -r requirements.txt
 ```
 
 It can then be run directly:
 
-```bash
+```console
 findcdn list github.com
 ```
 
 Alternatively you can install quickly to any project with:
 
-```bash
+```console
 pip install git+https://github.com/cisagov/findcdn.git
 ```
 
@@ -52,7 +52,7 @@ installing the module.
 
 ### Standalone Usage and Examples
 
-```bash
+```console
 findcdn file <fileIn> [options]
 findcdn list  <domain>... [options]
 findcdn (-h | --help)
@@ -65,7 +65,7 @@ findcdn list cisa.gov
 
 #### Options
 
-```plaintext
+```console
   -h --help                    Show this message.
   --version                    Show the current version.
   -o FILE --output=FILE        If specified, then the JSON output file will be
@@ -83,7 +83,7 @@ findcdn list cisa.gov
 
 #### Sample Output
 
-```bash
+```console
 user2@ubuntu:~$ findcdn list asu.edu -t 7 --double
 Using 7 threads.
 [Pending: 0 jobs]==[Threads: 2]: 100%|███████████████████████████████| 2/2 [00:00<00:00,  2.22it/s]
@@ -171,11 +171,10 @@ for domain in dumped_json['domains']:
 This tool's original purpose was to automatically detect if a domain that uses a
 CDN is frontable. Due to the significant overhead for fronting detection, we
 pivoted the development of this tool to be exclusively a CDN _detection_ tool.
-We use our [wiki](https://github.com/cisagov/findcdn/wiki) to describe
-further what Domain Fronting is, our research notes, design decisions, and
-playbooks for fronting specific domains. If you find any additional frontable
-domains or any flaws in the current playbooks, please consider
-[contributing!](CONTRIBUTING.md)
+We use our [wiki](https://github.com/cisagov/findcdn/wiki) to describe further
+what Domain Fronting is, our research notes, design decisions, and playbooks for
+fronting specific domains. If you find any additional frontable domains or any
+flaws in the current playbooks, please consider [contributing!](CONTRIBUTING.md)
 
 ### Project Change Summary
 
@@ -188,9 +187,9 @@ domains or any flaws in the current playbooks, please consider
 ## More Information
 
 There is more information located
-[on our wiki page](https://github.com/cisagov/findcdn/wiki). We encourage
-you to make feature requests or [contribute](CONTRIBUTING.md) anything you would
-like to see added into the project or wiki.
+[on our wiki page](https://github.com/cisagov/findcdn/wiki). We encourage you to
+make feature requests or [contribute](CONTRIBUTING.md) anything you would like
+to see added into the project or wiki.
 
 This can be any of the following:
 

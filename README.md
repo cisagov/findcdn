@@ -1,10 +1,10 @@
 # findcdn
 
-[![GitHub Build Status](https://github.com/Pascal-0x90/findcdn/workflows/build/badge.svg)](https://github.com/Pascal-0x90/findcdn/actions)
-[![Coverage Status](https://coveralls.io/repos/github/Pascal-0x90/findcdn/badge.svg?branch=develop)](https://coveralls.io/github/Pascal-0x90/findcdn?branch=develop)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/Pascal-0x90/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findcdn/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Pascal-0x90/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Pascal-0x90/findcdn/context:python)
-[![Known Vulnerabilities](https://snyk.io/test/github/Pascal-0x90/findcdn/develop/badge.svg)](https://snyk.io/test/github/Pascal-0x90/findcdn)
+[![GitHub Build Status](https://github.com/cisagov/findcdn/workflows/build/badge.svg)](https://github.com/cisagov/findcdn/actions)
+[![Coverage Status](https://coveralls.io/repos/github/cisagov/findcdn/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/findcdn?branch=develop)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/findcdn/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/findcdn/context:python)
+[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/findcdn/develop/badge.svg)](https://snyk.io/test/github/cisagov/findcdn)
 
 `findcdn`, is a tool that can scan and detect the kind of
 [Content Distribution Network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network)
@@ -13,7 +13,7 @@ just output to stdout.
 
 `findcdn` helps users of the tool accurately determine what CDN a domain is
 using. The list of supported domains is listed in the
-[cdn_config.py](https://github.com/Pascal-0x90/findcdn/blob/develop/src/findcdn/cdnEngine/detectCDN/cdn_config.py)
+[cdn_config.py](https://github.com/cisagov/findcdn/blob/develop/src/findcdn/cdnEngine/detectCDN/cdn_config.py)
 file in the repository. The library can be implemented as a standalone tool or
 an importable module in your project. In both cases, the results can be written
 to an output file.</br>
@@ -41,7 +41,7 @@ findcdn list github.com
 Alternatively you can install quickly to any project with:
 
 ```bash
-pip install git+https://github.com/Pascal-0x90/findcdn.git
+pip install git+https://github.com/cisagov/findcdn.git
 ```
 
 **Note:** It is recommended to use a python virtual environment to install
@@ -103,7 +103,7 @@ Domain processing completed.
 
 ```
 
-[![asciicast](https://raw.githubusercontent.com/Pascal-0x90/findcdn/develop/findcdn.gif)](https://raw.githubusercontent.com/Pascal-0x90/findcdn/develop/findcdn.gif)
+[![asciicast](https://raw.githubusercontent.com/cisagov/findcdn/develop/findcdn.gif)](https://raw.githubusercontent.com/cisagov/findcdn/develop/findcdn.gif)
 
 ### Library Usage
 
@@ -171,7 +171,7 @@ for domain in dumped_json['domains']:
 This tool's original purpose was to automatically detect if a domain that uses a
 CDN is frontable. Due to the significant overhead for fronting detection, we
 pivoted the development of this tool to be exclusively a CDN _detection_ tool.
-We use our [wiki](https://github.com/Pascal-0x90/findcdn/wiki) to describe
+We use our [wiki](https://github.com/cisagov/findcdn/wiki) to describe
 further what Domain Fronting is, our research notes, design decisions, and
 playbooks for fronting specific domains. If you find any additional frontable
 domains or any flaws in the current playbooks, please consider
@@ -182,13 +182,13 @@ domains or any flaws in the current playbooks, please consider
 - The project is now for CDN _detection_.
   - Determining frontability was infeasible for every CDN provider.
 - Resources, Notes, and playbooks are now available in the
-  [wiki](https://github.com/Pascal-0x90/findcdn/wiki) of this repository.
+  [wiki](https://github.com/cisagov/findcdn/wiki) of this repository.
 - Any feedback, improvements, or additional playbooks are always appreciated.
 
 ## More Information
 
 There is more information located
-[on our wiki page](https://github.com/Pascal-0x90/findcdn/wiki). We encourage
+[on our wiki page](https://github.com/cisagov/findcdn/wiki). We encourage
 you to make feature requests or [contribute](CONTRIBUTING.md) anything you would
 like to see added into the project or wiki.
 

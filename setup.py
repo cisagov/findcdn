@@ -40,7 +40,7 @@ setup(
     # NCATS "homepage"
     url="https://www.us-cert.gov/resources/ncats",
     # The project's main homepage
-    download_url="https://github.com/Pascal-0x90/findcdn",
+    download_url="https://github.com/cisagov/findcdn",
     # Author details
     author="Cyber and Infrastructure Security Agency",
     author_email="ncats@hq.dhs.gov",

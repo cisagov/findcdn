@@ -16,6 +16,7 @@ from typing import List, Tuple
 # Third-Party Libraries
 from tqdm import tqdm
 
+
 # Internal Libraries
 from . import detectCDN
 

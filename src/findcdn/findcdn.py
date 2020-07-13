@@ -42,12 +42,11 @@ import docopt
 from schema import And, Or, Schema, SchemaError, Use
 import validators
 
+
 # Internal Libraries
 from ._version import __version__
 from .cdnEngine import run_checks
-
-from .findcdn_err import FileWriteError, InvalidDomain, NoDomains  # isort:skip
-from .findcdn_err import OutputFileExists  # isort:skip
+from .findcdn_err import FileWriteError, InvalidDomain, NoDomains, OutputFileExists
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"

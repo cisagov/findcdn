@@ -92,6 +92,7 @@ setup(
             # to never grab the regression version.
             "coveralls != 1.11.0",
             "coverage",
+            "pylint",
             "pytest-cov",
             "pytest",
         ]

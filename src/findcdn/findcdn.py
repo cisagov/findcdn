@@ -45,24 +45,24 @@ import validators
 
 # Internal Libraries
 from ._version import __version__
-from .cdnEngine import run_checks
+from .cdnengine import run_checks
 from .findcdn_err import FileWriteError, InvalidDomain, NoDomains, OutputFileExists
 
 # Global Variables
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 TIMEOUT = 60  # Time in seconds
-THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
+THREADS = 0  # If 0 then cdnengine uses CPU count to set thread count
 
 
-def write_json(json_dump: str, output: str, verbose: bool, interactive: bool):
+def write_json(json_dump: str, output: str):
     """Write dict as JSON to output file."""
     try:
         with open(output, "x") as outfile:
             outfile.write(json_dump)
     except FileExistsError:
         raise OutputFileExists(output)
-    except Exception as e:
-        raise FileWriteError(e)
+    except PermissionError as err:
+        raise FileWriteError(err)
 
 
 def main(
@@ -70,7 +70,7 @@ def main(
     output_path: str = None,
     verbose: bool = False,
     all_domains: bool = False,
-    interactive: bool = False,
+    interactive_var: bool = False,
     double_in: bool = False,
     threads: int = THREADS,
     timeout: int = TIMEOUT,
@@ -79,7 +79,7 @@ def main(
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Make sure the list passed is got something in it
     if len(domain_list) <= 0:
-        raise NoDomains("error")
+        raise NoDomains()
 
     # Validate domains in list
     for item in domain_list:
@@ -92,23 +92,23 @@ def main(
 
     # Define domain dict and counter for json
     domain_dict = {}
-    CDN_count = 0
+    cdn_count = 0
 
     # Check domain list
     processed_list, cnt = run_checks(
-        domain_list, threads, timeout, user_agent, interactive, verbose, double_in,
+        domain_list, threads, timeout, user_agent, interactive_var, verbose, double_in,
     )
 
     # Parse the domain data
     for domain in processed_list:
         # Track the count of the domain has cdns
         if len(domain.cdns) > 0:
-            CDN_count += 1
+            cdn_count += 1
 
         # Setup formatting for json output
         if len(domain.cdns) > 0 or all_domains:
             domain_dict[domain.url] = {
-                "IP": str(domain.ip)[1:-1],
+                "IP": str(domain.ip_list)[1:-1],
                 "cdns": str(domain.cdns)[1:-1],
                 "cdns_by_names": str(domain.cdns_by_name)[1:-1],
             }
@@ -116,21 +116,21 @@ def main(
     # Create JSON from the results and return (results, successful jobs)
     json_dict = {}
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["cdn_count"] = str(CDN_count)
+    json_dict["cdn_count"] = str(cdn_count)
     json_dict["domains"] = domain_dict  # type: ignore
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
 
     # Show the dump to stdout if verbose or interactive
-    if (output_path is None and interactive) or verbose:
+    if (output_path is None and interactive_var) or verbose:
         print(json_dump)
 
     # Export to file if file provided
     if output_path is not None:
-        write_json(json_dump, output_path, verbose, interactive)
-    if interactive or verbose:
+        write_json(json_dump, output_path)
+    if interactive_var or verbose:
         print(
             "Domain processing completed.\n%d domains had CDN's out of %d."
-            % (CDN_count, len(domain_list))
+            % (cdn_count, len(domain_list))
         )
     if verbose:
         print(f"{cnt} jobs completed!")
@@ -167,7 +167,9 @@ def interactive() -> int:
                 None,
                 And(
                     str,
-                    lambda filename: os.path.isfile(filename),
+                    lambda filename: os.path.isfile(  # pylint: disable=unnecessary-lambda
+                        filename
+                    ),
                     error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
                 ),
             ),
@@ -199,8 +201,8 @@ def interactive() -> int:
         try:
             with open(validated_args["<fileIn>"]) as f:
                 domain_list = [line.rstrip() for line in f]
-        except IOError as e:
-            print("A file error occurred: %s" % e, file=sys.stderr)
+        except IOError as err:
+            print("A file error occurred: %s" % err, file=sys.stderr)
             return 1
     else:
         domain_list = validated_args["<domain>"]
@@ -228,12 +230,11 @@ def interactive() -> int:
     except InvalidDomain as invdom:
         print(invdom.message)
         return 3
-    except NoDomains as nd:
-        print(nd.message)
+    except NoDomains as nde:
+        print(nde.message)
         return 4
     return 0
 
 
 if __name__ == "__main__":
-    """Launch program in interactive mode"""
     sys.exit(interactive())

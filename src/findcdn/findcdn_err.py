@@ -7,7 +7,7 @@ __all__ = ["OutputFileExists", "InvalidDomain", "FileWriteError", "NoDomains"]
 class NoDomains(Exception):
     """Raise when no domains are passed to findcdn main."""
 
-    def __init__(self, error):
+    def __init__(self):
         """Instantiate super class with passed message."""
         self.message = "No domains were passed!"
         super().__init__(self.message)

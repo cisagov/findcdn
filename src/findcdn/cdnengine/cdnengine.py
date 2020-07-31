@@ -21,22 +21,6 @@ from tqdm import tqdm
 from . import detectcdn
 
 
-class DomainPot:
-    """DomainPot defines the "pot" which Domain objects are stored."""
-
-    # pylint: disable=too-few-public-methods
-    # DomainPot is okay to have only an __init__ as we only need it to have the private var.
-
-    def __init__(self, domains: List[str]):
-        """Define the pot for the Chef to use."""
-        self.domains: List[detectcdn.Domain] = []
-
-        # Convert to list of type domain
-        for dom in domains:
-            dom_in = detectcdn.Domain(dom,)
-            self.domains.append(dom_in)
-
-
 def chef_executor(
     domain: detectcdn.Domain,
     timeout: int,

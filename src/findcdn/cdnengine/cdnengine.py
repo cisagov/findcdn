@@ -140,10 +140,11 @@ class Chef:
 
                 # Update status bar if allowed
                 if self.pbar:
-                    # We type ignore these as its "illegal" to access private attributes of an object but we need to (thanks python)
+                    # Store values in format strings to then set in progress bar
                     pending = f"Pending: {job_count - completed} jobs"
                     threads = f"Threads: {self.threads}"
                     pbar.set_description(f"[{pending}]==[{threads}]")
+                    # If we have a progress bar, increment it
                     if self.pbar is not None:
                         pbar.update(1)
                         completed += 1

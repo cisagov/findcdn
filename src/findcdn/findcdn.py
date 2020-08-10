@@ -167,9 +167,7 @@ def interactive() -> int:
                 None,
                 And(
                     str,
-                    lambda filename: os.path.isfile(  # pylint: disable=unnecessary-lambda
-                        filename
-                    ),
+                    os.path.isfile(args["<fileIn>"]),
                     error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
                 ),
             ),

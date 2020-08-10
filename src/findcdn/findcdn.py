@@ -167,7 +167,7 @@ def interactive() -> int:
                 None,
                 And(
                     str,
-                    os.path.isfile(args["<fileIn>"]),
+                    lambda filename: os.path.isfile(str(filename)),
                     error='Input file "' + str(args["<fileIn>"]) + '" does not exist!',
                 ),
             ),

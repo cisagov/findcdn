@@ -136,7 +136,7 @@ def https_lookup(dom: Domain, timeout: int, agent: str) -> int:
                 protocol + dom.url, data=None, headers={"User-Agent": agent},
             )
             # The use of urlopen is safe in this context as we do not let the user
-            # have choice over the use of what protocol urlopen() uses. 
+            # have choice over the use of what protocol urlopen() uses.
             response = request.urlopen(req, timeout=timeout)  # nosec
         except (
             HTTPError,

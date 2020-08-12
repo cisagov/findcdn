@@ -26,7 +26,7 @@ def package_vars(version_file):
     """Read in and return the variables defined by the version_file."""
     pkg_vars = {}
     with open(version_file) as f:
-        exec(f.read(), pkg_vars)  # nosec
+        exec(f.read(), pkg_vars)  # nosec # pylint: disable=exec-used
     return pkg_vars
 
 
@@ -92,6 +92,7 @@ setup(
             # to never grab the regression version.
             "coveralls != 1.11.0",
             "coverage",
+            "pylint",
             "pytest-cov",
             "pytest",
         ]

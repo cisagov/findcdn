@@ -111,9 +111,6 @@ def test_file_working():
     assert return_code == 0, "interactive() should return successfully"
 
 
-"""Test a broken domains passed in as a file"""
-
-
 def test_file_broken():
     """Broken domain file to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):

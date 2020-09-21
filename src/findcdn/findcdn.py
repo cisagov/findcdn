@@ -42,7 +42,6 @@ import docopt
 from schema import And, Or, Schema, SchemaError, Use
 import validators
 
-
 # Internal Libraries
 from ._version import __version__
 from .cdnEngine import run_checks
@@ -96,7 +95,13 @@ def main(
 
     # Check domain list
     processed_list, cnt = run_checks(
-        domain_list, threads, timeout, user_agent, interactive, verbose, double_in,
+        domain_list,
+        threads,
+        timeout,
+        user_agent,
+        interactive,
+        verbose,
+        double_in,
     )
 
     # Parse the domain data
@@ -181,7 +186,10 @@ def interactive() -> int:
                 lambda timeout: timeout > 0,
                 error="The timeout duration must be a number greater than 0",
             ),
-            "--user_agent": And(str, error="The user agent must be a string.",),
+            "--user_agent": And(
+                str,
+                error="The user agent must be a string.",
+            ),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
         }

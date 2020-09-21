@@ -82,7 +82,9 @@ def test_has_cdn():
     assert checked_domains[0].url == "asu.edu" and checked_domains[0].cdns == [
         ".cloudflare.net",
         ".cloudflare.com",
-    ], ("Incorrect CDN detected for %s" % checked_domains[0].url)
+    ], (
+        "Incorrect CDN detected for %s" % checked_domains[0].url
+    )
     assert checked_domains[1].url == "censys.io" and checked_domains[1].cdns == [
         ".cloudflare.com"
     ], ("Incorrect CDN detected for %s" % checked_domains[1].url)
@@ -110,7 +112,7 @@ def test_run_checks_present():
     expected = {
         "asu.edu": [".cloudflare.net", ".cloudflare.com"],
         "censys.io": [".cloudflare.com"],
-        "adobe.com": [".edgekey.net", ".akamaitechnologies.fr"],
+        "adobe.com": [".edgesuite.net", ".akamaitechnologies.fr"],
     }
 
     # Assertions

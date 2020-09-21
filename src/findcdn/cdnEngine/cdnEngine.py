@@ -16,7 +16,6 @@ from typing import List, Tuple
 # Third-Party Libraries
 from tqdm import tqdm
 
-
 # Internal Libraries
 from . import detectCDN
 
@@ -98,9 +97,7 @@ class Chef:
                 cpu_count = 1
             self.threads = cpu_count  # type: ignore
 
-    def grab_cdn(
-        self, double: bool = False  # type: ignore
-    ):
+    def grab_cdn(self, double: bool = False):  # type: ignore
         """Check for CDNs used be domain list."""
         # Use Concurrent futures to multithread with pools
         job_count = 0

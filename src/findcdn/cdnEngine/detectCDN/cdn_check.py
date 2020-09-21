@@ -18,7 +18,6 @@ from dns.resolver import NXDOMAIN, NoAnswer, NoNameservers, Resolver, Timeout, q
 from ipwhois import HTTPLookupError, IPDefinedError, IPWhois
 from ipwhois.exceptions import ASNRegistryError
 
-
 # Internal Libraries
 from .cdn_config import COMMON, CDNs, CDNs_rev
 from .cdn_err import NoIPaddress
@@ -125,7 +124,9 @@ class cdnCheck:
             try:
                 # Some domains only respond when we have a User-Agent defined.
                 req = request.Request(
-                    PROTOCOL + dom.url, data=None, headers={"User-Agent": agent},
+                    PROTOCOL + dom.url,
+                    data=None,
+                    headers={"User-Agent": agent},
                 )
                 # Making the timeout 50 as to not hang thread.
                 response = request.urlopen(req, timeout=timeout)  # nosec

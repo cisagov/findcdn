@@ -112,7 +112,7 @@ def test_run_checks_present():
     expected = {
         "asu.edu": [".cloudflare.net", ".cloudflare.com"],
         "censys.io": [".cloudflare.com"],
-        "adobe.com": [".edgekey.net", ".akamaitechnologies.fr"],
+        "adobe.com": [".edgesuite.net", ".akamaitechnologies.fr"],
     }
 
     # Assertions

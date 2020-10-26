@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Summary: cdnEngine orchestrates CDN detection of domains.
 

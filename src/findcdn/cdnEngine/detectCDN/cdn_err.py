@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Define public exports."""
 __all__ = ["NoIPaddress"]
 

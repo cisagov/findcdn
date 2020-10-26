@@ -1,4 +1,4 @@
-# findcdn
+# findcdn #
 
 [![GitHub Build Status](https://github.com/cisagov/findcdn/workflows/build/badge.svg)](https://github.com/cisagov/findcdn/actions)
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/findcdn/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/findcdn?branch=develop)
@@ -18,18 +18,18 @@ file in the repository. The library can be implemented as a standalone tool or
 an importable module in your project. In both cases, the results can be written
 to an output file.</br>
 
-## Getting Started
+## Getting Started ##
 
 `findcdn` requires **Python 3.7+**. Python 2 is not supported. </br> `findcdn`
 can be installed as a module using `pip` and the `requirements.txt` file in the
 repository.
 
-### Installed as a Module
+### Installed as a Module ###
 
 `findcdn` can be installed via pip:
 
 ```console
-pip install -r requirements.txt
+pip install --requirement requirements.txt
 ```
 
 It can then be run directly:
@@ -50,7 +50,7 @@ modules and keep your environment clean. If you wish to do so, you will need
 [pyenv-virtualenv plugin](https://github.com/pyenv/pyenv-virtualenv) before
 installing the module.
 
-### Standalone Usage and Examples
+### Standalone Usage and Examples ###
 
 ```console
 findcdn file <fileIn> [options]
@@ -63,7 +63,7 @@ findcdn list dhs.gov cisa.gov -o output_cnd.txt -v
 findcdn list cisa.gov
 ```
 
-#### Options
+#### Options ####
 
 ```console
   -h --help                    Show this message.
@@ -81,7 +81,7 @@ findcdn list cisa.gov
                                use default.
 ```
 
-#### Sample Output
+#### Sample Output ####
 
 ```console
 user2@ubuntu:~$ findcdn list asu.edu -t 7 --double
@@ -105,7 +105,7 @@ Domain processing completed.
 
 [![asciicast](https://raw.githubusercontent.com/cisagov/findcdn/develop/findcdn.gif)](https://raw.githubusercontent.com/cisagov/findcdn/develop/findcdn.gif)
 
-### Library Usage
+### Library Usage ###
 
 Since `findcdn` can be installed as a module, its CDN detection power can be
 called from and implemented in any project. First, import `findcdn` into your
@@ -130,7 +130,7 @@ findcdn.main(
 )
 ```
 
-#### Example
+#### Example ####
 
 ```python
 import findcdn
@@ -145,7 +145,7 @@ for domain in dumped_json['domains']:
     print(f"{domain} has CDNs:\n {dumped_json['domains'][domain]['cdns']}")
 ```
 
-## How Does it Work
+## How Does it Work ##
 
 `findcdn` is broken into three sections:
 
@@ -166,7 +166,7 @@ for domain in dumped_json['domains']:
   - From each of these, it runs a fingerprint scan to identify any CDNs defined
     in `cdn_config.py`.
 
-## History
+## History ##
 
 This tool's original purpose was to automatically detect if a domain that uses a
 CDN is frontable. Due to the significant overhead for fronting detection, we
@@ -176,7 +176,7 @@ what Domain Fronting is, our research notes, design decisions, and playbooks for
 fronting specific domains. If you find any additional frontable domains or any
 flaws in the current playbooks, please consider [contributing!](CONTRIBUTING.md)
 
-### Project Change Summary
+### Project Change Summary ###
 
 - The project is now for CDN _detection_.
   - Determining frontability was infeasible for every CDN provider.
@@ -184,7 +184,7 @@ flaws in the current playbooks, please consider [contributing!](CONTRIBUTING.md)
   [wiki](https://github.com/cisagov/findcdn/wiki) of this repository.
 - Any feedback, improvements, or additional playbooks are always appreciated.
 
-## More Information
+## More Information ##
 
 There is more information located
 [on our wiki page](https://github.com/cisagov/findcdn/wiki). We encourage you to
@@ -198,11 +198,12 @@ This can be any of the following:
 - Better detection methods for CDN
 - General updates to current wiki pages
 
-## Contributing
+## Contributing ##
 
-We welcome contributions! Please see [here](CONTRIBUTING.md) for details.
+We welcome contributions! Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for
+details.
 
-## License
+## License ##
 
 This project is in the worldwide [public domain](LICENSE).
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """findcdn is a security research and reporting tool.
 
 findcdn determine what CDN a domain has and prints or exports the results as json.
@@ -240,8 +238,3 @@ def interactive() -> int:
         print(nd.message)
         return 4
     return 0
-
-
-if __name__ == "__main__":
-    """Launch program in interactive mode"""
-    sys.exit(interactive())

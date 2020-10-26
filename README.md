@@ -16,11 +16,13 @@ using. The list of supported domains is listed in the
 [cdn_config.py](https://github.com/cisagov/findcdn/blob/develop/src/findcdn/cdnEngine/detectCDN/cdn_config.py)
 file in the repository. The library can be implemented as a standalone tool or
 an importable module in your project. In both cases, the results can be written
-to an output file.</br>
+to an output file.
 
 ## Getting Started ##
 
-`findcdn` requires **Python 3.7+**. Python 2 is not supported. </br> `findcdn`
+`findcdn` requires **Python 3.7+**. Python 2 is not supported.
+
+`findcdn`
 can be installed as a module using `pip` and the `requirements.txt` file in the
 repository.
 
@@ -200,17 +202,18 @@ This can be any of the following:
 
 ## Contributing ##
 
-We welcome contributions! Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for
+We welcome contributions!  Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for
 details.
 
 ## License ##
 
 This project is in the worldwide [public domain](LICENSE).
 
-This project is in the public domain within the United States, and copyright and
-related rights in the work worldwide are waived through the
-[CC0 1.0 Universal public domain dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+This project is in the public domain within the United States, and
+copyright and related rights in the work worldwide are waived through
+the [CC0 1.0 Universal public domain
+dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
-All contributions to this project will be released under the CC0 dedication. By
-submitting a pull request, you are agreeing to comply with this waiver of
-copyright interest.
+All contributions to this project will be released under the CC0
+dedication. By submitting a pull request, you are agreeing to comply
+with this waiver of copyright interest.

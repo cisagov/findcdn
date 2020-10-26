@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Summary: This is the main runner for detectCDn.
 

@@ -28,7 +28,7 @@ repository.
 
 ### Installed as a Module ###
 
-`findcdn` can be installed via pip:
+`findcdn` can be installed via `pip`:
 
 ```console
 pip install --requirement requirements.txt
@@ -147,7 +147,7 @@ for domain in dumped_json['domains']:
     print(f"{domain} has CDNs:\n {dumped_json['domains'][domain]['cdns']}")
 ```
 
-## How Does it Work ##
+## How It Works ##
 
 `findcdn` is broken into three sections:
 

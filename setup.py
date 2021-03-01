@@ -48,13 +48,17 @@ setup(
     description="Discover domain CDN usage",
     long_description=readme(),
     long_description_content_type="text/markdown",
-    # NCATS "homepage"
-    url="https://www.us-cert.gov/resources/ncats",
-    # The project's main homepage
-    download_url="https://github.com/cisagov/findcdn",
+    # Landing page for CISA's cybersecurity mission
+    url="https://www.cisa.gov/cybersecurity",
+    # Additional URLs for this project per
+    # https://packaging.python.org/guides/distributing-packages-using-setuptools/#project-urls
+    project_urls={
+        "Source": "https://github.com/cisagov/findcdn",
+        "Tracker": "https://github.com/cisagov/findcdn/issues",
+    },
     # Author details
-    author="Cyber and Infrastructure Security Agency",
-    author_email="ncats@hq.dhs.gov",
+    author="Cybersecurity and Infrastructure Security Agency",
+    author_email="github@cisa.dhs.gov",
     license="License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

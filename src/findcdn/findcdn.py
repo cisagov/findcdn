@@ -142,7 +142,7 @@ def main(
     return json_dump
 
 
-def interactive() -> int:
+def interactive() -> None:
     """Collect command arguments and run the main program."""
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
@@ -197,7 +197,7 @@ def interactive() -> int:
     except SchemaError as err:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)
-        return 1
+        sys.exit(1)
 
     # Add domains to a list
     domain_list = []
@@ -207,7 +207,7 @@ def interactive() -> int:
                 domain_list = [line.rstrip() for line in f]
         except IOError as e:
             print("A file error occurred: %s" % e, file=sys.stderr)
-            return 1
+            sys.exit(1)
     else:
         domain_list = validated_args["<domain>"]
 
@@ -227,14 +227,13 @@ def interactive() -> int:
     # Check for all potential exceptions
     except OutputFileExists as ofe:
         print(ofe.message)
-        return 1
+        sys.exit(1)
     except FileWriteError as fwe:
         print(fwe.message)
-        return 2
+        sys.exit(2)
     except InvalidDomain as invdom:
         print(invdom.message)
-        return 3
+        sys.exit(3)
     except NoDomains as nd:
         print(nd.message)
-        return 4
-    return 0
+        sys.exit(4)

@@ -60,8 +60,12 @@ def test_list_working():
     with patch.object(
         sys, "argv", ["bogus", "list", "google.com", "facebook.com", "login.gov"]
     ):
-        return_code = findcdn.findcdn.interactive()
-    assert return_code == 0, "interactive() should return successfully"
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
+    assert return_code is None, "interactive() should return successfully"
 
 
 def test_list_working_double(capsys):
@@ -71,9 +75,13 @@ def test_list_working_double(capsys):
         "argv",
         ["bogus", "list", "google.com", "facebook.com", "login.gov", "-v", "-d"],
     ):
-        return_code = findcdn.findcdn.interactive()
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
         captured = capsys.readouterr()
-    assert return_code == 0, "interactive() should return successfully"
+    assert return_code is None, "interactive() should return successfully"
     assert "6 jobs completed" in captured.out
 
 
@@ -91,9 +99,13 @@ def test_list_working_verbose(capsys):
             "-v",
         ],
     ):
-        return_code = findcdn.findcdn.interactive()
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
         captured = capsys.readouterr()
-    assert return_code == 0, "interactive() should return successfully"
+    assert return_code is None, "interactive() should return successfully"
     assert "3 Domains Validated" in captured.out
 
 
@@ -104,9 +116,13 @@ def test_list_working_tcount(capsys):
         "argv",
         ["bogus", "list", "google.com", "facebook.com", "login.gov", "-t", "3", "-v"],
     ):
-        return_code = findcdn.findcdn.interactive()
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
         captured = capsys.readouterr()
-    assert return_code == 0, "interactive() should return successfully"
+    assert return_code is None, "interactive() should return successfully"
     assert "Using 3 threads" in captured.out
 
 
@@ -117,15 +133,23 @@ def test_list_broken():
         "argv",
         ["bogus", "list", "google.com/searchtest", "facebook.com", "login.gov"],
     ):
-        return_code = findcdn.findcdn.interactive()
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
     assert return_code == 3, "interactive() should return failure"
 
 
 def test_file_working():
     """Working domain file to test with."""
     with patch.object(sys, "argv", ["./findcdn", "file", "tests/validTest.txt"]):
-        return_code = findcdn.findcdn.interactive()
-    assert return_code == 0, "interactive() should return successfully"
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
+    assert return_code is None, "interactive() should return successfully"
 
 
 """Test a broken domains passed in as a file"""
@@ -134,15 +158,23 @@ def test_file_working():
 def test_file_broken():
     """Broken domain file to test with."""
     with patch.object(sys, "argv", ["bogus", "file", "tests/invalidTest.txt"]):
-        return_code = findcdn.findcdn.interactive()
-    assert return_code != 0, "interactive() should return failure"
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
+    assert return_code is not None, "interactive() should return failure"
 
 
 def test_file_dne():
     """Working domain list to test with."""
     with patch.object(sys, "argv", ["./findcdn", "file", "nosuchfile.txt"]):
-        return_code = findcdn.findcdn.interactive()
-    assert return_code != 0, "interactive() should return successfully"
+        return_code = None
+        try:
+            return_code = findcdn.findcdn.interactive()
+        except SystemExit as sys_exit:
+            return_code = sys_exit.code
+    assert return_code is not None, "interactive() should return successfully"
 
 
 def test_file_write(tmpdir):

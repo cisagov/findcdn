@@ -232,7 +232,7 @@ class cdnCheck:
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 
-    def data_digest(self, dom: Domain) -> int:
+    def data_digest(self, dom: Domain, checks: str) -> int:
         """Digest all data collected and assign to CDN list."""
         return_code = 1
         # Iterate through all attributes for substrings
@@ -242,7 +242,7 @@ class cdnCheck:
         if len(dom.headers) > 0 and not None:
             self.CDNid(dom, dom.headers)
             return_code = 0
-        if len(dom.namesrvs) > 0 and not None:
+        if len(dom.namesrvs) > 0 and not None and 'n' in checks:
             self.CDNid(dom, dom.namesrvs)
             return_code = 0
         if len(dom.whois_data) > 0 and not None:
@@ -257,16 +257,20 @@ class cdnCheck:
         agent: str,
         verbose: bool = False,
         interactive: bool = False,
+        checks: str = "chnw",
     ) -> int:
         """Option to run everything in this library then digest."""
         # Obtain each attributes data
         self.ip(dom)
-        self.cname(dom, timeout)
-        self.https_lookup(dom, timeout, agent, interactive, verbose)
-        self.whois(dom, interactive, verbose)
+        if 'c' in checks:
+            self.cname(dom, timeout)
+        if 'h' in checks:
+            self.https_lookup(dom, timeout, agent, interactive, verbose)
+        if 'w' in checks:
+            self.whois(dom, interactive, verbose)
 
         # Digest the data
-        return_code = self.data_digest(dom)
+        return_code = self.data_digest(dom, checks)
 
         # Extra case if we want verbosity for each domain check
         if verbose:

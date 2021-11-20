@@ -26,6 +26,9 @@ Options:
                                conclude processing, otherwise use default.
   --user_agent=<user_agent>    Set the user agent to use, otherwise
                                use default.
+  --checks=<checks>            Select detection types; possible values: 
+                               cname (c), HTTP headers (h), nameservers (n),
+                               whois data (w). Default: "chnw"
 """
 
 # Standard Python Libraries
@@ -49,6 +52,7 @@ from .findcdn_err import FileWriteError, InvalidDomain, NoDomains, OutputFileExi
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
 TIMEOUT = 60  # Time in seconds
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
+CHECKS = "chnw" # cnames, headers, nameservers, whois_data
 
 
 def write_json(json_dump: str, output: str, verbose: bool, interactive: bool):
@@ -72,6 +76,7 @@ def main(
     threads: int = THREADS,
     timeout: int = TIMEOUT,
     user_agent: str = USER_AGENT,
+    checks: str = CHECKS,
 ) -> str:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Make sure the list passed is got something in it
@@ -100,6 +105,7 @@ def main(
         interactive,
         verbose,
         double_in,
+        checks,
     )
 
     # Parse the domain data
@@ -154,6 +160,8 @@ def interactive() -> None:
         args["--threads"] = THREADS
     if args["--timeout"] is None:
         args["--timeout"] = TIMEOUT
+    if args["--checks"] is None:
+        args["--checks"] = CHECKS
 
     # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
@@ -187,6 +195,11 @@ def interactive() -> None:
             "--user_agent": And(
                 str,
                 error="The user agent must be a string.",
+            ),
+            "--checks": And(
+                str,
+                lambda checks: set(checks) <= {'c', 'h', 'n', 'w'},
+                error="Checks can be the following characters: chnw"
             ),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
@@ -223,6 +236,7 @@ def interactive() -> None:
             validated_args["--threads"],
             validated_args["--timeout"],
             validated_args["--user_agent"],
+            validated_args["--checks"]
         )
     # Check for all potential exceptions
     except OutputFileExists as ofe:

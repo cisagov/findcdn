@@ -20,7 +20,7 @@ jobs:
       - uses: cisagov/setup-env-github-action@develop
       - uses: actions/checkout@v2
       - id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3.1.0
         with:
           python-version: 3.9
       # GO_VERSION and GOCACHE are used by the cache task, so the Go
@@ -118,7 +118,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3.1.0
         with:
           python-version: ${{ matrix.python-version }}
       - uses: actions/cache@v2
@@ -161,7 +161,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3.1.0
         with:
           python-version: 3.9
       - uses: actions/cache@v2
@@ -203,7 +203,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3.1.0
         with:
           python-version: ${{ matrix.python-version }}
       - uses: actions/cache@v2

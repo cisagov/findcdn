@@ -30,23 +30,23 @@ class Domain:
     def __init__(
         self,
         url: str,
-        ip: List[str] = [],
-        cnames: List[str] = [],
-        cdns: List[str] = [],
-        cdns_by_name: List[str] = [],
-        namsrvs: List[str] = [],
-        headers: List[str] = [],
-        whois_data: List[str] = [],
+        ip: List[str] = None,
+        cnames: List[str] = None,
+        cdns: List[str] = None,
+        cdns_by_name: List[str] = None,
+        namsrvs: List[str] = None,
+        headers: List[str] = None,
+        whois_data: List[str] = None        
     ):
         """Initialize object to store metadata on domain in url."""
         self.url = url
-        self.ip = ip
-        self.cnames = cnames
-        self.cdns = cdns
-        self.cdns_by_name = cdns_by_name
-        self.namesrvs = namsrvs
-        self.headers = headers
-        self.whois_data = whois_data
+        self.ip = ip or []
+        self.cnames = cnames or []
+        self.cdns = cdns or []
+        self.cdns_by_name = cdns_by_name or []
+        self.namesrvs = namsrvs or []
+        self.headers = headers or []
+        self.whois_data = whois_data or []
         self.cdn_present = False
 
 

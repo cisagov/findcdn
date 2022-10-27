@@ -53,8 +53,8 @@ def test_cname():
     check.cname(dom_in, timeout=TIMEOUT)
 
     assert (
-        "www.asu.edu.cdn.cloudflare.net." in dom_in.cnames
-    ), "www.asu.edu should have www.asu.edu.cdn.cloudflare.net. as a cname"
+        "pantheon-systems.map.fastly.net." in dom_in.cnames
+    ), "www.asu.edu should have pantheon-systems.map.fastly.net. as a cname"
 
 
 def test_broken_cname():

@@ -48,10 +48,10 @@ def test_grab_cdn():
 
     # Assertions
     assert checked_domains[0].cdns == [
-        ".cloudflare.net",
-        ".cloudflare.com",
+        ".fastly.net",
+        ".nocookie.net",
     ], "Did not detect {} from {}.".format(
-        [".cloudflare.net", ".cloudflare.com"], checked_domains[0].url
+        [".fastly.net", ".nocookie.net"], checked_domains[0].url
     )
     assert checked_domains[1].cdns == [
         ".cloudfront.net",
@@ -80,8 +80,8 @@ def test_has_cdn():
 
     assert cdn_present == 3, "Too many cdn_present domains counted."
     assert checked_domains[0].url == "asu.edu" and checked_domains[0].cdns == [
-        ".cloudflare.net",
-        ".cloudflare.com",
+        ".fastly.net",
+        ".nocookie.net",
     ], (
         "Incorrect CDN detected for %s" % checked_domains[0].url
     )
@@ -110,7 +110,7 @@ def test_run_checks_present():
         if dom.cdn_present:
             cdn_present[dom.url] = dom.cdns
     expected = {
-        "asu.edu": [".cloudflare.net", ".cloudflare.com"],
+        "asu.edu": [".fastly.net", ".nocookie.net"],
         "censys.io": [".cloudflare.com"],
         "adobe.com": [".edgesuite.net", ".akamaitechnologies.fr"],
     }

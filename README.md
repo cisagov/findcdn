@@ -172,7 +172,7 @@ for domain in dumped_json['domains']:
 
 This tool's original purpose was to automatically detect if a domain that uses a
 CDN is frontable. Due to the significant overhead for fronting detection, we
-pivoted the development of this tool to be exclusively a CDN _detection_ tool.
+pivoted the development of this tool to be exclusively a CDN *detection* tool.
 We use our [wiki](https://github.com/cisagov/findcdn/wiki) to describe further
 what Domain Fronting is, our research notes, design decisions, and playbooks for
 fronting specific domains. If you find any additional frontable domains or any
@@ -180,7 +180,7 @@ flaws in the current playbooks, please consider [contributing!](CONTRIBUTING.md)
 
 ### Project Change Summary ###
 
-- The project is now for CDN _detection_.
+- The project is now for CDN *detection*.
   - Determining frontability was infeasible for every CDN provider.
 - Resources, Notes, and playbooks are now available in the
   [wiki](https://github.com/cisagov/findcdn/wiki) of this repository.

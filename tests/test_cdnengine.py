@@ -9,6 +9,52 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 
 TIMEOUT = 30
 THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
 
+def test_domain_init():
+    """Test domain initializer to ensure that values are not being inadvertently shared 
+    between instances"""
+
+    domain1 = findcdn.cdnEngine.detectCDN.Domain("foo.absolutely.fake.zzz1")
+    domain2 = findcdn.cdnEngine.detectCDN.Domain("bar.absolutely.fake.zzz1")    
+    assert domain1.url == "foo.absolutely.fake.zzz1"
+    assert domain2.url == "bar.absolutely.fake.zzz1"
+    #ensure that both start blank
+    for d in [domain1,domain2]:
+        assert d.ip == []
+        assert d.cnames == []
+        assert d.cdns == []
+        assert d.cdns_by_name == []
+        assert d.namesrvs == []
+        assert d.headers == []
+        assert d.whois_data == []
+        assert d.cdn_present == False
+
+    #now, add some data to each field in domain1
+    domain1.ip.append("d1_ip")
+    domain1.cnames.append("d1_cnames")
+    domain1.cdns.append("d1_cdns")
+    domain1.namesrvs.append("d1_namesrvs")
+    domain1.headers.append("d1_headers")
+    domain1.whois_data.append("d1_whois_data")
+    domain1.cdn_present = True
+
+    #ensure that the domain1 has the values...
+    assert domain1.ip == ["d1_ip"]
+    assert domain1.cnames == ["d1_cnames"]
+    assert domain1.cdns == ["d1_cdns"]
+    assert domain1.namesrvs == ["d1_namesrvs"]
+    assert domain1.headers == ["d1_headers"]
+    assert domain1.whois_data == ["d1_whois_data"]
+    assert domain1.cdn_present == True
+    #and domain2 does not.
+    assert domain2.ip == []
+    assert domain2.cnames == []
+    assert domain2.cdns == []
+    assert domain2.namesrvs == []
+    assert domain2.headers == []
+    assert domain2.whois_data == []
+    assert domain2.cdn_present == False
+    
+
 
 def test_domainpot_init():
     """Test if DomainPot can be instantiated correctly."""

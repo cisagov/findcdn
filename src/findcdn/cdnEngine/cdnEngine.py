@@ -27,9 +27,7 @@ class DomainPot:
 
         # Convert to list of type domain
         for dom in domains:
-            dom_in = detectCDN.Domain(
-                dom, list(), list(), list(), list(), list(), list(), list()
-            )
+            dom_in = detectCDN.Domain(dom)
             self.domains.append(dom_in)
 
 

@@ -142,12 +142,18 @@ def test_broken_whois():
     assert return_code != 0, "This fake site should return a non 0 code."
 
 
-def test_invalid_domain():
+def test_cdncheck_invalid_domain():
     """Invidual domain check should throw an InvalidDomain error"""
     dom_in = Domain("*.foo.bar",list(), list(), list(), list(), list(), list(), list())
     check = cdnCheck()
     with pytest.raises(InvalidDomain):
         check.all_checks(dom_in, timeout=TIMEOUT, agent=USER_AGENT)
+
+def test_cdncheck_valid_domain():
+    """Invidual domain check should NOT throw an InvalidDomain error"""
+    dom_in = Domain("cisa.gov",list(), list(), list(), list(), list(), list(), list())
+    check = cdnCheck()    
+
 
 def test_main_catches_invalid():
     """main() should catch and flag invalid domains in output, and NOT throw an exception"""
@@ -159,6 +165,17 @@ def test_main_catches_invalid():
     assert "invalid_domains" in json_obj
     assert len(json_obj["invalid_domains"]) > 0
     assert json_obj["invalid_domains"][0] == "*.foo.bar"
+
+def test_main_with_valid_domain_shows_no_invalid():
+    """main() should catch and flag invalid domains in output, and NOT throw an exception"""
+    domain_list = ["cisa.gov"]
+    json_dump = main(domain_list=domain_list)
+    assert json_dump is not None
+
+    json_obj = json.loads(json_dump)
+    assert "invalid_domains" in json_obj
+    assert len(json_obj["invalid_domains"]) == 0
+    
 
 
 def test_all_checks():

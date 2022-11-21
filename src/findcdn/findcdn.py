@@ -78,14 +78,25 @@ def main(
     if len(domain_list) <= 0:
         raise NoDomains("error")
 
+    invalid_domains = []
+    valid_domains = []
     # Validate domains in list
     for item in domain_list:
         if validators.domain(item) is not True:
-            raise InvalidDomain(item)
+            #add item to skipped domains for later return to user
+            invalid_domains.append(item)            
+            #remove this list from our main list to check
+        else:
+            valid_domains.append(item)            
+        
 
-    # Show the validated domains if in verbose mode
-    if verbose:
-        print("%d Domains Validated" % len(domain_list))
+    
+    print(f"{len(valid_domains)} Domains Validated.")
+    if(len(invalid_domains) > 0):
+        print(f"{len(invalid_domains)} domain(s) rejected, listed below: ")
+        for dom in invalid_domains:
+            print(f"\t{dom}")
+    
 
     # Define domain dict and counter for json
     domain_dict = {}
@@ -93,7 +104,7 @@ def main(
 
     # Check domain list
     processed_list, cnt = run_checks(
-        domain_list,
+        valid_domains,
         threads,
         timeout,
         user_agent,
@@ -121,6 +132,7 @@ def main(
     json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     json_dict["cdn_count"] = str(CDN_count)
     json_dict["domains"] = domain_dict  # type: ignore
+    json_dict["invalid_domains"] = invalid_domains
     json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
 
     # Show the dump to stdout if verbose or interactive
@@ -230,10 +242,7 @@ def interactive() -> None:
         sys.exit(1)
     except FileWriteError as fwe:
         print(fwe.message)
-        sys.exit(2)
-    except InvalidDomain as invdom:
-        print(invdom.message)
-        sys.exit(3)
+        sys.exit(2)    
     except NoDomains as nd:
         print(nd.message)
         sys.exit(4)

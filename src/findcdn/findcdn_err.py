@@ -21,11 +21,11 @@ class OutputFileExists(Exception):
 
 
 class InvalidDomain(Exception):
-    """Raise when an invalid domain is inputted in findcnd.main()."""
+    """Raise when an invalid domain is inputted."""
 
     def __init__(self, item):
         """Instantiate super class with passed message with passed in item."""
-        self.message = item + " is not a valid domain in findcdn.main()"
+        self.message = item + " is not a valid domain."
         super().__init__(self.message)
 
 

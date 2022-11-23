@@ -88,18 +88,18 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     include_package_data=True,
     install_requires=[
-        "dnspython",
-        "docopt",
-        "ipwhois",
-        "schema",
+        "dnspython == 2.0.0",
+        "docopt >= 0.6.2",
+        "ipwhois == 1.2.0",
+        "schema >= 0.7.5",
         "setuptools >= 24.2.0",
-        "tqdm",
-        "urllib3",
-        "validators",
+        "tqdm >= 4.64.1",
+        "urllib3 == 1.26.12",
+        "validators >= 0.20.0",
     ],
     extras_require={
         "test": [
-            "coverage",
+            "coverage >= 6.5.0",
             # coveralls 1.11.0 added a service number for calls from
             # GitHub Actions. This caused a regression which resulted in a 422
             # response from the coveralls API with the message:
@@ -107,9 +107,9 @@ setup(
             # 1.11.1 fixed this issue, but to ensure expected behavior we'll pin
             # to never grab the regression version.
             "coveralls != 1.11.0",
-            "pre-commit",
-            "pytest-cov",
-            "pytest",
+            "pre-commit >= 2.20.0",
+            "pytest-cov >= 4.0.0",
+            "pytest >= 7.2.0",
         ]
     },
     # Conveniently allows one to run the CLI tool as `findcdn`

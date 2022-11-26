@@ -94,8 +94,9 @@ setup(
         "schema",
         "setuptools >= 24.2.0",
         "tqdm",
-        "urllib3",
         "validators",
+        "PyYAML",
+        "requests",
     ],
     extras_require={
         "test": [

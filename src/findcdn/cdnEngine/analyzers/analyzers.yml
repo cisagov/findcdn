@@ -1,0 +1,39 @@
+---
+analyzers:
+  iplyzer:
+    filename: "iplyzer.py"
+    classname: "IPlyzer"
+    description: "Identify CDN using IP address lookups."
+    # Leave this option out for people to choose. Always run this.
+    argument: ""
+    # Prioritize the shorter running analyzers
+    priority: 1
+
+  cnamelyzer:
+    filename: "cnamelyzer.py"
+    classname: "CNAMElyzer"
+    description: "Identify CDN using CNAME records."
+    argument: "c"
+    priority: 2
+
+  whoislyzer:
+    filename: "whoislyzer.py"
+    classname: "WHOISlyzer"
+    description: "Identify CDN using WHOIS records."
+    argument: "w"
+    priority: 3
+
+  httplyzer:
+    filename: "httplyzer.py"
+    classname: "HTTPlyzer"
+    description: "Identify CDN using headers from Website."
+    argument: "h"
+    priority: 4
+
+# Add your own analyzer!
+
+  # censyslyzer:
+  #   filename: "censuslyzer.py"
+  #   classname: "CENSUSlyzer"
+  #   description: "Check for CDN using Censys"
+  #   argument: "e"

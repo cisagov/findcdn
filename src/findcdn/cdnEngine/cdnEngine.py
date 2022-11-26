@@ -6,188 +6,131 @@ if a given domain or set of domains use a CDN.
 """
 
 # Standard Python Libraries
-import concurrent.futures
-import math
-import os
-from typing import List, Tuple
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import ContextDecorator
+from datetime import datetime
+from time import perf_counter
+from typing import Any, Dict, List
 
 # Third-Party Libraries
 from tqdm import tqdm
+from validators import domain
 
+# cisagov Libraries
 # Internal Libraries
-from . import detectCDN
+from findcdn.cdnEngine.analyzers import ANALYZERS
+from findcdn.cdnEngine.analyzers.base import Domain
 
 
-class DomainPot:
-    """DomainPot defines the "pot" which Domain objects are stored."""
+class functime(ContextDecorator):
+    """Decorator to measure function time."""
 
-    def __init__(self, domains: List[str]):
-        """Define the pot for the Chef to use."""
-        self.domains: List[detectCDN.Domain] = []
+    def __enter__(self):
+        """Start timer definition."""
+        self.start = perf_counter()
+        return self
 
-        # Convert to list of type domain
-        for dom in domains:
-            dom_in = detectCDN.Domain(
-                dom, list(), list(), list(), list(), list(), list(), list()
-            )
-            self.domains.append(dom_in)
+    def __exit__(self, type, value, traceback):
+        """End timer and delta setting to elapsed."""
+        self.end = perf_counter()
+        self.elapsed = self.end - self.start
 
 
-def chef_executor(
-    domain: detectCDN.Domain,
-    timeout: int,
-    user_agent: str,
-    verbosity: bool,
-    interactive: bool,
-):
-    """Attempt to make the method "threadsafe" by giving each worker its own detector."""
-    # Define detector
-    detective = detectCDN.cdnCheck()
+def analyze_domain(
+    domain: str, checks: str, timeout: int = 10
+) -> Dict[str, Dict[str, object]]:
+    """Analyze single domain."""
+    error_code = 0
+    dom = Domain(domain, [], [], [])
+    results: List[str] = []
 
-    # Run checks
-    try:
-        detective.all_checks(
-            # Timeout is split by .4 so that each chunk can only take less than half.
-            domain,
-            verbose=verbosity,
-            timeout=math.ceil(timeout * 0.4),
-            agent=user_agent,
-            interactive=interactive,
+    # First identify if domain has valid IPs
+    iplyzer = ANALYZERS["IPlyzer"]["class"]
+    results, _, ec = iplyzer.run(dom, timeout)
+
+    # If there are no results but there are IPs, that means
+    # we must fallback to a different method for CDN detection.
+    if not len(results) == 0 and len(dom.ips) > 0:
+        # Sort analyzers based on priority (also filter out IPlyzer)
+        analyzers = sorted(
+            list(filter(lambda x: x != "IPlyzer", ANALYZERS.keys())),
+            key=lambda x: ANALYZERS[x]["prio"],
         )
-    except Exception as e:
-        # Incase some uncaught error somewhere
-        if interactive or verbosity:
-            print(f"An unusual exception has occurred:\n{e}")
-        return 1
 
-    # Return 0 for success
-    return 0
+        # Filter out any with their arg missing
+        analyzers = list(filter(lambda x: ANALYZERS[x]["arg"] in checks, analyzers))
 
+        # Get results
+        for analyzer in analyzers:
+            a = ANALYZERS[analyzer]["class"]
+            results, _, ec = a.run(dom, timeout)
+            # print(f"{analyzer} ==> {results} {error_code}")
+            error_code |= ec
+            if len(results) > 0:
+                break  # CDN has been found
+            if ec == -1:
+                break  # Domain just flat don't exist probably
 
-class Chef:
-    """Chef will run analysis on the domains in the DomainPot."""
-
-    def __init__(
-        self,
-        pot: DomainPot,
-        threads: int,
-        timeout: int,
-        user_agent: str,
-        interactive: bool = False,
-        verbose: bool = False,
-    ):
-        """Give the chef the pot to use."""
-        self.pot: DomainPot = pot
-        self.pbar: tqdm = interactive
-        self.verbose: bool = verbose
-        self.timeout: int = timeout
-        self.agent = user_agent
-        self.interactive = interactive
-
-        # Determine thread count
-        if threads and threads != 0:
-            # Threads defined by user assign
-            self.threads = threads
-        else:
-            # No user defined threads, get it from os.cpu_count()
-            cpu_count = os.cpu_count()
-            if cpu_count is None:
-                cpu_count = 1
-            self.threads = cpu_count  # type: ignore
-
-    def grab_cdn(self, double: bool = False):  # type: ignore
-        """Check for CDNs used be domain list."""
-        # Use Concurrent futures to multithread with pools
-        job_count = 0
-
-        if self.verbose:
-            # Give user information about the run:
-            print(f"Using {self.threads} threads with a {self.timeout} second timeout")
-            print(f"User Agent: {self.agent}\n")
-
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.threads
-        ) as executor:
-            # If double, Double contents to combat CDN cache misses
-            newpot = []
-            if double:
-                for domain in self.pot.domains:
-                    newpot.append(domain)
-            for domain in self.pot.domains:
-                newpot.append(domain)
-            job_count = len(newpot)
-            # Setup pbar with correct amount size
-            if self.pbar:
-                pbar = tqdm(total=job_count)
-
-            # Assign workers and assign to results list
-            results = {
-                executor.submit(
-                    chef_executor,
-                    domain,
-                    self.timeout,
-                    self.agent,
-                    self.verbose,
-                    self.interactive,
-                )
-                for domain in newpot
-            }
-
-            # Comb future objects for completed task pool.
-            for future in concurrent.futures.as_completed(results):
-                try:
-                    # Try and grab feature result to dequeue job
-                    future.result(timeout=self.timeout)
-                except concurrent.futures.TimeoutError as e:
-                    # Tell us we dropped it. Should log this instead.
-                    if self.interactive or self.verbose:
-                        print(f"Dropped due to: {e}")
-
-                # Update status bar if allowed
-                if self.pbar:
-                    # We type ignore these as its "illegal" to access private attributes of an object
-                    pending = f"Pending: {executor._work_queue.qsize()} jobs"  # type: ignore
-                    threads = f"Threads: {len(executor._threads)}"  # type: ignore
-                    pbar.set_description(f"[{pending}]==[{threads}]")
-                    if self.pbar is not None:
-                        pbar.update(1)
-                    else:
-                        pass
-
-        # Return the amount of jobs done and error code
-        return job_count
-
-    def has_cdn(self):
-        """For each domain, check if domain contains CDNS. If so, tick cdn_present to true."""
-        for domain in self.pot.domains:
-            if len(domain.cdns) > 0:
-                domain.cdn_present = True
-
-    def run_checks(self, double: bool = False) -> int:
-        """Run analysis on the internal domain pool using detectCDN library."""
-        cnt = self.grab_cdn(double)
-        self.has_cdn()
-        return cnt
+    # Organize and return as dict
+    dom_res = {}
+    dom_res[dom.domain] = {
+        "cdn": results,
+        "ips": [str(ip) for ip in dom.ips],
+        "has_cdn": 1 if len(results) > 0 else 0,
+    }
+    return dom_res
 
 
-def run_checks(
+def analyze_domains(
     domains: List[str],
-    threads: int,
-    timeout: int,
-    user_agent: str,
-    interactive: bool = False,
+    checks: str,
+    threads: int = 4,
+    timeout: int = 10,
     verbose: bool = False,
-    double: bool = False,
-) -> Tuple[List[detectCDN.Domain], int]:
-    """Orchestrate the use of DomainPot and Chef."""
-    # Our domain pot
-    dp = DomainPot(domains)
+    interactive: bool = False,
+):
+    """Perform analysis on multiple domains."""
+    # Show loading bar if interactive
+    if interactive:
+        pbar = tqdm(total=len(domains))
 
-    # Our chef to manage pot
-    chef = Chef(dp, threads, timeout, user_agent, interactive, verbose)
+    # This is so we can time the total execution of the code
+    with functime() as ft:
+        # Collect the subset of valid and invalid domains
+        VALID_DOMAINS = list(filter(lambda x: domain(x), domains))
+        INVALID_DOMAINS = list(filter(lambda x: not domain(x), domains))
 
-    # Run analysis for all domains
-    cnt = chef.run_checks(double)
+        completed = []
+        res = []
 
-    # Return all domains in form domain_pool, count of jobs processed, error code
-    return (chef.pot.domains, cnt)
+        # Thread pool executor for concurrent executions.
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            # Submit all the domains to be analyzed by a worker
+            for domaind in VALID_DOMAINS:
+                completed.append(
+                    executor.submit(analyze_domain, domaind, checks, timeout)
+                )
+
+            # Wait for workers to finish
+            for task in as_completed(completed):
+                dom_res = task.result()
+                res.append(dom_res)
+
+                # Update progress bar as a result completes
+                if interactive:
+                    pbar.update(1)
+
+    # Aggregate results
+    results: Dict[str, Any] = {}
+    results["valid_domains"] = {}
+    [results["valid_domains"].update(dom) for dom in res]
+
+    results["invalid_domains"] = [domain for domain in INVALID_DOMAINS]
+    results["date"] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+    results["runtime"] = ft.elapsed
+    results["total_analyzed"] = len(VALID_DOMAINS)
+    results["count_with_cdn"] = sum(
+        1 for _, v in results["valid_domains"].items() if v["has_cdn"]
+    )
+
+    return results

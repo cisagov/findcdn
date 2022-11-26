@@ -15,21 +15,21 @@ Usage:
 Options:
   -h --help                    Show this message.
   --version                    Show the current version.
+  --checks=<checks>            Select detection types; possible values:
+                               cname (c), HTTP headers (h),and whois (w).
+                               [default: chw]
   -o FILE --output=FILE        If specified, then the JSON output file will be
                                created at the specified value.
   -v --verbose                 Includes additional print statements.
   --all                        Includes domains with and without a CDN
                                in output.
   -d --double                  Run the checks twice to increase accuracy.
-  -t --threads=<thread_count>  Number of threads, otherwise use default.
+  -t --threads=<thread_count>  Number of threads, otherwise use default. [default: 4]
   --timeout=<timeout>          Max duration in seconds to wait for a domain to
-                               conclude processing, otherwise use default.
-  --user_agent=<user_agent>    Set the user agent to use, otherwise
-                               use default.
+                               conclude processing, otherwise use default. [default: 4]
 """
 
 # Standard Python Libraries
-import datetime
 import json
 import os
 import sys
@@ -38,20 +38,18 @@ from typing import Any, Dict, List
 # Third-Party Libraries
 import docopt
 from schema import And, Or, Schema, SchemaError, Use
-import validators
 
 # Internal Libraries
 from ._version import __version__
-from .cdnEngine import run_checks
+from .cdnEngine import ARGS, analyze_domains
 from .findcdn_err import FileWriteError, InvalidDomain, NoDomains, OutputFileExists
 
 # Global Variables
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
-TIMEOUT = 60  # Time in seconds
-THREADS = 0  # If 0 then cdnEngine uses CPU count to set thread count
+TIMEOUT = 10  # Time in seconds
+THREADS = 10  # If 0 then cdnEngine uses CPU count to set thread count
 
 
-def write_json(json_dump: str, output: str, verbose: bool, interactive: bool):
+def write_json(json_dump: str, output: str):
     """Write dict as JSON to output file."""
     try:
         with open(output, "x") as outfile:
@@ -64,64 +62,32 @@ def write_json(json_dump: str, output: str, verbose: bool, interactive: bool):
 
 def main(
     domain_list: List[str],
+    checks: str,
     output_path: str = None,
     verbose: bool = False,
-    all_domains: bool = False,
     interactive: bool = False,
-    double_in: bool = False,
     threads: int = THREADS,
     timeout: int = TIMEOUT,
-    user_agent: str = USER_AGENT,
+    all: bool = False,
 ) -> str:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
-    # Make sure the list passed is got something in it
-    if len(domain_list) <= 0:
-        raise NoDomains("error")
-
-    # Validate domains in list
-    for item in domain_list:
-        if validators.domain(item) is not True:
-            raise InvalidDomain(item)
-
-    # Show the validated domains if in verbose mode
-    if verbose:
-        print("%d Domains Validated" % len(domain_list))
-
-    # Define domain dict and counter for json
-    domain_dict = {}
-    CDN_count = 0
-
     # Check domain list
-    processed_list, cnt = run_checks(
-        domain_list,
-        threads,
-        timeout,
-        user_agent,
-        interactive,
-        verbose,
-        double_in,
+    results = analyze_domains(
+        domains=domain_list,
+        checks=checks,
+        threads=threads,
+        timeout=timeout,
+        interactive=interactive,
+        verbose=verbose,
     )
 
-    # Parse the domain data
-    for domain in processed_list:
-        # Track the count of the domain has cdns
-        if len(domain.cdns) > 0:
-            CDN_count += 1
-
-        # Setup formatting for json output
-        if len(domain.cdns) > 0 or all_domains:
-            domain_dict[domain.url] = {
-                "IP": str(domain.ip)[1:-1],
-                "cdns": str(domain.cdns)[1:-1],
-                "cdns_by_names": str(domain.cdns_by_name)[1:-1],
-            }
+    if not all:
+        results["valid_domains"] = {
+            cdn: v for cdn, v in results["valid_domains"].items() if len(v["cdn"]) > 0
+        }
 
     # Create JSON from the results and return (results, successful jobs)
-    json_dict = {}
-    json_dict["date"] = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-    json_dict["cdn_count"] = str(CDN_count)
-    json_dict["domains"] = domain_dict  # type: ignore
-    json_dump = json.dumps(json_dict, indent=4, sort_keys=False)
+    json_dump = json.dumps(results, indent=4, sort_keys=False)
 
     # Show the dump to stdout if verbose or interactive
     if (output_path is None and interactive) or verbose:
@@ -129,14 +95,7 @@ def main(
 
     # Export to file if file provided
     if output_path is not None:
-        write_json(json_dump, output_path, verbose, interactive)
-    if interactive or verbose:
-        print(
-            "Domain processing completed.\n%d domains had CDN's out of %d."
-            % (CDN_count, len(domain_list))
-        )
-    if verbose:
-        print(f"{cnt} jobs completed!")
+        write_json(json_dump, output_path)
 
     # Return json dump to callee
     return json_dump
@@ -147,17 +106,14 @@ def interactive() -> None:
     # Obtain arguments from docopt
     args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
 
-    # Check for None params then set default if found
-    if args["--user_agent"] is None:
-        args["--user_agent"] = USER_AGENT
-    if args["--threads"] is None:
-        args["--threads"] = THREADS
-    if args["--timeout"] is None:
-        args["--timeout"] = TIMEOUT
-
     # Validate and convert arguments as needed with schema
     schema: Schema = Schema(
         {
+            "--checks": And(
+                Use(str),
+                lambda checks: all([c in ARGS for c in checks]),
+                error="Check strings must be valid opts.",
+            ),
             "--output": Or(
                 None,
                 And(
@@ -183,10 +139,6 @@ def interactive() -> None:
                 Use(int),
                 lambda timeout: timeout > 0,
                 error="The timeout duration must be a number greater than 0",
-            ),
-            "--user_agent": And(
-                str,
-                error="The user agent must be a string.",
             ),
             "<domain>": And(list, error="Please format the domains as a list."),
             str: object,  # Don't care about other keys, if any
@@ -214,15 +166,14 @@ def interactive() -> None:
     # Start main runner of program with supplied inputs.
     try:
         main(
-            domain_list,
-            validated_args["--output"],
-            validated_args["--verbose"],
-            validated_args["--all"],
-            True,  # Launch in interactive mode.
-            validated_args["--double"],
-            validated_args["--threads"],
-            validated_args["--timeout"],
-            validated_args["--user_agent"],
+            domain_list=domain_list,
+            checks=validated_args["--checks"],
+            output_path=validated_args["--output"],
+            verbose=validated_args["--verbose"],
+            interactive=True,  # Launch in interactive mode.
+            threads=validated_args["--threads"],
+            timeout=validated_args["--timeout"],
+            all=validated_args["--all"],
         )
     # Check for all potential exceptions
     except OutputFileExists as ofe:

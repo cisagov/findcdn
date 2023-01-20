@@ -17,7 +17,7 @@ from findcdn.cdnEngine.analyzers.base import BaseAnalyzer, Domain
 class HTTPlyzer(BaseAnalyzer):
     """Reach out to host. Get headers."""
 
-    __NAME = "IPlyzer"
+    __NAME = "HTTPlyzer"
 
     def get_data(self, domain: Domain) -> Tuple[List, int]:
         """Perform action to get data we need to detect a CDN."""

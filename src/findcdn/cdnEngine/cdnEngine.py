@@ -14,6 +14,7 @@ from typing import Any, Dict, List
 
 # Third-Party Libraries
 from tqdm import tqdm
+from loguru import logger
 from validators import domain
 
 # cisagov Libraries
@@ -37,7 +38,7 @@ class functime(ContextDecorator):
 
 
 def analyze_domain(
-    domain: str, checks: str, timeout: int = 10
+    domain: str, checks: str, timeout: int = 10, verbose: bool = False
 ) -> Dict[str, Dict[str, object]]:
     """Analyze single domain."""
     error_code = 0
@@ -63,10 +64,15 @@ def analyze_domain(
         # Get results
         for analyzer in analyzers:
             a = ANALYZERS[analyzer]["class"]
-            results, _, ec = a.run(dom, timeout)
-            # print(f"{analyzer} ==> {results} {error_code}")
+            if verbose:
+                logger.debug(f"[ANALYZER]::[{analyzer}] Starting..")
+            results, _, ec = a.run(dom, timeout, verbose=verbose)
+            if verbose:
+                logger.debug(f"[ANALYZER]::[{analyzer}] RESULTS: {results} ERROR CODE: {error_code}")
             error_code |= ec
             if len(results) > 0:
+                if verbose:
+                    logger.debug(f"[ANALYZER]::[{analyzer}] CDN Has been found: {len(results) > 0 = }")
                 break  # CDN has been found
             if ec == -1:
                 break  # Domain just flat don't exist probably
@@ -108,13 +114,18 @@ def analyze_domains(
             # Submit all the domains to be analyzed by a worker
             for domaind in VALID_DOMAINS:
                 completed.append(
-                    executor.submit(analyze_domain, domaind, checks, timeout)
+                    executor.submit(analyze_domain, domaind, checks, timeout, verbose)
                 )
 
             # Wait for workers to finish
             for task in as_completed(completed):
                 dom_res = task.result()
                 res.append(dom_res)
+
+                if verbose:
+                    dom = list(dom_res.keys())[0]
+                    found = dom_res[dom]['has_cdn']
+                    logger.debug(f"{dom} {'has a cdn!' if found else 'has no cdn.'}")
 
                 # Update progress bar as a result completes
                 if interactive:

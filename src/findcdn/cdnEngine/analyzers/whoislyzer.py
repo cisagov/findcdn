@@ -19,7 +19,7 @@ from findcdn.cdnEngine.analyzers.base import BaseAnalyzer, Domain
 class WHOISlyzer(BaseAnalyzer):
     """Perform whois lookup on domain."""
 
-    __NAME = "IPlyzer"
+    __NAME = "WHOISlyzer"
 
     def get_data(self, domain: Domain) -> Tuple[List, int]:
         """Perform action to get data we need to detect a CDN."""

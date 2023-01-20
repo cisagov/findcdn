@@ -6,6 +6,9 @@ from dataclasses import dataclass
 from ipaddress import IPv4Address, IPv6Address
 from typing import List, Tuple, Union
 
+# Third-Party Libraries
+from loguru import logger
+
 # Internal Libraries
 
 
@@ -34,14 +37,18 @@ class BaseAnalyzer(ABC):
         """Parse the data gathered and return CDN results."""
         pass
 
-    def run(self, domain: Domain, timeout: int = 10) -> Tuple[List[str], Domain, int]:
+    def run(self, domain: Domain, timeout: int = 10, verbose: bool = False) -> Tuple[List[str], Domain, int]:
         """Kick off analysis and return CDN results."""
         self.timeout = timeout
 
+        if verbose:
+            logger.debug(f"[{self.__NAME}] Obtaining data")
         data, err = self.get_data(domain)
         if err:
             return [], domain, err
 
+        if verbose:
+            logger.debug(f"[{self.__NAME}] Parsing results ")
         results, err = self.parse(data)
         if err:
             return [], domain, err

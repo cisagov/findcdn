@@ -97,6 +97,7 @@ setup(
         "validators",
         "PyYAML",
         "requests",
+        "loguru"
     ],
     extras_require={
         "test": [

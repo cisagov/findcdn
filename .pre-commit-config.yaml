@@ -101,7 +101,7 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-  - repo: https://gitlab.com/pycqa/flake8
+  - repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
       - id: flake8
@@ -117,6 +117,8 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-setuptools
+          - types-PyYAML
+          - types-requests
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.31.1
     hooks:

@@ -4,14 +4,15 @@
 # package_name.__version__, which is used to get version information about this
 # Python package.
 from ._version import __version__  # noqa: F401
-from .findcdn import interactive, main
-from .findcdn_err import FileWriteError, InvalidDomain, OutputFileExists
+
+# from .findcdn import interactive, main
+# from .findcdn_err import FileWriteError, InvalidDomain, OutputFileExists
+from .cdnEngine import analyze_domain, analyze_domains
 
 __all__ = [
     "main",
     "__version__",
     "interactive",
-    "OutputFileExists",
-    "InvalidDomain",
-    "FileWriteError",
+    "analyze_domain",
+    "analyze_domains",
 ]

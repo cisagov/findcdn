@@ -29,6 +29,8 @@ Options:
   --checks=<checks>            Select detection types; possible values: 
                                cname (c), HTTP headers (h), nameservers (n),
                                whois data (w). Default: "chnw"
+  --ignore                     Ignores invalid domains and only work with valid
+                               ones (default False, which stops the scan)
 """
 
 # Standard Python Libraries

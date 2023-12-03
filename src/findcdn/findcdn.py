@@ -77,6 +77,7 @@ def main(
     timeout: int = TIMEOUT,
     user_agent: str = USER_AGENT,
     checks: str = CHECKS,
+    ignore: bool = False,
 ) -> str:
     """Take in a list of domains and determine the CDN for each return (JSON, number of successful jobs)."""
     # Make sure the list passed is got something in it
@@ -84,13 +85,20 @@ def main(
         raise NoDomains("error")
 
     # Validate domains in list
+    valid_domain_list = list()
     for item in domain_list:
         if validators.domain(item) is not True:
-            raise InvalidDomain(item)
+            if not ignore:
+                raise InvalidDomain(item)
+            elif interactive:
+                print("Invalid domain: {}".format(item))
+                continue
+        else:
+            valid_domain_list.append(item)
 
     # Show the validated domains if in verbose mode
     if verbose:
-        print("%d Domains Validated" % len(domain_list))
+        print("%d Domains Validated" % len(valid_domain_list))
 
     # Define domain dict and counter for json
     domain_dict = {}
@@ -98,7 +106,7 @@ def main(
 
     # Check domain list
     processed_list, cnt = run_checks(
-        domain_list,
+        valid_domain_list,
         threads,
         timeout,
         user_agent,
@@ -139,7 +147,7 @@ def main(
     if interactive or verbose:
         print(
             "Domain processing completed.\n%d domains had CDN's out of %d."
-            % (CDN_count, len(domain_list))
+            % (CDN_count, len(valid_domain_list))
         )
     if verbose:
         print(f"{cnt} jobs completed!")
@@ -201,7 +209,17 @@ def interactive() -> None:
                 lambda checks: set(checks) <= {'c', 'h', 'n', 'w'},
                 error="Checks can be the following characters: chnw"
             ),
-            "<domain>": And(list, error="Please format the domains as a list."),
+            "--ignore": Or(
+                False,
+                And(
+                    bool,
+                    Use(lambda value: True)  # Convert to True if the flag set
+                ),
+                default=False
+            ),
+            "<domain>": And(
+                list, error="Please format the domains as a list."
+            ),
             str: object,  # Don't care about other keys, if any
         }
     )
@@ -236,7 +254,8 @@ def interactive() -> None:
             validated_args["--threads"],
             validated_args["--timeout"],
             validated_args["--user_agent"],
-            validated_args["--checks"]
+            validated_args["--checks"],
+            validated_args["--ignore"],
         )
     # Check for all potential exceptions
     except OutputFileExists as ofe:

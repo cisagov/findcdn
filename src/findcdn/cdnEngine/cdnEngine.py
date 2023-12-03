@@ -39,6 +39,7 @@ def chef_executor(
     user_agent: str,
     verbosity: bool,
     interactive: bool,
+    checks: str,
 ):
     """Attempt to make the method "threadsafe" by giving each worker its own detector."""
     # Define detector
@@ -53,6 +54,7 @@ def chef_executor(
             timeout=math.ceil(timeout * 0.4),
             agent=user_agent,
             interactive=interactive,
+            checks = checks,
         )
     except Exception as e:
         # Incase some uncaught error somewhere
@@ -75,6 +77,7 @@ class Chef:
         user_agent: str,
         interactive: bool = False,
         verbose: bool = False,
+        checks: str = "chnw",
     ):
         """Give the chef the pot to use."""
         self.pot: DomainPot = pot
@@ -83,6 +86,7 @@ class Chef:
         self.timeout: int = timeout
         self.agent = user_agent
         self.interactive = interactive
+        self.checks = checks
 
         # Determine thread count
         if threads and threads != 0:
@@ -129,6 +133,7 @@ class Chef:
                     self.agent,
                     self.verbose,
                     self.interactive,
+                    self.checks,
                 )
                 for domain in newpot
             }
@@ -178,13 +183,14 @@ def run_checks(
     interactive: bool = False,
     verbose: bool = False,
     double: bool = False,
+    checks: str = "chnw",
 ) -> Tuple[List[detectCDN.Domain], int]:
     """Orchestrate the use of DomainPot and Chef."""
     # Our domain pot
     dp = DomainPot(domains)
 
     # Our chef to manage pot
-    chef = Chef(dp, threads, timeout, user_agent, interactive, verbose)
+    chef = Chef(dp, threads, timeout, user_agent, interactive, verbose, checks)
 
     # Run analysis for all domains
     cnt = chef.run_checks(double)

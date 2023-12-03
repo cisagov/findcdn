@@ -9,6 +9,7 @@ from http.client import RemoteDisconnected
 from ssl import CertificateError, SSLError
 from typing import List
 from urllib import request as request
+from urllib import parse
 from urllib.error import URLError
 
 # Third-Party Libraries
@@ -23,6 +24,41 @@ from .cdn_err import NoIPaddress
 # Global variables
 LIFETIME = 10
 
+
+class RedirectFilter(request.HTTPRedirectHandler):
+
+    def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        newhost = parse.urlparse(newurl).netloc
+        # if the original and redirected hostname are the same
+        if req.host == newhost:
+            return request.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, hdrs, newurl)
+        # otherwise don't sent any more requests
+        else:
+            return None
+
+    def http_error_302(self, req, fp, code, msg, hdrs):
+
+        result = request.HTTPRedirectHandler.http_error_302(
+                self, req, fp, code, msg, hdrs)
+
+        # The original http_error_302 calls self.redirect_request()
+        # If the target hostname is the same in the redirection,
+        # redirect_request() will return a new request to be handled by
+        # http_error_302 above.
+        # Otherwise, it returns None, in which case http_error_302 also returns
+        # None. In that case, we just return the response (fp) to the initial
+        # request.
+
+        if result is None:
+            return fp
+
+        # store previous responses' headers into the last result
+        for k,v in hdrs.items():
+            result.headers.set_raw(k, v)
+
+        return result
+
+    http_error_301 = http_error_303 = http_error_307 = http_error_302
 
 class Domain:
     """Domain class allows for storage of metadata on domain."""
@@ -59,7 +95,7 @@ class cdnCheck:
 
     def ip(self, dom: Domain) -> List[int]:
         """Determine IP addresses the domain resolves to."""
-        dom_list: List[str] = [dom.url, "www." + dom.url]
+        dom_list: List[str] = [dom.url]
         return_codes = []
         ip_list = []
         for domain in dom_list:
@@ -88,7 +124,7 @@ class cdnCheck:
     def cname(self, dom: Domain, timeout: int) -> List[int]:
         """Collect CNAME records on domain."""
         # List of domains to check
-        dom_list = [dom.url, "www." + dom.url]
+        dom_list = [dom.url]
         # Our codes to return
         return_code = []
         # Seutp resolver and timeouts
@@ -116,7 +152,7 @@ class cdnCheck:
     ) -> int:
         """Read 'server' header for CDN hints."""
         # List of domains with different protocols to check.
-        PROTOCOLS = ["https://", "https://www."]
+        PROTOCOLS = ["http://", "https://"]
         # Iterate through all protocols
         for PROTOCOL in PROTOCOLS:
             try:
@@ -127,8 +163,11 @@ class cdnCheck:
                     headers={"User-Agent": agent},
                 )
                 # Making the timeout 50 as to not hang thread.
-                response = request.urlopen(req, timeout=timeout)  # nosec
-            except URLError:
+                # replace RedirectHandler with RedirectFilter
+                opener = request.build_opener(RedirectFilter)
+                response = opener.open(req, timeout=timeout)
+
+            except URLError as e:
                 continue
             except RemoteDisconnected:
                 continue
@@ -143,6 +182,7 @@ class cdnCheck:
                 if interactive or verbose:
                     print(f"[{e}]: https://{dom.url}")
                 continue
+
             # Define headers to check for the response
             # to grab strings for later parsing.
             HEADERS = ["server", "via"]
@@ -232,7 +272,7 @@ class cdnCheck:
                     dom.cdns.append(CDNs_rev[name])
                     dom.cdns_by_name.append(name)
 
-    def data_digest(self, dom: Domain) -> int:
+    def data_digest(self, dom: Domain, checks: str) -> int:
         """Digest all data collected and assign to CDN list."""
         return_code = 1
         # Iterate through all attributes for substrings
@@ -242,7 +282,7 @@ class cdnCheck:
         if len(dom.headers) > 0 and not None:
             self.CDNid(dom, dom.headers)
             return_code = 0
-        if len(dom.namesrvs) > 0 and not None:
+        if len(dom.namesrvs) > 0 and not None and 'n' in checks:
             self.CDNid(dom, dom.namesrvs)
             return_code = 0
         if len(dom.whois_data) > 0 and not None:
@@ -257,16 +297,20 @@ class cdnCheck:
         agent: str,
         verbose: bool = False,
         interactive: bool = False,
+        checks: str = "chnw",
     ) -> int:
         """Option to run everything in this library then digest."""
         # Obtain each attributes data
         self.ip(dom)
-        self.cname(dom, timeout)
-        self.https_lookup(dom, timeout, agent, interactive, verbose)
-        self.whois(dom, interactive, verbose)
+        if 'c' in checks:
+            self.cname(dom, timeout)
+        if 'h' in checks:
+            self.https_lookup(dom, timeout, agent, interactive, verbose)
+        if 'w' in checks:
+            self.whois(dom, interactive, verbose)
 
         # Digest the data
-        return_code = self.data_digest(dom)
+        return_code = self.data_digest(dom, checks)
 
         # Extra case if we want verbosity for each domain check
         if verbose:

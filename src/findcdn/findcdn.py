@@ -217,7 +217,6 @@ def interactive() -> None:
                     bool,
                     Use(lambda value: True)  # Convert to True if the flag set
                 ),
-                default=False
             ),
             "<domain>": And(
                 list, error="Please format the domains as a list."

@@ -5,7 +5,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v4.4.0
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -31,17 +31,17 @@ repos:
 
   # Text file hooks
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.31.1
+    rev: v0.36.0
     hooks:
       - id: markdownlint
         args:
           - --config=.mdl_config.yaml
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.1
+    rev: v3.0.3
     hooks:
       - id: prettier
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.3
+    rev: v1.32.0
     hooks:
       - id: yamllint
         args:
@@ -49,16 +49,41 @@ repos:
 
   # GitHub Actions hooks
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.14.2
+    rev: 0.26.3
     hooks:
       - id: check-github-actions
       - id: check-github-workflows
 
   # pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit
-    rev: v2.17.0
+    rev: v3.4.0
     hooks:
       - id: validate_manifest
+
+  # Go hooks
+  - repo: https://github.com/TekWizely/pre-commit-golang
+    rev: v1.0.0-rc.1
+    hooks:
+      # Style Checkers
+      - id: go-critic
+      # StaticCheck
+      - id: go-staticcheck-repo-mod
+      # Go Build
+      - id: go-build-repo-mod
+      # Go Mod Tidy
+      - id: go-mod-tidy-repo
+      # Go Test
+      - id: go-test-repo-mod
+      # Go Vet
+      - id: go-vet-repo-mod
+      # GoSec
+      - id: go-sec-repo-mod
+
+  # Nix hooks
+  - repo: https://github.com/nix-community/nixpkgs-fmt
+    rev: v1.3.0
+    hooks:
+      - id: nixpkgs-fmt
 
   # Shell script hooks
   - repo: https://github.com/cisagov/pre-commit-shfmt
@@ -81,64 +106,64 @@ repos:
       - id: shell-lint
 
   # Python hooks
-  # Run bandit on "tests" tree with a configuration
+  # Run bandit on the "tests" tree with a configuration
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
+    rev: 1.7.5
     hooks:
       - id: bandit
         name: bandit (tests tree)
         files: tests
         args:
           - --config=.bandit.yml
-  # Run bandit everything but tests directory
+  # Run bandit on everything except the "tests" tree
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.0
+    rev: 1.7.5
     hooks:
       - id: bandit
         name: bandit (everything else)
         exclude: tests
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.9.1
     hooks:
       - id: black
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0
     hooks:
       - id: flake8
         additional_dependencies:
           - flake8-docstrings
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.942
+    rev: v1.5.1
     hooks:
       - id: mypy
         additional_dependencies:
           - types-setuptools
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.31.1
+    rev: v3.10.1
     hooks:
       - id: pyupgrade
 
   # Ansible hooks
-  - repo: https://github.com/ansible-community/ansible-lint
-    rev: v5.4.0
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v6.19.0
     hooks:
       - id: ansible-lint
       # files: molecule/default/playbook.yml
 
   # Terraform hooks
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.64.0
+    rev: v1.83.2
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
 
   # Docker hooks
   - repo: https://github.com/IamTheFij/docker-pre-commit
-    rev: v2.1.0
+    rev: v3.0.1
     hooks:
       - id: docker-compose-check
 

@@ -1,10 +1,17 @@
 # findcdn #
 
+<<<<<<< HEAD
 [![GitHub Build Status](https://github.com/cisagov/findcdn/workflows/build/badge.svg)](https://github.com/cisagov/findcdn/actions)
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/findcdn/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/findcdn?branch=develop)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/cisagov/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/findcdn/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/cisagov/findcdn.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cisagov/findcdn/context:python)
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/findcdn/develop/badge.svg)](https://snyk.io/test/github/cisagov/findcdn)
+=======
+[![GitHub Build Status](https://github.com/cisagov/skeleton-python-library/workflows/build/badge.svg)](https://github.com/cisagov/skeleton-python-library/actions)
+[![CodeQL](https://github.com/cisagov/skeleton-python-library/workflows/CodeQL/badge.svg)](https://github.com/cisagov/skeleton-python-library/actions/workflows/codeql-analysis.yml)
+[![Coverage Status](https://coveralls.io/repos/github/cisagov/skeleton-python-library/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/skeleton-python-library?branch=develop)
+[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/skeleton-python-library/develop/badge.svg)](https://snyk.io/test/github/cisagov/skeleton-python-library)
+>>>>>>> 65604c7e134491f497f612f6eaebded8f411bec5
 
 `findcdn`, is a tool that can scan and detect the kind of
 [Content Distribution Network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network)

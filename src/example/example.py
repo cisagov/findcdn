@@ -20,6 +20,7 @@ Options:
 """
 
 # Standard Python Libraries
+from importlib.resources import files
 import logging
 import os
 import sys
@@ -27,7 +28,6 @@ from typing import Any, Dict
 
 # Third-Party Libraries
 import docopt
-import pkg_resources
 
 # There are no type stubs for the schema library, so mypy requires the type:
 # ignore hint.
@@ -96,9 +96,7 @@ def main() -> None:
 
     # Access some data from our package data (see the setup.py)
     secret_message: str = (
-        pkg_resources.resource_string("example", "data/secret.txt")
-        .decode("utf-8")
-        .strip()
+        files(f"{__package__}.data").joinpath("secret.txt").read_text().strip()
     )
     logging.info('Secret="%s"', secret_message)
 

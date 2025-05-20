@@ -273,12 +273,10 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: pytest
       - name: Upload coverage report
-        run: coveralls
-        env:
-          COVERALLS_FLAG_NAME: py${{ matrix.python-version }}
-          COVERALLS_PARALLEL: true
-          COVERALLS_SERVICE_NAME: github
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: py${{ matrix.python-version }}
+          parallel: true
         if: success()
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
@@ -319,35 +317,10 @@ jobs:
           # this workflow.
           permissions_monitoring_config: ${{ vars.ACTIONS_PERMISSIONS_CONFIG }}
       - uses: actions/checkout@v4
-      - id: setup-env
-        uses: cisagov/setup-env-github-action@develop
-      - id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.setup-env.outputs.python-version }}
-      - uses: actions/cache@v4
-        env:
-          BASE_CACHE_KEY: ${{ github.job }}-${{ runner.os }}-\
-            py${{ steps.setup-python.outputs.python-version }}-
-        with:
-          path: ${{ env.PIP_CACHE_DIR }}
-          # We do not use '**/setup.py' in the cache key so only the 'setup.py'
-          # file in the root of the repository is used. This is in case a Python
-          # package were to have a 'setup.py' as part of its internal codebase.
-          key: ${{ env.BASE_CACHE_KEY }}\
-            ${{ hashFiles('**/requirements-test.txt') }}-\
-            ${{ hashFiles('**/requirements.txt') }}-\
-            ${{ hashFiles('setup.py') }}
-          restore-keys: |
-            ${{ env.BASE_CACHE_KEY }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade --requirement requirements-test.txt
       - name: Finished coveralls reports
-        run: coveralls --finish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
       - name: Setup tmate debug session
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE

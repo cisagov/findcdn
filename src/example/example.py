@@ -96,7 +96,7 @@ def main() -> None:
 
     # Access some data from our package data (see the setup.py)
     secret_message: str = (
-        files(f"{__package__}.data").joinpath("secret.txt").read_text().strip()
+        files(__package__).joinpath("data", "secret.txt").read_text().strip()
     )
     logging.info('Secret="%s"', secret_message)
 

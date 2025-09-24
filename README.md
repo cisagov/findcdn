@@ -10,8 +10,11 @@
 [![GitHub Build Status](https://github.com/cisagov/skeleton-python-library/workflows/build/badge.svg)](https://github.com/cisagov/skeleton-python-library/actions)
 [![CodeQL](https://github.com/cisagov/skeleton-python-library/workflows/CodeQL/badge.svg)](https://github.com/cisagov/skeleton-python-library/actions/workflows/codeql-analysis.yml)
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/skeleton-python-library/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/skeleton-python-library?branch=develop)
+<<<<<<< HEAD
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/skeleton-python-library/develop/badge.svg)](https://snyk.io/test/github/cisagov/skeleton-python-library)
 >>>>>>> 65604c7e134491f497f612f6eaebded8f411bec5
+=======
+>>>>>>> cf0d937626ca5213720b7dd074735bc960d174b0
 
 `findcdn`, is a tool that can scan and detect the kind of
 [Content Distribution Network (CDN)](https://en.wikipedia.org/wiki/Content_delivery_network)

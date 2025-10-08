@@ -8,11 +8,10 @@
 # crazy-max/ghaction-github-labeler configuration file located at
 # .github/labels.yml.
 
-# Enable if Ansible playbooks are used in the repository.
-# ansible:
-#   - changed-files:
-#       - any-glob-to-any-file:
-#           - "**/ansible/**"
+ansible:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/ansible/**"
 dependencies:
   - changed-files:
       - any-glob-to-any-file:
@@ -20,13 +19,12 @@ dependencies:
           - .pre-commit-config.yaml
           - requirements*.txt
           - setup.py
-# Enable if Docker is used in the repository.
-# docker:
-#   - changed-files:
-#       - any-glob-to-any-file:
-#           - "**/compose*.yml"
-#           - "**/docker-compose*.yml"
-#           - "**/Dockerfile*"
+docker:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/compose*.yml"
+          - "**/docker-compose*.yml"
+          - "**/Dockerfile*"
 documentation:
   - changed-files:
       - any-glob-to-any-file:
@@ -35,21 +33,22 @@ github-actions:
   - changed-files:
       - any-glob-to-any-file:
           - .github/workflows/**
-# Enable if Packer is used in the repository.
-# packer:
-#   - changed-files:
-#       - any-glob-to-any-file:
-#           - "**/*.pkr.hcl"
-# Enable if Python is used in the repository.
+javascript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.js"
+packer:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.pkr.hcl"
 python:
   - changed-files:
       - any-glob-to-any-file:
           - "**/*.py"
-# Enable if Terraform is used in the repository.
-# terraform:
-#   - changed-files:
-#       - any-glob-to-any-file:
-#           - "**/*.tf"
+terraform:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.tf"
 test:
   - changed-files:
       - any-glob-to-any-file:
@@ -62,6 +61,10 @@ test:
           - .yamllint
           - pytest.ini
           - tests/**/*.py
+typescript:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.ts"
 upstream update:
   - head-branch:
       # Any Lineage pull requests should use this branch.

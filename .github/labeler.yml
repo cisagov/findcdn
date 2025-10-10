@@ -60,7 +60,7 @@ test:
           - .mdl_config.yaml
           - .yamllint
           - pytest.ini
-          - tests/**/*.py
+          - tests/**
 typescript:
   - changed-files:
       - any-glob-to-any-file:

@@ -219,7 +219,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
         python-version:
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
@@ -347,7 +346,6 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
@@ -406,7 +404,7 @@ jobs:
       - name: Build artifacts
         run: python -m build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist-${{ matrix.python-version }}
           path: dist
@@ -433,7 +431,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
         python-version:
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
@@ -487,7 +484,7 @@ jobs:
           restore-keys: |
             ${{ env.BASE_CACHE_KEY }}
       - name: Retrieve the built wheel
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: dist-${{ matrix.python-version }}
           path: dist

@@ -24,7 +24,7 @@ from importlib.resources import files
 import logging
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 # Third-Party Libraries
 import docopt
@@ -50,7 +50,7 @@ def example_div(dividend: int, divisor: int) -> float:
 
 def main() -> None:
     """Set up logging and call the example function."""
-    args: Dict[str, str] = docopt.docopt(__doc__, version=__version__)
+    args: dict[str, str] = docopt.docopt(__doc__, version=__version__)
     # Validate and convert arguments as needed
     schema: Schema = Schema(
         {
@@ -72,7 +72,7 @@ def main() -> None:
     )
 
     try:
-        validated_args: Dict[str, Any] = schema.validate(args)
+        validated_args: dict[str, Any] = schema.validate(args)
     except SchemaError as err:
         # Exit because one or more of the arguments were invalid
         print(err, file=sys.stderr)

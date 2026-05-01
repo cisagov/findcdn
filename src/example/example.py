@@ -94,7 +94,7 @@ def main() -> None:
     message: str = os.getenv("ECHO_MESSAGE", DEFAULT_ECHO_MESSAGE)
     logging.info('ECHO_MESSAGE="%s"', message)
 
-    # Access some data from our package data (see the setup.py)
+    # Access some data from our package data (see pyproject.toml)
     secret_message: str = (
         files(__package__).joinpath("data", "secret.txt").read_text().strip()
     )

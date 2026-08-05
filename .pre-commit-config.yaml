@@ -1,25 +1,39 @@
 ---
+ci:
+  # Do not commit changes from running pre-commit for pull requests.
+  autofix_prs: false
+  # Autoupdate hooks weekly (this is the default).
+  autoupdate_schedule: weekly
+
 default_language_version:
   # force all unspecified python hooks to run python3
   python: python3
 
 repos:
+  # Check the pre-commit configuration
+  - repo: meta
+    hooks:
+      - id: check-useless-excludes
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v6.0.0
     hooks:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-json
       - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
       - id: check-toml
+      - id: check-vcs-permalinks
       - id: check-xml
       - id: debug-statements
+      - id: destroyed-symlinks
       - id: detect-aws-credentials
         args:
           - --allow-missing-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
-        exclude: files/(issue|motd)
       - id: mixed-line-ending
         args:
           - --fix=lf
@@ -31,17 +45,17 @@ repos:
 
   # Text file hooks
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.31.1
+    rev: v0.48.0
     hooks:
       - id: markdownlint
         args:
           - --config=.mdl_config.yaml
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.1
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.8.1
     hooks:
       - id: prettier
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.26.3
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args:
@@ -49,102 +63,214 @@ repos:
 
   # GitHub Actions hooks
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.14.2
+    rev: 0.37.0
     hooks:
       - id: check-github-actions
       - id: check-github-workflows
 
   # pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit
-    rev: v2.17.0
+    rev: v4.5.1
     hooks:
       - id: validate_manifest
 
+  # Go hooks
+  - repo: https://github.com/TekWizely/pre-commit-golang
+    rev: v1.0.0-rc.4
+    hooks:
+      # Go Build
+      - id: go-build-repo-mod
+      # Style Checkers
+      - id: go-critic
+      # goimports
+      - id: go-imports-repo
+        args:
+          # Write changes to files
+          - -w
+      # Go Mod Tidy
+      - id: go-mod-tidy-repo
+      # GoSec
+      - id: go-sec-repo-mod
+      # StaticCheck
+      - id: go-staticcheck-repo-mod
+      # Go Test
+      - id: go-test-repo-mod
+      # Go Vet
+      - id: go-vet-repo-mod
+  # Nix hooks
+  - repo: https://github.com/nix-community/nixpkgs-fmt
+    rev: v1.3.0
+    hooks:
+      - id: nixpkgs-fmt
+
   # Shell script hooks
-  - repo: https://github.com/cisagov/pre-commit-shfmt
-    rev: v0.0.2
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.13.0-1
     hooks:
       - id: shfmt
         args:
+          # List files that will be formatted
+          - --list
+          # Write result to file instead of stdout
+          - --write
           # Indent by two spaces
-          - -i
-          - '2'
+          - --indent
+          - "2"
           # Binary operators may start a line
-          - -bn
+          - --binary-next-line
           # Switch cases are indented
-          - -ci
+          - --case-indent
           # Redirect operators are followed by a space
-          - -sr
-  - repo: https://github.com/detailyang/pre-commit-shell
-    rev: 1.0.5
+          - --space-redirects
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
     hooks:
-      - id: shell-lint
+      - id: shellcheck
 
   # Python hooks
-  # Run bandit on "tests" tree with a configuration
+  # Run bandit on the "tests" tree
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
+    rev: 1.9.4
     hooks:
       - id: bandit
         name: bandit (tests tree)
         files: tests
         args:
-          - --config=.bandit.yml
-  # Run bandit everything but tests directory
+          # Skip "assert used" check since assertions are used
+          # frequently in pytests.
+          - --skip=B101
+  # Run bandit on everything except the "tests" tree
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.0
+    rev: 1.9.4
     hooks:
       - id: bandit
         name: bandit (everything else)
         exclude: tests
-  - repo: https://github.com/psf/black
-    rev: 22.3.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 26.3.1
     hooks:
       - id: black
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.9.2
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.3.0
     hooks:
       - id: flake8
         additional_dependencies:
-          - flake8-docstrings
+          - dlint==0.16.0
+          - flake8-bugbear==25.11.29
+          - flake8-comprehensions==3.17.0
+          - flake8-docstrings==1.7.0
+          - flake8-noqa==1.5.0
+          # This is necessary to read the flake8 configuration from
+          # the pyproject.toml file.
+          - flake8-pyproject==1.2.3
+          - pep8-naming==0.15.1
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 8.0.1
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.942
+    rev: v1.19.1
     hooks:
       - id: mypy
+        # IMPORTANT: Keep type hinting-related dependencies of the
+        # mypy pre-commit hook additional_dependencies in sync with
+        # the dev section of pyproject.toml to avoid discrepancies in
+        # type checking between environments.
         additional_dependencies:
-          - types-setuptools
+          - types-docopt
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.10.0
+    hooks:
+      - id: pip-audit
+        args:
+          # We have to ignore this vulnerability for now since an
+          # update for pygments has not yet been released.
+          #
+          # In any event, this vulnerability is unlikely to cause us
+          # any problems since we don't feed any regexes to pygments
+          # directly.  pygments is pulled in as a dependency of
+          # pytest.
+          #
+          # See also:
+          # - https://nvd.nist.gov/vuln/detail/CVE-2026-4539
+          # - https://github.com/pygments/pygments/issues/3058
+          #
+          # TODO: Remove this when it becomes possible.  See
+          # cisagov/skeleton-generic#257 for more details.
+          - --ignore-vuln
+          - CVE-2026-4539
+          # Add any pip requirements files to scan
+          - --requirement
+          - requirements-dev.txt
+          - --requirement
+          - requirements-test.txt
+          - --requirement
+          - requirements.txt
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.31.1
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
+        args:
+          # Python 3.10 is currently the oldest non-EOL version of
+          # Python, so we want to apply all rules that apply to this
+          # version or later.  See here for more details:
+          # https://www.gyford.com/phil/writing/2025/08/26/how-to-use-pyupgrade/
+          - --py310-plus
 
   # Ansible hooks
-  - repo: https://github.com/ansible-community/ansible-lint
-    rev: v5.4.0
+  - repo: https://github.com/ansible/ansible-lint
+    # We need to stay on this version because we are still using Python 3.13 in
+    # our GitHub Actions configuration. Later versions require Python 3.14 for
+    # the hook to run.
+    rev: v26.1.1
     hooks:
       - id: ansible-lint
-      # files: molecule/default/playbook.yml
+        additional_dependencies:
+          # On its own ansible-lint does not pull in ansible, only
+          # ansible-core.  Therefore, if an Ansible module lives in
+          # ansible instead of ansible-core, the linter will complain
+          # that the module is unknown.  In these cases it is
+          # necessary to add the ansible package itself as an
+          # additional dependency, with the same pinning as is done in
+          # requirements-test.txt of cisagov/skeleton-ansible-role.
+          #
+          # Version 10 is required because the pip-audit pre-commit
+          # hook identifies a vulnerability in ansible-core 2.16.13,
+          # but all versions of ansible 9 have a dependency on
+          # ~=2.16.X.
+          # - ansible>=10,<11
+          # ansible-core<2.17.7 suffers from GHSA-99w6-3xph-cx78.
+          #
+          # Note that any changes made to this dependency must also be
+          # made in requirements.txt in cisagov/skeleton-packer and
+          # requirements-test.txt in cisagov/skeleton-ansible-role.
+          - ansible-core>=2.17.7
 
   # Terraform hooks
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.64.0
+    rev: v1.105.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
+      # This needs to run after the terraform_validate hook so that any Terraform
+      # configurations are initialized.
+      - id: terraform_providers_lock
+        args:
+          - --args=-platform=darwin_amd64
+          - --args=-platform=darwin_arm64
+          - --args=-platform=linux_amd64
+          - --args=-platform=linux_arm64
+          - --hook-config=--mode=always-regenerate-lockfile
 
   # Docker hooks
   - repo: https://github.com/IamTheFij/docker-pre-commit
-    rev: v2.1.0
+    rev: v3.0.1
     hooks:
       - id: docker-compose-check
 
   # Packer hooks
   - repo: https://github.com/cisagov/pre-commit-packer
-    rev: v0.0.2
+    rev: v0.3.1
     hooks:
-      - id: packer_validate
       - id: packer_fmt
+      - id: packer_validate
